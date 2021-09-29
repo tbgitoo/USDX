@@ -23,7 +23,7 @@
  * $Id$
  *}
 
-unit UScreenOptionsKeyPlay;
+unit UScreenOptionsBeatPlay;
 
 interface
 
@@ -45,19 +45,16 @@ uses
 // Class definition for the options screen for the tapping (accessible through
 // Tools -> Options -> Beat Tapping in the english version
 type
-  TScreenOptionsKeyPlay = class(TMenu)
+  TScreenOptionsBeatPlay = class(TMenu)
     private
-      KeyboardDelayOptInt:integer; // Value for Keyboard delay. Private because we only store the float value which is 10x this
-      KeyboardDelaySelectNum: integer; // This is the reference number of the graphical element
-      SelectLetterID: integer; // the presently selected leeter
-      SelectLetterIDGraphicalNum: integer;  // Again, the graphical reference number
+      BeatDetectionDelayOptInt:integer; // Value for Keyboard delay. Private because we only store the float value which is 10x this
+      BeatDetectionDelaySelectNum: integer; // This is the reference number of the graphical element
       ButtonConfigureID: integer;
     public
       constructor Create; override;
       function ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean; override;
       procedure OnShow; override;
       procedure UpdateCalculatedSelectSlides(Init: boolean); // For showing suitable text to choose
-      procedure UpdateLetterSelection(); // Ensure that the letter shown corresponds to the player
   end;
 
 
@@ -76,7 +73,7 @@ type
 TGetTextFunc = function(var Param: integer; Offset: integer; Modify: boolean; OptText: PUtf8String): boolean;
 UTF8StringArray = array of UTF8String;
 
-function TScreenOptionsKeyPlay.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
+function TScreenOptionsBeatPlay.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
 begin
   Result := true;
   if (PressedDown) then
@@ -114,7 +111,7 @@ begin
           if SelInteraction = 6 then
           begin
             Ini.Save;
-            FadeTo(@ScreenOptionsKeyPlayPeakAnalysis);
+            FadeTo(@ScreenOptionsBeatPlayPeakAnalysis);
           end;
         end;
       SDLK_DOWN:
@@ -129,8 +126,6 @@ begin
             InteractInc;
           end;
           UpdateCalculatedSelectSlides(false);
-          if SelInteraction = 1 then // Player selected, update letters from known map
-             UpdateLetterSelection();
         end;
       SDLK_LEFT:
         begin
@@ -140,32 +135,24 @@ begin
             InteractDec;
           end;
           UpdateCalculatedSelectSlides(false);
-          if SelInteraction = 1 then // Player selected, update letters from known map
-             UpdateLetterSelection();
         end;
     end;
   end;
 end;
 
-constructor TScreenOptionsKeyPlay.Create;
+constructor TScreenOptionsBeatPlay.Create;
 begin
   inherited Create;
 
-  LoadFromTheme(Theme.OptionsKeyPlay);
+  LoadFromTheme(Theme.OptionsBeatPlay);
 
-  Theme.OptionsKeyPlay.SelectKeyPlayOn.showArrows := true;
-  Theme.OptionsKeyPlay.SelectKeyPlayOn.oneItemOnly := true;
-  Theme.OptionsKeyPlay.SelectKeyboardDelay.oneItemOnly := true;
-  Theme.OptionsKeyPlay.SelectKeyboardDelay.showArrows := true;
-  AddSelectSlide(Theme.OptionsKeyPlay.SelectKeyPlayOn, Ini.KeyPlayOn, IKeyPlayOn);
-  AddSelectSlide(Theme.OptionsKeyPlay.SelectPlayer, Ini.KeyPlayPlayerSelected, IKeyPlayPlayers);
+   Theme.OptionsBeatPlay.SelectBeatDetectionDelay.oneItemOnly := true;
+  Theme.OptionsBeatPlay.SelectBeatDetectionDelay.showArrows := true;
 
-  SelectLetterIDGraphicalNum:=AddSelectSlide(Theme.OptionsKeyPlay.SelectLetter,
-        SelectLetterID, IKeyPlayLetters);
 
-  Theme.OptionsKeyPlay.SelectKeyPlayClapSign.showArrows := true;
-  Theme.OptionsKeyPlay.SelectKeyPlayClapSign.oneItemOnly := true;
-  AddSelectSlide(Theme.OptionsKeyPlay.SelectKeyPlayClapSign, Ini.KeyPlayClapSignOn, IKeyPlayClapSignOn);
+  Theme.OptionsBeatPlay.SelectKeyPlayClapSign.showArrows := true;
+  Theme.OptionsBeatPlay.SelectKeyPlayClapSign.oneItemOnly := true;
+  AddSelectSlide(Theme.OptionsBeatPlay.SelectKeyPlayClapSign, Ini.KeyPlayClapSignOn, IKeyPlayClapSignOn);
 
   UpdateCalculatedSelectSlides(true); // Instantiate the calculated slides
 
@@ -173,9 +160,9 @@ begin
   if (Length(Button[0].Text)=0) then
     AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
 
-  AddButton(Theme.OptionsKeyPlay.ButtonAudioConfigure);
+  AddButton(Theme.OptionsBeatPlay.ButtonAudioConfigure);
   if (Length(Button[1].Text)=0) then
-    AddButtonText(20, 5, Theme.OptionsKeyPlay.Description[0]);
+    AddButtonText(20, 5, Theme.OptionsBeatPlay.Description[0]);
 
 
 
@@ -185,11 +172,11 @@ begin
 
   Interaction := 0;
 
-  UpdateLetterSelection();
+
 
 end;
 
-procedure TScreenOptionsKeyPlay.OnShow;
+procedure TScreenOptionsBeatPlay.OnShow;
 begin
   inherited;
 
@@ -197,7 +184,7 @@ begin
 
 end;
 
-function GetKeyDelayOptText(var Param: integer; Offset: integer; Modify: boolean; OptText: PUTF8String): boolean;
+function GetBeatDetectionDelayOptText(var Param: integer; Offset: integer; Modify: boolean; OptText: PUTF8String): boolean;
 begin
   if (Param + Offset * 10 < -1000) or (Param + Offset * 10 > 1000) then
     Result := false
@@ -211,7 +198,7 @@ begin
   end;
 end;
 
-function GetKeyChoiceOptText(var Param: integer; Offset: integer; Modify: boolean; OptText: PUTF8String): boolean;
+function GetBeatChoiceOptText(var Param: integer; Offset: integer; Modify: boolean; OptText: PUTF8String): boolean;
 begin
   if (Param + Offset * 10 < -1000) or (Param + Offset * 10 > 1000) then
     Result := false
@@ -260,24 +247,20 @@ begin
     GetText(Param, Idx - OptInt, false, @Texts[Idx]);
 end;
 
-procedure TScreenOptionsKeyPlay.UpdateCalculatedSelectSlides(Init: boolean);
+procedure TScreenOptionsBeatPlay.UpdateCalculatedSelectSlides(Init: boolean);
 begin
-  CalculateSelectSlide(Init, @GetKeyDelayOptText, Ini.KeyboardDelay, KeyboardDelayOptInt, IKeyboardDelay);
+  CalculateSelectSlide(Init, @GetBeatDetectionDelayOptText, Ini.BeatDetectionDelay, BeatDetectionDelayOptInt, IBeatDetectionDelay);
   if Init then
   begin
-    KeyboardDelaySelectNum := AddSelectSlide(Theme.OptionsKeyPlay.SelectKeyboardDelay, KeyboardDelayOptInt, IKeyboardDelay);
+    BeatDetectionDelaySelectNum := AddSelectSlide(Theme.OptionsBeatPlay.SelectBeatDetectionDelay, BeatDetectionDelayOptInt, IBeatDetectionDelay);
   end
   else
   begin
-    UpdateSelectSlideOptions(Theme.OptionsKeyPlay.SelectKeyboardDelay, KeyboardDelaySelectNum, IKeyboardDelay, KeyboardDelayOptInt);
+    UpdateSelectSlideOptions(Theme.OptionsBeatPlay.SelectBeatDetectionDelay, BeatDetectionDelaySelectNum, IBeatDetectionDelay, BeatDetectionDelayOptInt);
   end;
 end;
 
-procedure TScreenOptionsKeyPlay.UpdateLetterSelection();
-begin
-  UpdateSelectSlideOptions(Theme.OptionsKeyPlay.SelectLetter,SelectLetterIDGraphicalNum,IKeyPlayLetters,Ini.PlayerKeys[Ini.KeyPlayPlayerSelected]);
 
-end;
 
 
 end.

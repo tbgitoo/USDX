@@ -23,7 +23,7 @@
  * $Id$
  *}
 
-unit UScreenOptionsKeyPlayPeakAnalysis;
+unit UScreenOptionsBeatPlayPeakAnalysis;
 
 interface
 
@@ -61,7 +61,7 @@ TBeatPeakInfo = record
 
 // Class definition for the options screen for the tapping (accessible through
 // Tools -> Options -> Beat Tapping in the english version
-  TScreenOptionsKeyPlayPeakAnalysis = class(TMenu)
+  TScreenOptionsBeatPlayPeakAnalysis = class(TMenu)
     private
       // current input device
       CurrentDeviceIndex: integer;
@@ -131,7 +131,7 @@ type
 TGetTextFunc = function(var Param: integer; Offset: integer; Modify: boolean; OptText: PUtf8String): boolean;
 UTF8StringArray = array of UTF8String;
 
-function TScreenOptionsKeyPlayPeakAnalysis.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
+function TScreenOptionsBeatPlayPeakAnalysis.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
 begin
   Result := true;
   if (PressedDown) then
@@ -152,7 +152,7 @@ begin
         begin
           Ini.Save;
           AudioPlayback.PlaySound(SoundLib.Back);
-          FadeTo(@ScreenOptionsKeyPlay);
+          FadeTo(@ScreenOptionsBeatPlay);
         end;
       SDLK_TAB:
       begin
@@ -164,7 +164,7 @@ begin
           begin
             //Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
-            FadeTo(@ScreenOptionsKeyPlay);
+            FadeTo(@ScreenOptionsBeatPlay);
           end;
         end;
       SDLK_DOWN:
@@ -197,7 +197,7 @@ end;
 
 end;
 
-constructor TScreenOptionsKeyPlayPeakAnalysis.Create;
+constructor TScreenOptionsBeatPlayPeakAnalysis.Create;
 var
   DeviceIndex:  integer;
   SourceIndex:  integer;
@@ -307,7 +307,7 @@ begin
 end;
 
 
-procedure TScreenOptionsKeyPlayPeakAnalysis.OnShow;
+procedure TScreenOptionsBeatPlayPeakAnalysis.OnShow;
 begin
   inherited;
 
@@ -319,7 +319,7 @@ begin
   UpdateInputDevice();
 end;
 
-procedure TScreenOptionsKeyPlayPeakAnalysis.OnHide;
+procedure TScreenOptionsBeatPlayPeakAnalysis.OnHide;
 begin
   StopPreview();
 
@@ -329,7 +329,7 @@ end;
 
 
 
-procedure TScreenOptionsKeyPlayPeakAnalysis.UpdateInputDevice;
+procedure TScreenOptionsBeatPlayPeakAnalysis.UpdateInputDevice;
 var
   SourceIndex: integer;
   InputDevice: TAudioInputDevice;
@@ -390,7 +390,7 @@ begin
   StartPreview();
 end;
 
-procedure TScreenOptionsKeyPlayPeakAnalysis.StartPreview;
+procedure TScreenOptionsBeatPlayPeakAnalysis.StartPreview;
 var
   Device: TAudioInputDevice;
 begin
@@ -411,7 +411,7 @@ begin
 end;
 
 
-procedure TScreenOptionsKeyPlayPeakAnalysis.doBeatDetection;
+procedure TScreenOptionsBeatPlayPeakAnalysis.doBeatDetection;
 var
   BeatDetectionParams: TBeatDetectionParameters;
   SampleIndex: integer;
@@ -458,7 +458,7 @@ begin
   end; // End detection of new peak
 end;
 
-function TScreenOptionsKeyPlayPeakAnalysis.Draw: boolean;
+function TScreenOptionsBeatPlayPeakAnalysis.Draw: boolean;
 begin
   DrawBG;
   DrawFG;
@@ -472,7 +472,7 @@ begin
   Result := true;
 end;
 
-procedure TScreenOptionsKeyPlayPeakAnalysis.BeatDrawOscilloscope(X, Y, W, H: real);
+procedure TScreenOptionsBeatPlayPeakAnalysis.BeatDrawOscilloscope(X, Y, W, H: real);
 var
   SampleIndex: integer;
 
@@ -583,7 +583,7 @@ begin
 end;
 
 // Preview as in UScreenOptionsRecord.pas, except for drawing the oscilloscope line instead of volume and pitch
-procedure TScreenOptionsKeyPlayPeakAnalysis.StopPreview;
+procedure TScreenOptionsBeatPlayPeakAnalysis.StopPreview;
 var
   ChannelIndex: integer;
   Device: TAudioInputDevice;
