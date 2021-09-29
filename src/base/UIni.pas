@@ -518,7 +518,7 @@ var
   IDebugTranslated:            array[0..1] of UTF8String  = ('Off', 'On');
   IAVDelay:                    array of UTF8String;
   IMicDelay:                   array of UTF8String;
-
+  IBeatDetectionDelay:         array of UTF8String;
 
   IFullScreenTranslated:       array[0..2] of UTF8String  = ('Off', 'On', 'Borderless');
   IVisualizerTranslated:       array[0..3] of UTF8String  = ('Off', 'WhenNoVideo', 'WhenNoVideoAndImage','On');
@@ -1744,7 +1744,7 @@ begin
   ScreenFade := ReadArrayIndex(IScreenFade, IniFile, 'Advanced', 'ScreenFade', IGNORE_INDEX, 'On');
 
   // To show the clap sign or not
-  BeatPlayClapSignOn := ReadArrayIndex(IBeatPlayClapSignOn, IniFile, 'BeatPlay', 'BeatPlayClapSignOn', IGNORE_INDEX, 'On');
+  BeatPlayClapSignOn := ReadArrayIndex(IBeatPlayClapSignOn, IniFile, 'BeatPlay', 'BeatPlayClapSignOn', IGNORE_INDEX, 'Show');
 
   BeatDetectionDelay := IniFile.ReadInteger('BeatPlay', 'BeatDetectionDelay', 140);
 

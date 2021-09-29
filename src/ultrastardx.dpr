@@ -402,6 +402,11 @@ uses
   UScreenJukeboxPlaylist        in 'screens\UScreenJukeboxPlaylist.pas',
 
   UAvatars                in 'base\UAvatars.pas',
+
+  UScreenOptionsBeatPlay   in 'beatNote\UScreenOptionsBeatPlay.pas',
+  UScreenOptionsBeatPlayPeakAnalysis          in 'beatNote\UScreenOptionsBeatPlayPeakAnalysis.pas',
+
+
   UScreenAbout            in 'screens\UScreenAbout.pas',
 
   SysUtils;

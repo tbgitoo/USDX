@@ -722,7 +722,7 @@ begin
       begin
         with Notes[Count] do
         begin
-          if (NoteType <> ntFreestyle) and (NoteType <> ntRap or not CurrentSong.RapBeat) then
+          if (NoteType <> ntFreestyle) and ((NoteType <> ntRap) or not CurrentSong.RapBeat) then
           begin
             // begin: 14, 20
             // easy: 6, 11
@@ -1873,7 +1873,7 @@ begin
         end;
 
 
-        If (NoteType = ntRap and not CurrentSong.RapBeat) or (NoteType = ntRapGolden) then
+        If ((NoteType = ntRap) and not CurrentSong.RapBeat) or (NoteType = ntRapGolden) then
         begin
           glBindTexture(GL_TEXTURE_2D, Tex_Left_Rap[Color].TexNum);
         end
@@ -1900,7 +1900,7 @@ begin
             Rec.Left  := Rec.Right;
             Rec.Right := (StartBeat + Duration - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat) * TempR + X - NotesW[0] - 0.5 + 10*ScreenX;
           end;
-        If (NoteType = ntRap and not CurrentSong.RapBeat) or (NoteType = ntRapGolden) then
+        If ((NoteType = ntRap) and not CurrentSong.RapBeat) or (NoteType = ntRapGolden) then
         begin
           glBindTexture(GL_TEXTURE_2D, Tex_Mid_Rap[Color].TexNum);
         end

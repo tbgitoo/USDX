@@ -969,9 +969,9 @@ begin
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsAdvanced'));
   ScreenOptionsAdvanced :=    TScreenOptionsAdvanced.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsBeatPlay')); // Screen with options for beat tapping
-  ScreenOptionsKeyPlay :=    TScreenOptionsKeyPlay.Create;
+  ScreenOptionsBeatPlay :=    TScreenOptionsBeatPlay.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionBeatPlayPeakAnalysis')); // Screen with audio detection options for tapping
-  ScreenOptionsKeyPlayPeakAnalysis :=    TScreenOptionsKeyPlayPeakAnalysis.Create;
+  ScreenOptionsBeatPlayPeakAnalysis :=    TScreenOptionsBeatPlayPeakAnalysis.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsNetwork'));
   ScreenOptionsNetwork :=    TScreenOptionsNetwork.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsWebCam'));

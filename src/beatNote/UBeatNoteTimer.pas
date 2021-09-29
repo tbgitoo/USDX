@@ -200,7 +200,7 @@ begin
     for LineFragmentIndex := 0 to Line.HighNote do
       begin
         CurrentLineFragment := @Line.Notes[LineFragmentIndex];
-        if (CurrentLineFragment.NoteType= ntRap) then
+        if (CurrentLineFragment.NoteType= ntRap) and CurrentSong.RapBeat then
         begin
         if spansCurrentBeat(ActualBeat, CurrentLineFragment.StartBeat,
             CurrentLineFragment.NoteType, CurrentLineFragment.Duration, tolerance) then
@@ -244,7 +244,7 @@ begin
       end; // End for loop over the line fragments
 
   end; // End for loop for the sentences
-   end; // End Beat rap mode
+
 
   // We looped through all the sentences but could not found any presently matching note
   if not noteFound then begin

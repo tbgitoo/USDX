@@ -146,13 +146,13 @@ begin
 
   LoadFromTheme(Theme.OptionsBeatPlay);
 
-   Theme.OptionsBeatPlay.SelectBeatDetectionDelay.oneItemOnly := true;
+  Theme.OptionsBeatPlay.SelectBeatDetectionDelay.oneItemOnly := true;
   Theme.OptionsBeatPlay.SelectBeatDetectionDelay.showArrows := true;
 
 
-  Theme.OptionsBeatPlay.SelectKeyPlayClapSign.showArrows := true;
-  Theme.OptionsBeatPlay.SelectKeyPlayClapSign.oneItemOnly := true;
-  AddSelectSlide(Theme.OptionsBeatPlay.SelectKeyPlayClapSign, Ini.KeyPlayClapSignOn, IKeyPlayClapSignOn);
+  Theme.OptionsBeatPlay.SelectBeatPlayClapSign.showArrows := true;
+  Theme.OptionsBeatPlay.SelectBeatPlayClapSign.oneItemOnly := true;
+  AddSelectSlide(Theme.OptionsBeatPlay.SelectBeatPlayClapSign, Ini.BeatPlayClapSignOn, IBeatPlayClapSignOn);
 
   UpdateCalculatedSelectSlides(true); // Instantiate the calculated slides
 

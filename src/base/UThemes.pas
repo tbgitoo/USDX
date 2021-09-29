@@ -943,6 +943,7 @@ type
 
   TThemeOptionsBeatPlay = class(TThemeBasic)
     SelectBeatPlayClapSign: TThemeSelectSlide;
+    SelectBeatDetectionDelay: TThemeSelectSlide;
     ButtonExit: TThemeButton;
     ButtonAudioConfigure: TThemeButton;
     Description: array[0..0] of UTF8String;
@@ -2443,6 +2444,7 @@ begin
       // Configuration beat playing
       ThemeLoadBasic      (OptionsBeatPlay, 'OptionsBeatPlay');
       ThemeLoadSelectSlide(OptionsBeatPlay.SelectBeatPlayClapSign, 'OptionsBeatPlayShowClap');
+      ThemeLoadSelectSlide(OptionsBeatPlay.SelectBeatDetectionDelay, 'OptionsBeatPlaySelectBeatDetectionDelay');
       ThemeLoadButton (OptionsBeatPlay.ButtonExit, 'OptionsBeatPlayButtonExit');
       ThemeLoadButton (OptionsBeatPlay.ButtonAudioConfigure, 'OptionsBeatPlayButtonAudioConfigure');
 
