@@ -247,6 +247,14 @@ uses
 
   UHelp             in 'base\UHelp.pas',
 
+
+  //------------------------------
+  //Includes -Beat Playing
+  //------------------------------
+
+  UBeatNote             in 'beatNote\UBeatNote.pas',
+  UBeatNoteTimer        in 'beatNote\UBeatNoteTimer.pas',
+
   //------------------------------
   //Includes - Plugin Support
   //------------------------------

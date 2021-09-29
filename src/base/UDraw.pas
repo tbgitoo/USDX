@@ -115,7 +115,8 @@ uses
   UScreenJukebox,
   USong,
   UTexture,
-  UWebcam;
+  UWebcam,
+  UBeatNote;
 
 
 procedure SingDrawWebCamFrame;
@@ -567,6 +568,7 @@ begin
       else TempR := W / TempR;
 
       for N := 0 to Player[PlayerIndex].HighNote do
+      if (not CurrentSong.RapBeat) or (Player[PlayerIndex].Note[N].NoteType <>ntRap) then // the specific case of rap notes in beat mode is handled separately
       begin
         with Player[PlayerIndex].Note[N] do
         begin
@@ -701,6 +703,7 @@ begin
     with Tracks[Track].Lines[Tracks[Track].CurrentLine] do
     begin
       for Count := 0 to HighNote do
+      if (not CurrentSong.RapBeat) or (Notes[Count].NoteType <>ntRap) then
       begin
         with Notes[Count] do
         begin

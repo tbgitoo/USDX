@@ -158,6 +158,7 @@ type
     Resolution: integer;
     BPM:        array of TBPM;
     GAP:        real; // in miliseconds
+    RapBeat:    boolean; // rap notes: clapping (true) or standard (false)
     
     Encoding:   TEncoding;
     PreviewStart: real;   // in seconds
@@ -975,6 +976,9 @@ begin
     //Language Sorting
     self.Language := Parser.SongInfo.Header.Language;
     self.LanguageNoAccent := LowerCase(GetStringWithNoAccents(UTF8Decode(self.Language)));
+
+    //Rap beat
+    self.RapBeat:=Parser.SongInfo.Header.RapBeat;
   end
   else
     Log.LogError('File incomplete or not SingStar XML (A): ' + aFileName.ToNative);
@@ -1187,6 +1191,13 @@ begin
           self.Video := EncFile
         else
           Log.LogError('Can''t find video file in song: ' + FullFileName);
+      end
+      else if (Identifier = 'RAP') then
+      begin
+        if Value = 'BEAT' then
+           self.RapBeat:= true
+        else self.RapBeat:=false;
+
       end
 
       // Video Gap
