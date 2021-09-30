@@ -1056,6 +1056,7 @@ type
       undo:                TThemeButton;
       gold:                TThemeButton;
       freestyle:           TThemeButton;
+      RapBeatMode:      TThemeButton;
 
       // sliders
       SlideTitle:          TThemeSelectSlide;
@@ -2586,6 +2587,7 @@ begin
       ThemeLoadButton(EditSub.gold,    'EditSubBarStatic6');
       ThemeLoadButton(EditSub.freestyle,    'EditSubBarStatic7');
       ThemeLoadButton(EditSub.undo,    'EditSubBarStatic8');
+      ThemeLoadButton(EditSub.RapBeatMode, 'EditSubBarStatic9');
       ThemeLoadSelectSlide(EditSub.SlideTitle, 'EditSubTitle');
       ThemeLoadSelectSlide(EditSub.SlideArtist, 'EditSubArtist');
       ThemeLoadSelectSlide(EditSub.SlideLanguage, 'EditSubLanguage');

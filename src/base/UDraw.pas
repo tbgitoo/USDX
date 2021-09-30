@@ -1853,7 +1853,11 @@ begin
           ntFreestyle: glColor4f(1, 1, 1, 0.35);
           ntNormal: glColor4f(1, 1, 1, 0.85);
           ntGolden: Glcolor4f(1, 1, 0.3, 0.85);
-          ntRap: glColor4f(1, 1, 1, 0.85);
+          ntRap:
+            begin
+            if CurrentSong.RapBeat then
+              glColor4f(1, 1, 1, 0.15) else glColor4f(1, 1, 1, 0.85);
+            end;
           ntRapGolden: Glcolor4f(1, 1, 0.3, 0.85);
         end; // case
 
@@ -1919,7 +1923,7 @@ begin
         Rec.Left  := Rec.Right;
         Rec.Right := Rec.Right + NotesW[0];
 
-        If (NoteType = ntRap) or (NoteType = ntRapGolden) then
+        If ((NoteType = ntRap) and not CurrentSong.RapBeat) or (NoteType = ntRapGolden) then
         begin
           glBindTexture(GL_TEXTURE_2D, Tex_Right_Rap[Color].TexNum);
         end
@@ -1938,7 +1942,45 @@ begin
         begin
           GoldenRec.SaveGoldenStarsRec(GoldenStarPos, Rec.Top, Rec.Right, Rec.Bottom);
         end;
-        
+
+        // Draw the beat stronger in rap beat mode
+        if (NoteType = ntRap) and CurrentSong.RapBeat then
+        begin
+             // The dot on the beat is drawn less transparent than the tail
+            glColor4f(1, 1, 1, 0.85);
+            Rec.Left  := (StartBeat - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat-0.5) * TempR + X + 0.5 + 10*ScreenX;
+            Rec.Right := Rec.Left + NotesW[0];
+            Rec.Top := YBaseNote - (Tone-BaseNote)*Space/2 - NotesH[0];
+            Rec.Bottom := Rec.Top + 2 * NotesH[0];
+            glBindTexture(GL_TEXTURE_2D, Tex_Left[Color].TexNum);
+            glBegin(GL_QUADS);
+              glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
+              glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
+              glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
+              glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
+            glEnd;
+            // Middle, only for the beat at the beginning of the note (duration 1)
+            Rec.Left  := Rec.Right;
+            Rec.Right := (StartBeat + 1 - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat-0.5) * TempR + X - NotesW[0] - 0.5 + 10*ScreenX;
+            glBindTexture(GL_TEXTURE_2D, Tex_Mid[Color].TexNum);
+            glBegin(GL_QUADS);
+              glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
+              glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
+              glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
+              glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
+            glEnd;
+            // right, only for the beat
+            Rec.Left  := Rec.Right;
+            Rec.Right := Rec.Right + NotesW[0];
+            glBindTexture(GL_TEXTURE_2D, Tex_Right[Color].TexNum);
+            glBegin(GL_QUADS);
+              glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
+              glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
+              glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
+            glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
+        glEnd;
+        end;
+
       end; // with
     end; // for
   end; // with

@@ -1043,6 +1043,7 @@ var
     end;
   end;
 begin
+
   Result := true;
   Done   := 0;
   MedleyFlags := 0;
@@ -1192,10 +1193,14 @@ begin
         else
           Log.LogError('Can''t find video file in song: ' + FullFileName);
       end
+      // Rap beat mode for detection of clapping on rap notes
       else if (Identifier = 'RAP') then
       begin
         if Value = 'BEAT' then
-           self.RapBeat:= true
+        begin
+           self.RapBeat:= true;
+
+        end
         else self.RapBeat:=false;
 
       end

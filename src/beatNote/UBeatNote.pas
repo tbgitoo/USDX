@@ -376,12 +376,11 @@ end;
 
 procedure checkBeatNote(CP: integer; Screen: TScreenSingController); // Specifically: detect current beat note (if any). This is
 // inspired by NewNote from UNote with adaptation to the beat detection system (i.e. UBeateNoteTimer and specifically BeatNoteTimerState)
-// The idea is that BeatNoteTimerState provides the information on whether there is a beat note (NoteType ntBeat) or beat silence note
-// NoteType ntBeatSilence playing at present. If so, sound analysis is carried out (via the specific procedure AnalyzeBufferBeatOnly
+// The idea is that BeatNoteTimerState provides the information on whether there is a beat note (NoteType ntRap) is playing at present.
+// If so, sound analysis is carried out (via the specific procedure AnalyzeBufferBeatOnly
 // implemented in URecord. If a clap (loud sound compared to background and at absolute level) is detected by AnalyzeBufferBeatOnly
-// in the expected time-frame (usually shorter than the 4096 available samples=ca. 0.1s in the sound buffer), then the beat or beat silence
-// note is considere hit for the current rythmic beat. The player history is adaptated correspondingly, along with scoring, and BeatNoteTimerState
-// is notified of the hit even (this avoids double hitting)
+// in the expected time-frame (centered on the initiating beat), then the beat
+// is considered to be hit. If a later part of the note is hit, it is considered missed
 var
   CurrentLineFragment: PLineFragment;
   CurrentSound:        TCaptureBuffer;

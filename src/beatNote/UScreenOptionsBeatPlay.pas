@@ -102,13 +102,13 @@ begin
       end;
       SDLK_RETURN:
         begin
-          if SelInteraction = 5 then
+          if SelInteraction = 2 then
           begin
             Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
             FadeTo(@ScreenOptions);
           end;
-          if SelInteraction = 6 then
+          if SelInteraction = 3 then
           begin
             Ini.Save;
             FadeTo(@ScreenOptionsBeatPlayPeakAnalysis);
