@@ -576,10 +576,8 @@ begin
         with Player[PlayerIndex].Note[N] do
         begin
 
-          // the beat and beat silence notes are drawn shifted by 0.5 unit beats as they
-          // are on rather than between rythmic beats
-          // the shifted notes are drawn with SingDrawPlayerLineBeats
-          if (NoteType <> ntRap) or not CurrentSong.RapBeat then
+          // Exclude the case of rap notes in beat mode
+          if (NoteType <> ntRap) then
           begin
 
           // Left part of note
@@ -722,7 +720,7 @@ begin
       begin
         with Notes[Count] do
         begin
-          if (NoteType <> ntFreestyle) and ((NoteType <> ntRap) or not CurrentSong.RapBeat) then
+          if (NoteType <> ntFreestyle) and (NoteType <> ntRap) then
           begin
             // begin: 14, 20
             // easy: 6, 11
