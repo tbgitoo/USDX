@@ -54,7 +54,8 @@ uses
   dglOpenGL,
   sdl2,
   SysUtils,
-  TextGL;
+  TextGL,
+  UKeyboardRecording;
 
 type
   TLyricsSyncSource = class(TSyncSource)
@@ -94,7 +95,7 @@ type
     fMusicSync: TMusicSyncSource;
     fTimebarMode: TTimebarMode;
 
-    PlayMidi: boolean;
+    PlayMidi: boolean; // This is playing the target midi track as opposed to an input midi track
 
     removeVoice: boolean;
     fShowWebcam: boolean;
@@ -210,7 +211,10 @@ uses
   UWebcam,
   UWebSDK,
   Classes,
-  Math;
+  Math,
+  UBeatNoteTimer,
+  UMidiNote,
+  UMidiPlayback;
 
 const
   MAX_MESSAGE = 3;
@@ -226,6 +230,10 @@ var
   Color:        TRGB;
 begin
   Result := true;
+   // Ensure sampling for the keyboard at every loop cycle, not just new notes
+  // to capture proper timing
+  KeyBoardRecorder.ParseInput(PressedKey, CharCode,
+  PressedDown);
   if (PressedDown) then
   begin // key down
 
@@ -268,6 +276,7 @@ begin
           LastSentencePerfect := false;
         end;
         AudioPlayback.SetPosition(CurrentSong.Start);
+        MidiPlayback.SetPosition(CurrentSong.Start);
         if (Assigned(fCurrentVideo)) then
            fCurrentVideo.Position := CurrentSong.VideoGAP + CurrentSong.Start;// + (CurrentSong.gap / 1000.0 - 5.0);
         Scores.KillAllPopUps;
@@ -305,8 +314,14 @@ begin
           fCurrentVideo := fVideoClip;
           if (Assigned(fCurrentVideo)) then
           begin
+
             fCurrentVideo.SetAspectCorrection(BackgroundAspectCorrection);
-            fCurrentVideo.Position := CurrentSong.VideoGAP + CurrentSong.Start + AudioPlayback.Position;
+
+
+               fCurrentVideo.Position := CurrentSong.VideoGAP + CurrentSong.Start + AudioPlayback.Position;
+               if AudioPlayback.Position = 0 then // use midiplayback position as fallback if there is no mp3 file
+                   fCurrentVideo.Position := CurrentSong.VideoGAP + CurrentSong.Start + MidiPlayback.Position;
+
           end;
           Log.LogStatus('finished switching to video', 'UScreenSing.ParseInput');
         end
@@ -409,11 +424,23 @@ begin
           if (AudioPlayback.Position < CurrentSong.gap / 1000 - 6) then
           begin
             AudioPlayback.SetPosition(CurrentSong.gap / 1000.0 - 5.0);
+            MidiPlayback.SetPosition(CurrentSong.gap / 1000.0 - 5.0);
               if (Assigned(fCurrentVideo)) then
                  fCurrentVideo.Position := CurrentSong.VideoGAP + CurrentSong.Start + (CurrentSong.gap / 1000.0 - 5.0);
           end;
+          if (AudioPlayback.Position = 0) then
+          begin
+            if (MidiPlayback.Position < CurrentSong.gap / 1000 - 6) then
+            begin
+                 MidiPlayback.SetPosition(CurrentSong.gap / 1000.0 - 5.0);
+                 AudioPlayback.SetPosition(CurrentSong.gap / 1000.0 - 5.0);
+              if (Assigned(fCurrentVideo)) then
+                 fCurrentVideo.Position := CurrentSong.VideoGAP + CurrentSong.Start + (CurrentSong.gap / 1000.0 - 5.0);
+            end;
           Exit;
         end;
+      end;
+
       end;
 
       // SHIFT: show/hide oscilloscope
@@ -534,15 +561,19 @@ begin
       begin
         if (SDL_ModState = KMOD_LCTRL) then // seek 5 seconds forward
         AudioPlayback.SetPosition(AudioPlayback.Position + 5.0);
+        MidiPlayback.SetPosition(MidiPlayback.Position + 5.0);
+
         if (Assigned(fCurrentVideo)) then
           fCurrentVideo.Position := AudioPlayback.Position + 5.0;
+          if AudioPlayback.Position = 0 then
+             fCurrentVideo.Position := MidiPlayback.Position + 5.0;
       end;
 
       SDLK_LEFT:
       begin
         if (SDL_ModState = KMOD_LCTRL) then // seek 5 seconds backward and reset scores to avoid cheating
 	begin
-	if (AudioPlayback.Position < 20.0) then
+	if (AudioPlayback.Position < 20.0) and (MidiPlayback.Position < 20.0) then
 	  exit;
         for i1 := 0 to High(Player) do
         with Player[i1] do
@@ -571,6 +602,7 @@ begin
 	Scores.Init;
 
         AudioPlayback.SetPosition(AudioPlayback.Position - 5.0);
+        MidiPlayback.SetPosition(AudioPlayback.Position);
 	LyricsState.SetCurrentTime(AudioPlayback.Position - 5.0);
 	Lyrics.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
 	LyricsState.UpdateBeats();
@@ -616,6 +648,7 @@ begin
 
     // pause music
       AudioPlayback.Pause;
+      MidiPlayback.Pause;
 
     // pause video
     if (fCurrentVideo <> nil) then
@@ -628,6 +661,7 @@ begin
 
     // play music
       AudioPlayback.Play;
+      MidiPlayback.Play;
 
     // video
     if (fCurrentVideo <> nil) then
@@ -646,8 +680,19 @@ begin
   inherited Create;
   ScreenSing := self;
   screenSingViewRef := TScreenSingView.Create();
+
+
   // for now: default to letterbox but preserve aspect between songs
   BackgroundAspectCorrection := acoLetterBox;
+
+
+  // Make sure the keyboard recorder is running, needed for "singing" by keyboard play
+  createKeyboardRecorder();
+
+  // Make sure the beat note timing manager is running for singing with beats
+  createTBeatNoteTimerState();
+  createMidiNoteHandler();
+
 
   ClearSettings;
 end;
@@ -822,6 +867,8 @@ begin
   // hide cursor on singscreen show
   Display.SetCursor;
 
+  midiNoteHandler.updateForCurrentPlayers();
+
   // clear the scores of all players
   for PlayerIndex := 0 to High(Player) do
     with Player[PlayerIndex] do
@@ -846,22 +893,35 @@ begin
   PlayMidi := false;
   MidiFadeIn := false;
 
+
   AudioPlayback.Open(CurrentSong.Path.Append(CurrentSong.Mp3));
+  MidiPlayback.Open(CurrentSong.Path.Append(CurrentSong.Midi));
+
+
   if ScreenSong.Mode = smMedley then
-    AudioPlayback.SetVolume(0.1)
+  begin
+    AudioPlayback.SetVolume(0.1);
+    MidiPlayback.SetVolume(0.1);
+  end
   else
-    AudioPlayback.SetVolume(1.0);
+  begin
+      AudioPlayback.SetVolume(1.0);
+      MidiPlayback.SetVolume(1.0);
+  end;
   //AudioPlayback.Position := CurrentSong.Start;
   AudioPlayback.Position := LyricsState.GetCurrentTime();
+  MidiPlayback.Position := LyricsState.GetCurrentTime();
 
 
   // set time
   if (CurrentSong.Finish > 0) then
     LyricsState.TotalTime := CurrentSong.Finish / 1000
   else
-  begin
-    LyricsState.TotalTime := AudioPlayback.Length;
+  begin // we play until the longer of the midi or mp3 playback has finished
+    LyricsState.TotalTime := max(AudioPlayback.Length,MidiPlayback.Length);
   end;
+
+
 
   LyricsState.UpdateBeats();
 
@@ -880,11 +940,13 @@ begin
   // start lyrics
   LyricsState.Start(true);
 
+
   // start music
   if ScreenSong.Mode = smMedley then
     AudioPlayback.FadeIn(CurrentSong.Medley.FadeIn_time, 1.0)
   else
     AudioPlayback.Play();
+  MidiPlayback.Play();
 
   // Send Score
   Act_MD5Song := CurrentSong.MD5;
@@ -1208,6 +1270,10 @@ begin
   if (CurrentSong.isDuet) and (PlayersPlay <> 1) then
     GoldenRec.SentenceChange(1);
 
+   if CurrentSong.freestyleMidi then begin
+    prepareScoresForMidi;
+  end;
+
   // set position of line bonus - line bonus end
   // set number of empty sentences for line bonus
   NumEmptySentences[0] := 0;
@@ -1231,6 +1297,8 @@ begin
   end;
 
   eSongLoaded.CallHookChain(False);
+
+
 
   if (ScreenSong.Mode = smMedley) and (PlaylistMedley.CurrentMedleySong>1) then
     onShowFinish;
@@ -1274,6 +1342,7 @@ begin
           Webcam.Release;
           fShowWebCam:=false;
         end;
+  midiNoteHandler.stopMidiHandling(true);
   Background.OnFinish;
   Display.SetCursor;
 end;
@@ -1471,7 +1540,7 @@ end;
 
 function TScreenSingController.FinishedMusic: boolean;
 begin
-  Result := AudioPlayback.Finished;
+  Result := AudioPlayback.Finished and MidiPlayback.Finished ;
 end;
 
 procedure TScreenSingController.Finish;
@@ -1482,7 +1551,9 @@ var
 begin
   AudioInput.CaptureStop;
   AudioPlayback.Stop;
+  MidiPlayback.Stop;
   AudioPlayback.SetSyncSource(nil);
+  MidiPlayback.SetSyncSource(nil);
 
   if (ScreenSong.Mode = smNormal) and (SungPaused = false) and (SungToEnd) and (Length(DllMan.Websites) > 0) then
   begin
@@ -1662,7 +1733,6 @@ begin
 
       // points for this line
       LineScore := CurrentScore - CurrentPlayer.ScoreLast;
-
       // check for lines with low points
       if MaxLineScore <= 2 then
         LinePerfection := 1
@@ -1766,6 +1836,8 @@ end;
 function TMusicSyncSource.GetClock(): real;
 begin
   Result := AudioPlayback.Position;
+  if Result=0 then // Use midi as fallback
+    Result := MidiPlayback.Position;
 end;
 
 procedure TScreenSingController.UpdateMedleyStats(medley_end: boolean);   //TODO: view or controller? unsure
@@ -1796,6 +1868,7 @@ begin
     PlaylistMedley.ApplausePlayed:=true;
 
     AudioPlayback.Fade(CurrentSong.Medley.FadeOut_time, 0.1);
+    MidiPlayback.Fade(CurrentSong.Medley.FadeOut_time, 0.1);
     AudioPlayback.PlaySound(SoundLib.Applause);
   end;
 end;
