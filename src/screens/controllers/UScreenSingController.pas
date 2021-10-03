@@ -54,7 +54,8 @@ uses
   dglOpenGL,
   sdl2,
   SysUtils,
-  TextGL;
+  TextGL,
+  UKeyboardRecording;
 
 type
   TLyricsSyncSource = class(TSyncSource)
@@ -225,6 +226,10 @@ var
   Color:        TRGB;
 begin
   Result := true;
+   // Ensure sampling for the keyboard at every loop cycle, not just new notes
+  // to capture proper timing
+  KeyBoardRecorder.ParseInput(PressedKey, CharCode,
+  PressedDown);
   if (PressedDown) then
   begin // key down
 
@@ -634,6 +639,8 @@ begin
   inherited Create;
   ScreenSing := self;
   screenSingViewRef := TScreenSingView.Create();
+  // Make sure the keyboard recorder is running, needed for "singing" by keyboard play
+  createKeyboardRecorder();
   // Make sure the beat note timing manager is running for singing with beats
   createTBeatNoteTimerState();
 
