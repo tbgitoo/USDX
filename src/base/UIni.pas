@@ -238,6 +238,13 @@ type
 
       InputDeviceBeatDetectionConfig: array of TInputDeviceBeatDetectionConfig; // Configuration of beat detection for different audio channels
 
+      // Keyboard playing
+      KeyPlayOn:             integer; // Keyboard (1) or from sound signal (0)
+      KeyPlayPlayerSelected: integer; // To select keyboard keys for the different
+      // players, one selects players one by one and then configures the key to be
+      // hit for each one.
+      PlayerKeys:            array of integer; // Stores the keys associated with each player
+
       // Controller
       Joypad:         integer;
       Mouse:          integer;
@@ -474,6 +481,10 @@ const
   IBeatDetectIntensityThresholdValues: array[0..10] of Integer = (5,10,15,20,30,40,50,60,70,80,90);
 
   IBeatDetectRiseRateFactorValues: array[0..5] of real = (1.5,2,2.5,3,4,5);
+
+  IKeyPlayOn:    array[0..1] of UTF8String = ('Off', 'On');
+  IKeyPlayPlayers: array[0..11] of UTF8String = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10','11','12');
+  IKeyPlayLetters: array[0..6] of UTF8String = ('a', 's', 'd', 'f', 'j', 'k', 'l');
 
   ILineBonus:     array[0..1] of UTF8String = ('Off', 'On');
   IPartyPopup:    array[0..1] of UTF8String = ('Off', 'On');
@@ -1738,6 +1749,15 @@ begin
 
   BeatDetectionDelay := IniFile.ReadInteger('BeatPlay', 'BeatDetectionDelay', 140);
 
+    // Keyboard playing
+  KeyPlayOn := ReadArrayIndex(IKeyPlayOn, IniFile, 'KeyPlay', 'KeyPlayOn', IGNORE_INDEX, 'Off');
+  setLength(PlayerKeys,High(IKeyPlayPlayers)+1);
+  // read the keyboard keys associated with the players. Indexes of IKeyPlayLetters
+  for I := 0 to High(PlayerKeys) do
+  begin
+        PlayerKeys[I] := ReadArrayIndex(IKeyPlayLetters, IniFile, 'KeyPlay',Format('Player[%d]', [I+1]), IGNORE_INDEX, 'a');
+  end;
+
   // Visualizations
   // <mog> this could be of use later..
   //  VisualizerOption :=
@@ -2076,8 +2096,19 @@ begin
     //SyncTo
     IniFile.WriteString('Advanced', 'SyncTo', ISyncTo[SyncTo]);
 
+    // General beat play settings
     IniFile.WriteString('BeatPlay', 'BeatPlayClapSignOn', IBeatPlayClapSignOn[BeatPlayClapSignOn]);
     IniFile.WriteInteger('BeatPlay', 'BeatDetectionDelay', BeatDetectionDelay);
+
+    //Keyboard playing for beats
+    IniFile.WriteString('KeyPlay', 'KeyPlayOn', IKeyPlayOn[KeyPlayOn]);
+    // Keyboard playing for beats: association between players and keys
+
+    for I:=0 to High(Ini.PlayerKeys) do
+      begin
+           IniFile.WriteString('KeyPlay', Format('Player[%d]', [I+1]), IKeyPlayLetters[Ini.PlayerKeys[I]] );
+       end;
+
 
     // Joypad
     IniFile.WriteString('Controller', 'Joypad', IJoypad[Joypad]);

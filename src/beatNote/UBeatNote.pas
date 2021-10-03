@@ -35,6 +35,7 @@ interface
 
 uses
   UBeatNoteTimer, // Provides the detection of beat notes along the time
+  UKeyboardRecording, // Integration with keyboard playing
   UCommon,
   UScreenSingController,
   UMusic,
@@ -413,7 +414,8 @@ begin
 
      TimeElapsed :=  (ActualBeat-BeatNoteTimerState.playerBeatNoteState[CP].CurrentBeat)/currentSong.BPM[0].BPM*60.0;
 
-
+     if Ini.KeyPlayOn=0 then // Adjustment of timing for specificities of the audio detection
+     begin
        BeatDetectionParams:=BeatDetectionParametersFromIni(CP);
        // Add additional time for gathering the necessary samples
        TimeElapsed := TimeElapsed + BeatDetectionParams.MinPeakDuration/1000.0+0.005; // Time for baseline before
@@ -421,7 +423,7 @@ begin
        begin
          TimeElapsed := TimeElapsed + BeatDetectionParams.TestTimeAfterPeak/1000.0;
        end;
-
+     end;
 
 
      if BeatNoteTimerState.playerBeatNoteState[CP].CurrentBeat = CurrentLineFragment.StartBeat then
@@ -441,7 +443,9 @@ begin
 
 
 
-
+     // Do sound or keyboard analysis
+     if Ini.KeyPlayOn=0 then
+     begin
 
        CurrentSound.AnalyzeBufferBeatOnly(TimeElapsed,
                                              BeatDetectionParams.Threshold,
@@ -451,6 +455,12 @@ begin
                                              BeatDetectionParams.TestTimeAfterPeak);
 
        validNoteFound:=CurrentSound.ToneValid;
+
+      end
+     else
+     begin
+       validNoteFound:=KeyBoardRecorder.keyboardPressedForPlayer(CP,true);
+     end;
 
 
 
