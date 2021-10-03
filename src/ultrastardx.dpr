@@ -256,6 +256,12 @@ uses
   UBeatNoteTimer        in 'beatNote\UBeatNoteTimer.pas',
 
   //------------------------------
+  //Includes -Keyboard Playing
+  //-----
+
+  UKeyboardRecording in 'beatNote\UKeyboardRecording.pas',
+
+  //------------------------------
   //Includes - Plugin Support
   //------------------------------
   UParty            in 'base\UParty.pas',            // TODO: rewrite Party Manager as Module, reomplent ability to offer party Mody by Plugin
