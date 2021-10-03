@@ -941,9 +941,18 @@ type
     ButtonExit: TThemeButton;
   end;
 
+  TThemeOptionsKeyPlay = class(TThemeBasic)
+    SelectKeyPlayOn:        TThemeSelectSlide;
+    SelectPlayer:           TThemeSelectSlide;
+    SelectLetter:           TThemeSelectSlide;
+  end;
+
   TThemeOptionsBeatPlay = class(TThemeBasic)
+    SelectKeyPlayOn: TThemeSelectSlide;
     SelectBeatPlayClapSign: TThemeSelectSlide;
     SelectBeatDetectionDelay: TThemeSelectSlide;
+    SelectPlayer:           TThemeSelectSlide;
+    SelectLetter:           TThemeSelectSlide;
     ButtonExit: TThemeButton;
     ButtonAudioConfigure: TThemeButton;
     Description: array[0..0] of UTF8String;
@@ -1440,6 +1449,7 @@ type
     OptionsAdvanced:  TThemeOptionsAdvanced;
     OptionsBeatPlay:  TThemeOptionsBeatPlay;
     OptionsBeatDetect: TThemeOptionsBeatDetect;
+    OptionsKeyPlay: TThemeOptionsKeyPlay;
     OptionsNetwork:   TThemeOptionsNetwork;
     OptionsWebcam:    TThemeOptionsWebcam;
     OptionsJukebox:   TThemeOptionsJukebox;
@@ -1612,6 +1622,7 @@ begin
   OptionsAdvanced := TThemeOptionsAdvanced.Create;
   OptionsBeatPlay := TThemeOptionsBeatPlay.Create;
   OptionsBeatDetect := TThemeOptionsBeatDetect.Create;
+  OptionsKeyPlay := TThemeOptionsKeyPlay.Create;
   OptionsNetwork := TThemeOptionsNetwork.Create;
   OptionsWebcam := TThemeOptionsWebcam.Create;
   OptionsJukebox := TThemeOptionsJukebox.Create;
@@ -2444,12 +2455,20 @@ begin
 
       // Configuration beat playing
       ThemeLoadBasic      (OptionsBeatPlay, 'OptionsBeatPlay');
+
       ThemeLoadSelectSlide(OptionsBeatPlay.SelectBeatPlayClapSign, 'OptionsBeatPlayShowClap');
       ThemeLoadSelectSlide(OptionsBeatPlay.SelectBeatDetectionDelay, 'OptionsBeatPlaySelectBeatDetectionDelay');
+
       ThemeLoadButton (OptionsBeatPlay.ButtonExit, 'OptionsBeatPlayButtonExit');
       ThemeLoadButton (OptionsBeatPlay.ButtonAudioConfigure, 'OptionsBeatPlayButtonAudioConfigure');
 
       OptionsBeatPlay.Description[0] := Language.Translate('SING_OPTIONS_BEATPLAY_AUDIO_CONFIGURE');
+
+      // Specific options for keyboard playing
+      ThemeLoadBasic (OptionsKeyPlay, 'OptionsKeyPlay');
+      ThemeLoadSelectSlide(OptionsKeyPlay.SelectKeyPlayOn, 'OptionsKeyPlaySelectKeyPlayOn');
+      ThemeLoadSelectSlide(OptionsKeyPlay.SelectPlayer, 'OptionsKeyPlaySelectPlayer');
+      ThemeLoadSelectSlide(OptionsKeyPlay.SelectLetter, 'OptionsKeyPlaySelectLetter');
 
       // Configuration to use audio beat detection for beat playing
       ThemeLoadBasic      (OptionsBeatDetect, 'OptionsBeatDetect');
