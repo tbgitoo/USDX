@@ -49,12 +49,15 @@ type
     private
       BeatDetectionDelayOptInt:integer; // Value for Keyboard delay. Private because we only store the float value which is 10x this
       BeatDetectionDelaySelectNum: integer; // This is the reference number of the graphical element
+      SelectLetterID: integer; // the presently selected leeter
+      SelectLetterIDGraphicalNum: integer;  // Again, the graphical reference number
       ButtonConfigureID: integer;
     public
       constructor Create; override;
       function ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean; override;
       procedure OnShow; override;
       procedure UpdateCalculatedSelectSlides(Init: boolean); // For showing suitable text to choose
+      procedure UpdateLetterSelection(); // Ensure that the letter shown corresponds to the player
   end;
 
 
@@ -102,13 +105,13 @@ begin
       end;
       SDLK_RETURN:
         begin
-          if SelInteraction = 2 then
+          if SelInteraction = 5 then
           begin
             Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
             FadeTo(@ScreenOptions);
           end;
-          if SelInteraction = 3 then
+          if SelInteraction = 6 then
           begin
             Ini.Save;
             FadeTo(@ScreenOptionsBeatPlayPeakAnalysis);
@@ -126,6 +129,8 @@ begin
             InteractInc;
           end;
           UpdateCalculatedSelectSlides(false);
+           if SelInteraction = 1 then // Player selected, update letters from known map
+             UpdateLetterSelection();
         end;
       SDLK_LEFT:
         begin
@@ -135,6 +140,8 @@ begin
             InteractDec;
           end;
           UpdateCalculatedSelectSlides(false);
+          if SelInteraction = 1 then // Player selected, update letters from known map
+             UpdateLetterSelection();
         end;
     end;
   end;
@@ -145,6 +152,10 @@ begin
   inherited Create;
 
   LoadFromTheme(Theme.OptionsBeatPlay);
+  LoadFromTheme(Theme.OptionsKeyPlay);
+
+  Theme.OptionsKeyPlay.SelectKeyPlayOn.showArrows := true;
+  Theme.OptionsKeyPlay.SelectKeyPlayOn.oneItemOnly := true;
 
   Theme.OptionsBeatPlay.SelectBeatDetectionDelay.oneItemOnly := true;
   Theme.OptionsBeatPlay.SelectBeatDetectionDelay.showArrows := true;
@@ -152,6 +163,13 @@ begin
 
   Theme.OptionsBeatPlay.SelectBeatPlayClapSign.showArrows := true;
   Theme.OptionsBeatPlay.SelectBeatPlayClapSign.oneItemOnly := true;
+
+  AddSelectSlide(Theme.OptionsKeyPlay.SelectKeyPlayOn, Ini.KeyPlayOn, IKeyPlayOn);
+  AddSelectSlide(Theme.OptionsKeyPlay.SelectPlayer, Ini.KeyPlayPlayerSelected, IKeyPlayPlayers);
+
+  SelectLetterIDGraphicalNum:=AddSelectSlide(Theme.OptionsKeyPlay.SelectLetter,
+        SelectLetterID, IKeyPlayLetters);
+
   AddSelectSlide(Theme.OptionsBeatPlay.SelectBeatPlayClapSign, Ini.BeatPlayClapSignOn, IBeatPlayClapSignOn);
 
   UpdateCalculatedSelectSlides(true); // Instantiate the calculated slides
@@ -172,7 +190,7 @@ begin
 
   Interaction := 0;
 
-
+  UpdateLetterSelection();
 
 end;
 
@@ -260,7 +278,11 @@ begin
   end;
 end;
 
+procedure TScreenOptionsBeatPlay.UpdateLetterSelection();
+begin
+  UpdateSelectSlideOptions(Theme.OptionsKeyPlay.SelectLetter,SelectLetterIDGraphicalNum,IKeyPlayLetters,Ini.PlayerKeys[Ini.KeyPlayPlayerSelected]);
 
+end;
 
 
 end.
