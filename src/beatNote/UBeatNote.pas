@@ -607,7 +607,7 @@ begin
         with Notes[Count] do
         begin
 
-           if NoteType = ntRap then
+           if (NoteType = ntRap) and CurrentSong.RapBeat then
            begin
                 glColor4f(1, 1, 1, 1);
 
@@ -690,7 +690,7 @@ begin
       begin
         with Notes[Count] do
         begin
-          if NoteType = ntRap then
+          if (NoteType = ntRap) and CurrentSong.RapBeat then
           begin
             W := NotesW[PlayerIndex] * 3 + 1.5;
             H := NotesH[PlayerIndex] * 1.5 + 3.5;
