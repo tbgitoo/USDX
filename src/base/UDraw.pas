@@ -576,9 +576,7 @@ begin
         with Player[PlayerIndex].Note[N] do
         begin
 
-          // Exclude the case of rap notes in beat mode
-          if (NoteType <> ntRap) then
-          begin
+
 
           // Left part of note
           Rec.Left  := X + (Start - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat) * TempR + 0.5 + 10*ScreenX;
@@ -677,7 +675,7 @@ begin
                 GoldenRec.SavePerfectNotePos(Rec.Left, Rec.Top);
             end;
           end;
-          end; // end not beat notes
+
 
         end; // with
       end; // for
