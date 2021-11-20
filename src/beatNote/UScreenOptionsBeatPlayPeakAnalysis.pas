@@ -160,7 +160,8 @@ begin
       end;
       SDLK_RETURN:
         begin
-          if SelInteraction = 7 then
+
+          if SelInteraction = 5 then
           begin
             //Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
@@ -173,7 +174,7 @@ begin
         InteractPrev;
       SDLK_RIGHT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction < 7) then
+          if (SelInteraction >= 0) and (SelInteraction < 5) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractInc;
