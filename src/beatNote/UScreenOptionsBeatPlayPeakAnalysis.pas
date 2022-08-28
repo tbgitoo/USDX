@@ -277,8 +277,10 @@ begin
 
     Theme.OptionsBeatDetect.SelectIntensityThreshold.showArrows := true;
     Theme.OptionsBeatDetect.SelectIntensityThreshold.oneItemOnly := true;
-    SelectIntensityID := AddSelectSlide(Theme.OptionsBeatDetect.SelectIntensityThreshold,
-        Ini.InputDeviceBeatDetectionConfig[0].ChannelBeatDectectionSettings[0].IntensityThreshold, IBeatDetectIntensityThreshold);
+    if(Length(Ini.InputDeviceBeatDetectionConfig)>0) then
+        if(Length(Ini.InputDeviceBeatDetectionConfig[0].ChannelBeatDectectionSettings)>0) then
+        SelectIntensityID := AddSelectSlide(Theme.OptionsBeatDetect.SelectIntensityThreshold,
+                          Ini.InputDeviceBeatDetectionConfig[0].ChannelBeatDectectionSettings[0].IntensityThreshold, IBeatDetectIntensityThreshold);
 
 
     Theme.OptionsBeatDetect.SelectMicBoost.showArrows := true;
