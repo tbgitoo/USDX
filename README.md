@@ -1,7 +1,7 @@
 # UltraStar Deluxe Development README
 
 [![Travis Build Status](https://travis-ci.org/UltraStar-Deluxe/USDX.svg?branch=master)](https://travis-ci.org/UltraStar-Deluxe/USDX)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/jbcwa5cmnmnk4609/branch/master?svg=true)](https://ci.appveyor.com/project/bohning/usdx/branch/master)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/UltraStar-Deluxe/USDX?branch=master&svg=true)](https://ci.appveyor.com/project/basisbit/usdx/branch/master)
 [![License](https://img.shields.io/badge/license-GPLv2-blue.svg)](LICENSE)
 
 ```
@@ -274,6 +274,16 @@ For linking and running the game, the following libraries are also required:
      - `ultrastardx`
    * or start it directly  
      `./game/ultrastardx`
+
+#### Compiling on Linux using flatpak-builder
+- The Flatpak manifest uses the org.freedesktop.Platform 20.08 runtime, which is available for the major architectures on the [Flathub](https://flathub.org/repo/flathub.flatpakrepo) remote. If it isn't available for your architecture, you can lower the version in the manifest. Below 19.08 you either need to enable the dav1d module or disable AV1 support in the ffmpeg module by removing the --enable-libdav1d configure option. For some architectures the runtime is not hosted by Flathub but can be downloaded from the [Freedesktop SDK](https://releases.freedesktop-sdk.io/freedesktop-sdk.flatpakrepo) remote.
+- The build has to be done outside of the USDX source code tree since flatpak-builder will to copy the whole source tree into the build directory. Also note that flatpak-builder will create a hidden directory `.flatpak-builder` in the directory it was called in where downloads and build results are cached.
+- Assuming you can use the Flathub remote and you didn't already add it to your flatpak configuration, you can do it with
+  * `flatpak remote-add --user flathub https://flathub.org/repo/flathub.flatpakrepo`
+- Then building and installing the USDX flatpak is just a matter of
+  * `flatpak-builder --user --install-deps-from=flathub --install build $USDX_SOURCE_TREE/dists/flatpak/eu.usdx.UltraStarDeluxe.yaml`
+- The `.flatpak-builder` and `build` directories can be removed afterwards.
+- Songs must be placed in `~/.var/app/eu.usdx.UltraStarDeluxe/.ultrastardx/songs`
 
 #### Compiling on macOS (High Sierra and above)
 - USDX is built using _Homebrew_ and official _FreePascal build_ (using its compiler _FPC_)
