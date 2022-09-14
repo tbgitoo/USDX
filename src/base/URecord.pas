@@ -794,7 +794,7 @@ var
   Value:        longint;
   SampleCount:  integer;
   SampleBuffer: PSmallIntArray; // buffer handled as array of samples
-  Boost:        byte;
+  Boost:        longint;
 begin
   // TODO: set boost per device
   case Ini.MicBoost of
@@ -808,6 +808,10 @@ begin
     7:   Boost := 1000;
     8:   Boost := 3160;
     9:   Boost := 10000;
+    10:  Boost := 31600;
+    11:  Boost := 100000;
+    12:  Boost := 1000000;
+    13:  Boost := 10000000;
     else Boost := 1;
   end;
 
