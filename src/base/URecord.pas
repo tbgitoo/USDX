@@ -802,6 +802,12 @@ begin
     1:   Boost := 2;
     2:   Boost := 4;
     3:   Boost := 8;
+    4:   Boost := 32;
+    5:   Boost := 100;
+    6:   Boost := 316;
+    7:   Boost := 1000;
+    8:   Boost := 3160;
+    9:   Boost := 10000;
     else Boost := 1;
   end;
 

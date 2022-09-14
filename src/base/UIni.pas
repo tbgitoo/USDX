@@ -498,7 +498,7 @@ const
 
   // Recording options
   IChannelPlayer: array[0..6] of UTF8String = ('Off', '1', '2', '3', '4', '5', '6');
-  IMicBoost:      array[0..3] of UTF8String = ('Off', '+6dB', '+12dB', '+18dB');
+  IMicBoost:      array[0..9] of UTF8String = ('Off', '+6dB', '+12dB', '+18dB','+30dB','+40dB','+50dB','+60dB','+70dB','+80dB');
 
   // Webcam
   IWebcamResolution: array[0..5] of UTF8String = ('160x120', '176x144', '320x240', '352x288', '640x480', '800x600');
@@ -598,7 +598,7 @@ var
 
   // Recording options
   IChannelPlayerTranslated:    array[0..IMaxPlayerCount] of UTF8String = ('Off', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12');
-  IMicBoostTranslated:         array[0..3] of UTF8String = ('Off', '+6dB', '+12dB', '+18dB');
+  IMicBoostTranslated:         array[0..9] of UTF8String = ('Off', '+6dB', '+12dB', '+18dB','+30dB','+40dB','+50dB','+60dB','+70dB','+80dB');
 
   // Network
   ISendNameTranslated:        array[0..1] of UTF8String = ('Off', 'On');
@@ -956,6 +956,12 @@ begin
   IMicBoostTranslated[1]              := '+6dB';
   IMicBoostTranslated[2]              := '+12dB';
   IMicBoostTranslated[3]              := '+18dB';
+  IMicBoostTranslated[4]              := '+30dB';
+  IMicBoostTranslated[5]              := '+40dB';
+  IMicBoostTranslated[6]              := '+50dB';
+  IMicBoostTranslated[7]              := '+60dB';
+  IMicBoostTranslated[8]              := '+70dB';
+  IMicBoostTranslated[9]              := '+80dB';
 
   // Network
   IAutoModeTranslated[0]         := ULanguage.Language.Translate('OPTION_VALUE_OFF');
