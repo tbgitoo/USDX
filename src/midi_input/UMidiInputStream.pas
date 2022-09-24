@@ -37,7 +37,7 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, PortMidi, sysutils,CTypes, UCommon;
+  Classes, PortMidi, sysutils,CTypes, UCommon, UTextEncoding;
 
 
 type
@@ -49,9 +49,16 @@ PInteger = ^integer;
 TMidiInputDeviceList = class
   public
     input_devices: array of Integer;
-    input_device_names: array of String;
+    input_device_names: array of UTF8String;
+    input_device_names_with_none: array of UTF8String;
+    // Convenience array for choice fields, adds "None" as first element and
+    // returns the other input devices in order
     constructor Create;
     procedure scanInputDevices;
+    function getDeviceName(id: Integer): UTF8String;
+    procedure update_names_with_none();
+    function getIndexInList(device_id: Integer):Integer;
+
 end;
 
 
@@ -107,7 +114,6 @@ end;
 
 procedure TMidiInputDeviceList.scanInputDevices;
 var count: integer;
-    n_devices: integer;
     deviceInfo: PPmDeviceInfo;
 begin
    Pm_Initialize();
@@ -121,13 +127,59 @@ begin
           setLength(input_devices,Length(input_devices)+1);
           setLength(input_device_names,Length(input_devices));
           input_devices[Length(input_devices)-1]:=count;
-          input_device_names[Length(input_devices)-1]:=deviceInfo^.name;
+          DecodeStringUTF8(deviceInfo^.name, input_device_names[Length(input_devices)-1],encLocale);
        end;
    end;
+   update_names_with_none;
 end;
 
+function TMidiInputDeviceList.getDeviceName(id: Integer): UTF8String;
+var
+    deviceInfo: PPmDeviceInfo;
+begin
+   if (id<0) or (id>=Length(input_devices)) then result:='None'
+   else
+       begin
+          if(id >= Pm_CountDevices()) then // Additional safety if devices have changed as compared to stored values
+            result:='None'
+          else
+            begin
+               deviceInfo:=Pm_GetDeviceInfo(id);
+               result:=deviceInfo^.name;
+            end;
+       end;
+end;
 
+procedure TMidiInputDeviceList.update_names_with_none();
+var
+    count: integer;
+begin
+   if input_devices=nil then
+   begin
+     setLength(input_device_names_with_none,1);
+     input_device_names_with_none[0]:='None';
+   end
+   else
+     begin
+        setLength(input_device_names_with_none,1+Length(input_devices));
+        input_device_names_with_none[0]:='None';
+        for count:=0 to (Length(input_devices)-1) do
+        begin
+           input_device_names_with_none[count+1]:=input_device_names[count];
+        end;
 
+     end;
+
+end;
+
+function TMidiInputDeviceList.getIndexInList(device_id: Integer):Integer;
+var
+    count: Integer;
+begin
+   result:=-1;
+   for count:=0 to Length(input_devices) do
+     if device_id=input_devices[count] then result:=count;
+end;
 
 constructor TMidiInputStream.Create;
 var

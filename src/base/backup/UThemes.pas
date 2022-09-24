@@ -963,7 +963,6 @@ type
     Description: array[0..1] of UTF8String;
     SelectPlayer:           TThemeSelectSlide;
     SelectDevice:        TThemeSelectSlide;
-    ButtonExit:         TThemeButton;
   end;
 
   TThemeOptionsNetwork = class(TThemeBasic)

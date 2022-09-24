@@ -56,6 +56,9 @@ type
 
        // interaction IDs
       ExitButtonIID: integer;
+      MidiDeviceForPlayer: integer;
+
+      SelectMidiDeviceGraphicalNum: integer; // This is a mystery number, but we need it for the slide update
 
     public
       constructor Create; override;
@@ -98,7 +101,7 @@ begin
       SDLK_ESCAPE,
       SDLK_BACKSPACE :
         begin
-          //Ini.Save;
+          Ini.Save;
           AudioPlayback.PlaySound(SoundLib.Back);
           FadeTo(@ScreenOptionsBeatPlay);
         end;
@@ -109,36 +112,50 @@ begin
       SDLK_RETURN:
         begin
 
-          if SelInteraction = 5 then
+          if SelInteraction = 2 then
           begin
-            //Ini.Save;
+            Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
             FadeTo(@ScreenOptionsBeatPlay);
           end;
         end;
       SDLK_DOWN:
+        begin
         InteractNext;
+
+        end;
       SDLK_UP :
+        begin
         InteractPrev;
+
+        end;
       SDLK_RIGHT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 4) then
+          if (SelInteraction >= 0) and (SelInteraction <= 1) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractInc;
           end;
-          //UpdateCalculatedSelectSlides(false);
+          if SelInteraction=1 then
+          begin
+            Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]:=MidiDeviceForPlayer-1;
+          end;
+          UpdateCalculatedSelectSlides(false);
           // if SelInteraction = 1 then // Player selected, update letters from known map
            //  UpdateLetterSelection();
         end;
       SDLK_LEFT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 4) then
+          if (SelInteraction >= 0) and (SelInteraction <= 1) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractDec;
           end;
-          //UpdateCalculatedSelectSlides(false);
+          if SelInteraction=1 then
+          begin
+            Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]:=MidiDeviceForPlayer-1;
+          end;
+          UpdateCalculatedSelectSlides(false);
           //if SelInteraction = 1 then // Player selected, update letters from known map
           //   UpdateLetterSelection();
         end;
@@ -153,8 +170,21 @@ end;
 constructor TScreenOptionsMidiInput.Create;
 begin
   inherited Create;
+
+  MidiDeviceForPlayer:=0;
+  createMidiInputDeviceList;
   LoadFromTheme(Theme.OptionsMidiPlay);
+  Theme.OptionsMidiPlay.SelectPlayer.showArrows := true;
+  Theme.OptionsMidiPlay.SelectDevice.oneItemOnly := true;
+  Theme.OptionsMidiPlay.SelectDevice.showArrows := true;
   AddSelectSlide(Theme.OptionsMidiPlay.SelectPlayer, Ini.MidiPlayPlayerSelected, IKeyPlayPlayers);
+  SelectMidiDeviceGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SelectDevice, MidiDeviceForPlayer, midiInputDeviceList.input_device_names_with_none);
+
+
+  AddButton(Theme.OptionsMidiPlay.ButtonExit);
+  if (Length(Button[0].Text)=0) then
+    AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
+
   UpdateCalculatedSelectSlides(true); // Calculate dependent slides
   end;
 
@@ -162,8 +192,15 @@ begin
 
 procedure TScreenOptionsMidiInput.UpdateCalculatedSelectSlides(Init: boolean);
 begin
-  createMidiInputDeviceList;
-  ConsoleWriteLn(IntToStr(Length(midiInputDeviceList.input_devices)));
+  //ConsoleWriteLn(IntToStr(Length(midiInputDeviceList.input_devices)));
+  // Get the current player midi device id, -1 is off and so we need to add 1 to match the actual device
+  MidiDeviceForPlayer:=midiInputDeviceList.getIndexInList(Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected])+1;
+
+  UpdateSelectSlideOptions(Theme.OptionsMidiPlay.SelectDevice,
+      SelectMidiDeviceGraphicalNum,midiInputDeviceList.input_device_names_with_none,MidiDeviceForPlayer);
+
+
+
 end;
 
 end.
