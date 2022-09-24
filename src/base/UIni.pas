@@ -245,6 +245,9 @@ type
       // hit for each one.
       PlayerKeys:            array of integer; // Stores the keys associated with each player
 
+      // Midi playing
+      MidiPlayPlayerSelected: integer; // To select keyboard keys for the different
+
       // Controller
       Joypad:         integer;
       Mouse:          integer;

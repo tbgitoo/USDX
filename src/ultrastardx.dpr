@@ -262,6 +262,12 @@ uses
   UKeyboardRecording in 'beatNote\UKeyboardRecording.pas',
 
   //------------------------------
+  //Includes -Midi input
+  //------------------------------
+
+  UMidiInputStream in 'midi_input\UMidiInputStream.pas',
+
+  //------------------------------
   //Includes - Plugin Support
   //------------------------------
   UParty            in 'base\UParty.pas',            // TODO: rewrite Party Manager as Module, reomplent ability to offer party Mody by Plugin
@@ -411,6 +417,7 @@ uses
 
   UScreenOptionsBeatPlay   in 'beatNote\UScreenOptionsBeatPlay.pas',
   UScreenOptionsBeatPlayPeakAnalysis          in 'beatNote\UScreenOptionsBeatPlayPeakAnalysis.pas',
+  UScreenOptionsMidiInput          in 'midi_input\UScreenOptionsMidiInput.pas',
 
 
   UScreenAbout            in 'screens\UScreenAbout.pas',

@@ -116,6 +116,11 @@ begin
             Ini.Save;
             FadeTo(@ScreenOptionsBeatPlayPeakAnalysis);
           end;
+          if SelInteraction = 7 then
+          begin
+            Ini.Save;
+            FadeTo(@ScreenOptionsMidiInput);
+          end;
         end;
       SDLK_DOWN:
         InteractNext;
@@ -174,13 +179,17 @@ begin
 
   UpdateCalculatedSelectSlides(true); // Instantiate the calculated slides
 
-  AddButton(Theme.OptionsAdvanced.ButtonExit);
+  AddButton(Theme.OptionsBeatPlay.ButtonExit);
   if (Length(Button[0].Text)=0) then
     AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
 
   AddButton(Theme.OptionsBeatPlay.ButtonAudioConfigure);
   if (Length(Button[1].Text)=0) then
     AddButtonText(20, 5, Theme.OptionsBeatPlay.Description[0]);
+
+  AddButton(Theme.OptionsBeatPlay.ButtonMidiConfigure);
+  if (Length(Button[2].Text)=0) then
+    AddButtonText(20, 5, Theme.OptionsBeatPlay.Description[1]);
 
 
 

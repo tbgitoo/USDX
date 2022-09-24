@@ -64,6 +64,7 @@ uses
   UScreenOptionsAdvanced,
   UScreenOptionsBeatPlay,
   UScreenOptionsBeatPlayPeakAnalysis,
+  UScreenOptionsMidiInput,
   UScreenOptionsNetwork,
   UScreenOptionsWebcam,
   UScreenOptionsJukebox,
@@ -163,6 +164,7 @@ var
   ScreenOptionsAdvanced:  TScreenOptionsAdvanced;
   ScreenOptionsBeatPlay:   TScreenOptionsBeatPlay;
   ScreenOptionsBeatPlayPeakAnalysis: TScreenOptionsBeatPlayPeakAnalysis;
+  ScreenOptionsMidiInput: TScreenOptionsMidiInput;
   ScreenOptionsNetwork:   TScreenOptionsNetwork;
   ScreenOptionsWebcam:    TScreenOptionsWebcam;
   ScreenOptionsJukebox:   TScreenOptionsJukebox;
@@ -975,6 +977,8 @@ begin
   ScreenOptionsBeatPlay :=    TScreenOptionsBeatPlay.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionBeatPlayPeakAnalysis')); // Screen with audio detection options for tapping
   ScreenOptionsBeatPlayPeakAnalysis :=    TScreenOptionsBeatPlayPeakAnalysis.Create;
+  SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsMidiInput')); // Screen for configuring midi input
+  ScreenOptionsMidiInput :=    TScreenOptionsMidiInput.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsNetwork'));
   ScreenOptionsNetwork :=    TScreenOptionsNetwork.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsWebCam'));

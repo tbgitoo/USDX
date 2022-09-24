@@ -953,9 +953,15 @@ type
     SelectBeatDetectionDelay: TThemeSelectSlide;
     SelectPlayer:           TThemeSelectSlide;
     SelectLetter:           TThemeSelectSlide;
-    ButtonExit: TThemeButton;
     ButtonAudioConfigure: TThemeButton;
-    Description: array[0..0] of UTF8String;
+    ButtonMidiConfigure: TThemeButton;
+    ButtonExit: TThemeButton;
+    Description: array[0..1] of UTF8String;
+  end;
+
+  TThemeOptionsMidiPlay = class(TThemeBasic)
+    Description: array[0..1] of UTF8String;
+    SelectPlayer:           TThemeSelectSlide;
   end;
 
   TThemeOptionsNetwork = class(TThemeBasic)
@@ -1448,6 +1454,7 @@ type
     OptionsRecord:    TThemeOptionsRecord;
     OptionsAdvanced:  TThemeOptionsAdvanced;
     OptionsBeatPlay:  TThemeOptionsBeatPlay;
+    OptionsMidiPlay: TThemeOptionsMidiPlay;
     OptionsBeatDetect: TThemeOptionsBeatDetect;
     OptionsKeyPlay: TThemeOptionsKeyPlay;
     OptionsNetwork:   TThemeOptionsNetwork;
@@ -1621,6 +1628,7 @@ begin
   OptionsRecord := TThemeOptionsRecord.Create;
   OptionsAdvanced := TThemeOptionsAdvanced.Create;
   OptionsBeatPlay := TThemeOptionsBeatPlay.Create;
+  OptionsMidiPlay := TThemeOptionsMidiPlay.Create;
   OptionsBeatDetect := TThemeOptionsBeatDetect.Create;
   OptionsKeyPlay := TThemeOptionsKeyPlay.Create;
   OptionsNetwork := TThemeOptionsNetwork.Create;
@@ -2456,13 +2464,17 @@ begin
       // Configuration beat playing
       ThemeLoadBasic      (OptionsBeatPlay, 'OptionsBeatPlay');
 
+
+
       ThemeLoadSelectSlide(OptionsBeatPlay.SelectBeatPlayClapSign, 'OptionsBeatPlayShowClap');
       ThemeLoadSelectSlide(OptionsBeatPlay.SelectBeatDetectionDelay, 'OptionsBeatPlaySelectBeatDetectionDelay');
 
       ThemeLoadButton (OptionsBeatPlay.ButtonExit, 'OptionsBeatPlayButtonExit');
       ThemeLoadButton (OptionsBeatPlay.ButtonAudioConfigure, 'OptionsBeatPlayButtonAudioConfigure');
+      ThemeLoadButton (OptionsBeatPlay.ButtonMidiConfigure, 'OptionsBeatPlayButtonMidiConfigure');
 
       OptionsBeatPlay.Description[0] := Language.Translate('SING_OPTIONS_BEATPLAY_AUDIO_CONFIGURE');
+      OptionsBeatPlay.Description[1] := Language.Translate('SING_OPTIONS_BEATPLAY_MIDI_CONFIGURE');
 
       // Specific options for keyboard playing
       ThemeLoadBasic (OptionsKeyPlay, 'OptionsKeyPlay');
@@ -2478,6 +2490,10 @@ begin
       ThemeLoadSelectSlide(OptionsBeatDetect.SelectIntensityThreshold,       'OptionsBeatDetectSelectThreshold');
       ThemeLoadSelectSlide(OptionsBeatDetect.SelectMicBoost,      'OptionsBeatDetectSelectMicBoost');
        ThemeLoadButton(OptionsBeatDetect.ButtonExit,               'OptionsBeatDetectButtonExit');
+
+       // Configuration to use midi as the input
+       ThemeLoadBasic      (OptionsMidiPlay, 'OptionsMidiPlay');
+       ThemeLoadSelectSlide(OptionsMidiPlay.SelectPlayer, 'OptionsMidiPlaySelectPlayer');
 
       //Options Network
       ThemeLoadBasic(OptionsNetwork, 'OptionsNetwork');

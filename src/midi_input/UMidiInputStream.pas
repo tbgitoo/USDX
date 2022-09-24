@@ -37,12 +37,22 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, PortMidi, sysutils,CTypes;
+  Classes, PortMidi, sysutils,CTypes, UCommon;
 
 
 type
 
+IntegerArray = array of Integer;
+PIntegerArray = ^IntegerArray;
+PInteger = ^integer;
 
+TMidiInputDeviceList = class
+  public
+    input_devices: array of Integer;
+    input_device_names: array of String;
+    constructor Create;
+    procedure scanInputDevices;
+end;
 
 
 TMidiInputStream = class
@@ -56,7 +66,6 @@ TMidiInputStream = class
     isCapturing: Boolean;
     constructor Create;
     procedure initMidi;
-    procedure ReadMessages;
     procedure setMidiDeviceID(id: PmDeviceID);
     function midiDeviceName(): PChar;
     function midiDeviceInterf(): PChar;
@@ -68,7 +77,10 @@ TMidiInputStream = class
     function readEvents(): PmError;
     function OpenInput(id: PmDeviceID): PmError;
     procedure CloseInput();
+
   end;
+
+
 
 
 TMidiKeyboardPressedStream = class(TMidiInputStream)
@@ -80,16 +92,42 @@ TMidiKeyboardPressedStream = class(TMidiInputStream)
     function readEvents(): PmError;
 end;
 
+procedure createMidiInputDeviceList();
 
-
-
+ // global singleton for the TBeatNoteTimerState class
+var midiInputDeviceList : TMidiInputDeviceList;
 
 implementation
 
-procedure TMidiInputStream.ReadMessages;
-begin
 
+constructor TMidiInputDeviceList.Create;
+begin
+  scanInputDevices;
 end;
+
+procedure TMidiInputDeviceList.scanInputDevices;
+var count: integer;
+    n_devices: integer;
+    deviceInfo: PPmDeviceInfo;
+begin
+   Pm_Initialize();
+   setLength(input_devices,0);
+   setLength(input_device_names,0);
+   for count:=0 to (Pm_CountDevices()-1) do
+   begin
+       deviceInfo:=Pm_GetDeviceInfo(count);
+       if(deviceInfo^.input>0) then
+       begin
+          setLength(input_devices,Length(input_devices)+1);
+          setLength(input_device_names,Length(input_devices));
+          input_devices[Length(input_devices)-1]:=count;
+          input_device_names[Length(input_devices)-1]:=deviceInfo^.name;
+       end;
+   end;
+end;
+
+
+
 
 constructor TMidiInputStream.Create;
 var
@@ -246,6 +284,14 @@ begin
       end;
    end;
 
+end;
+
+
+// Instantiate the singleton if necessary
+procedure createMidiInputDeviceList();
+begin
+   if midiInputDeviceList = nil then
+      midiInputDeviceList := TMidiInputDeviceList.Create;
 end;
 
 end.
