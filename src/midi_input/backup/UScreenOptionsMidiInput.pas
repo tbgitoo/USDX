@@ -230,7 +230,7 @@ begin
   midiMessageString:='-';
   if lastEvent.message_ <> 0 then
      midiMessageString:='0x'+IntToHex(lastEvent.message_,3);
-  test:=TText.Create(70, 300,midiMessageString);
+  test:=TText.Create(70, 300,IntToHex(lastEvent.message_,3));
   test.Draw;
 
 

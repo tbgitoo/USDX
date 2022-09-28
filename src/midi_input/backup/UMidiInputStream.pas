@@ -356,6 +356,7 @@ begin
             if (Pm_MessageStatus(midiEvent[count].message_)=$91) and not
             (Pm_MessageData2(midiEvent[count].message_)=$00) then
             begin
+               ConsoleWriteLn(IntToStr(Pm_MessageData1(midiEvent[count].message_)));
                 keyBoardPressed[Pm_MessageData1(midiEvent[count].message_)]:=True;
             end;
       end;

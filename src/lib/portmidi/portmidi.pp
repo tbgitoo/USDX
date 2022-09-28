@@ -199,7 +199,7 @@ const
                                 or (1 shl $03) or (1 shl $06));
 
 function Pm_SetFilter(stream : PortMidiStream; filters : CInt32 ) : PmError;
-  EXTERNALSPEC 'Pm_SetFilte';
+  EXTERNALSPEC 'Pm_SetFilter';
 
 function Pm_Channel(channel : CInt) : CInt; inline;
 
