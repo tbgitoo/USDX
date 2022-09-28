@@ -266,6 +266,8 @@ uses
   //------------------------------
 
   UMidiInputStream in 'midi_input\UMidiInputStream.pas',
+  pasfluidsynth in 'lib\fluidsynth\pasfluidsynth.pas',
+  UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
 
   //------------------------------
   //Includes - Plugin Support
