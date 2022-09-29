@@ -1781,14 +1781,14 @@ begin
   setLength(PlayerMidiInputDevice,High(IKeyPlayPlayers)+1);
   for I := 0 to High(PlayerKeys) do
   begin
-     if(Length(midiInputDeviceList.input_devices)>0) then
+     if(Length(midiInputDeviceList.midi_devices)>0) then
        begin
         PlayerMidiInputDevice[I] :=
-                                 ReadArrayIndex(midiInputDeviceList.input_device_names,
+                                 ReadArrayIndex(midiInputDeviceList.midi_device_names,
                                    IniFile, 'MidiPlayInputDevice',Format('Player[%d]', [I+1]), IGNORE_INDEX, 'a');
         if PlayerMidiInputDevice[I]>=0 then // This is the index in terms of available devices, but we need the index of the device
           begin
-             PlayerMidiInputDevice[I]:=midiInputDeviceList.input_devices[PlayerMidiInputDevice[I]];
+             PlayerMidiInputDevice[I]:=midiInputDeviceList.midi_devices[PlayerMidiInputDevice[I]];
           end;
 
        end

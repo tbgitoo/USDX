@@ -57,12 +57,15 @@ uses
 
 type
     TFluidsynthHandler = class
+    protected
+      soundFondLoaded: boolean;
     public
       fluidsynth : TFluidSynth;
       midiDriver: TFluidSynth.PFluidMidiDriver;
       midiRouter: TFluidSynth.PFluidMidiRouter;
       seq_id: TFluidSynth.fluid_seq_id_t;
       midi_port_name: PChar;
+      midi_port_id: Integer;
       constructor Create;
       procedure StartAudio();
       procedure StopAudio();
@@ -80,16 +83,23 @@ procedure createfluidSynthHandler();
 
 implementation
 
+uses
+  UMidiInputStream, UTextEncoding, UCommon;
+
 // Instantiate the singleton if necessary
 procedure createfluidSynthHandler();
 begin
    if fluidSynthHandler = nil then
+   begin
       fluidSynthHandler := TFluidsynthHandler.Create();
+      fluidSynthHandler.StartMidi(); // This opens the midi port
+   end;
 end;
 
  constructor TFluidSynthHandler.Create;
  begin
    midi_port_name:='fluidsynth_ultrastar_midi_port';
+   soundFondLoaded:=false;
    fluidsynth := TFluidSynth.Create();
    fluidsynth.settings := fluidsynth.new_fluid_settings();
    // Autoconnect: This would be handy, but it seems to be implemented only  in
@@ -100,9 +110,10 @@ end;
    // Create the actual synthesizer instance, the TFluidSynth is already a wrapper in pasfluidsynth
    fluidsynth.synth := fluidsynth.new_fluid_synth(fluidsynth.settings);
 
-   fluidsynth.fluid_synth_sfload(fluidsynth.synth, '/Applications/MuseScore 3.app/Contents/Resources/sound/MuseScore_General.sf3', 1);
+
    fluidsynth.audioDriver:=nil;
    midiDriver:=nil;
+   midi_port_id:=-1;
 
  end;
 
@@ -123,9 +134,16 @@ procedure TFluidSynthHandler.StartAudio;
 begin
   if not audioIsRunning() then
   begin
+     if not soundFondLoaded then begin // only load the audiofont when really needed, this
+        // takes a while
+        fluidsynth.fluid_synth_sfload(fluidsynth.synth,
+        '/Applications/MuseScore 3.app/Contents/Resources/sound/MuseScore_General.sf3', 1);
+        soundFondLoaded:=true;
+     end;
    // This is starts the synthesis thread, which will produce the actual sound
    // So this is more than an instation, it creates a background process
    // this is however very useful in order to best exploit processing capacity
+
 
   fluidsynth.audioDriver := fluidsynth.new_fluid_audio_driver(fluidsynth.settings, fluidsynth.synth);
   // Initialize sequencer, this is the thing that actually dispatches the midi messages directly to the synth
@@ -140,6 +158,9 @@ end;
 
 
 procedure TFluidSynthHandler.StartMidi;
+var
+  midiOutputDevices: TMidiDeviceList;
+  UTF8PortName: UTF8String;
 begin
   if not midiIsRunning() then
   begin
@@ -157,6 +178,10 @@ begin
 
    midiDriver:=fluidsynth.new_fluid_midi_driver(fluidsynth.settings, fluidsynth.fluid_midi_router_handle_midi_event, midiRouter);
 
+   // We need not only the port name, but also the port id in order to write to this port for synthesizing
+   midiOutputDevices:=TMidiDeviceList.create(false,true);
+   DecodeStringUTF8(midi_port_name, UTF8PortName,encLocale);   // Convert to UTF8
+   midi_port_id:=midiOutputDevices.getDeviceIdFromDeviceName(UTF8PortName);
    end;
 end;
 

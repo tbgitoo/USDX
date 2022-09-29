@@ -61,7 +61,9 @@ type
       ExitButtonIID: integer;
       MidiDeviceForPlayer: integer;
       SelectMidiDeviceGraphicalNum: integer; // This is a mystery number, but we need it for the slide update
-      midiStream: TMidiKeyboardPressedStream;
+      midiKeyboardStream: TMidiKeyboardPressedStream;
+      midiInputDeviceMessaging: TmidiInputDeviceMessaging; // For sound synthesis
+      isShown: boolean;
     public
       lastEvent: PmEvent;
       constructor Create; override;
@@ -72,7 +74,8 @@ type
       procedure DrawCaptureField(X, Y, W, H: real);
       procedure DrawPiano(X, Y, W, H: real; lowerOctave: integer; upperOctave: integer);
       function  Draw: boolean; override;
-
+      procedure OnShowFinish; override;
+      procedure OnHide; override;
 
   end;
 
@@ -151,7 +154,7 @@ begin
           UpdateCalculatedSelectSlides(false);
           // if SelInteraction = 1 then // Player selected, update letters from known map
            //  UpdateLetterSelection();
-           UpdateMidiStream;
+           if isShown then UpdateMidiStream;
         end;
       SDLK_LEFT:
         begin
@@ -167,7 +170,7 @@ begin
           UpdateCalculatedSelectSlides(false);
           //if SelInteraction = 1 then // Player selected, update letters from known map
           //   UpdateLetterSelection();
-          UpdateMidiStream;
+          if isShown then UpdateMidiStream;
         end;
   end;
 
@@ -180,9 +183,8 @@ end;
 constructor TScreenOptionsMidiInput.Create;
 begin
   inherited Create;
+  isShown:=false; // The construction takes place at app initiation, this is way before showing
   createfluidSynthHandler(); // In case it hasn't been created yet
-  fluidSynthHandler.StartAudio();
-  fluidSynthHandler.StartMidi();
   lastEvent.message_:=0;
   lastEvent.timestamp:=0;
   MidiDeviceForPlayer:=0;
@@ -192,27 +194,25 @@ begin
   Theme.OptionsMidiPlay.SelectDevice.oneItemOnly := true;
   Theme.OptionsMidiPlay.SelectDevice.showArrows := true;
   AddSelectSlide(Theme.OptionsMidiPlay.SelectPlayer, Ini.MidiPlayPlayerSelected, IKeyPlayPlayers);
-  SelectMidiDeviceGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SelectDevice, MidiDeviceForPlayer, midiInputDeviceList.input_device_names_with_none);
-  midiStream:=TMidiKeyboardPressedStream.create;
-
+  SelectMidiDeviceGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SelectDevice, MidiDeviceForPlayer, midiInputDeviceList.midi_device_names_with_none);
+  midiKeyboardStream:=TMidiKeyboardPressedStream.create;
+  midiInputDeviceMessaging:=nil;
   AddButton(Theme.OptionsMidiPlay.ButtonExit);
   if (Length(Button[0].Text)=0) then
     AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
 
   UpdateCalculatedSelectSlides(true); // Calculate dependent slides
-  UpdateMidiStream;
+  //UpdateMidiStream;
   end;
 
 
 
 procedure TScreenOptionsMidiInput.UpdateCalculatedSelectSlides(Init: boolean);
 begin
-  //ConsoleWriteLn(IntToStr(Length(midiInputDeviceList.input_devices)));
-  // Get the current player midi device id, -1 is off and so we need to add 1 to match the actual device
   MidiDeviceForPlayer:=midiInputDeviceList.getIndexInList(Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected])+1;
 
   UpdateSelectSlideOptions(Theme.OptionsMidiPlay.SelectDevice,
-      SelectMidiDeviceGraphicalNum,midiInputDeviceList.input_device_names_with_none,MidiDeviceForPlayer);
+      SelectMidiDeviceGraphicalNum,midiInputDeviceList.midi_device_names_with_none,MidiDeviceForPlayer);
 
 
 
@@ -225,11 +225,11 @@ begin
 
   if MidiDeviceForPlayer>=0 then
   begin
-    midiStream.readEvents;
-    if midiStream.availableEvents>0 then
-    begin
-      lastEvent:= midiStream.midiEvent[midiStream.availableEvents-1];
-    end;
+    //midiStream.readEvents;
+    //if midiStream.availableEvents>0 then
+    //begin
+    //  lastEvent:= midiStream.midiEvent[midiStream.availableEvents-1];
+
   end;
   midiMessageString:='-';
   if lastEvent.message_ <> 0 then
@@ -261,7 +261,7 @@ begin
       keyIsPlayed := False;
 
       if (MidiDeviceForPlayer>=0) and (midikey >= 0) and (midikey <= 127) then begin
-         keyIsPlayed := midiStream.keyBoardPressed[midikey];
+         keyIsPlayed := midiKeyboardStream.keyBoardPressed[midikey];
       end;
 
       if ((count mod 12)=1) or ((count mod 12)=3) or ((count mod 12)=6) or ((count mod 12)=8) or ((count mod 12)=10) then
@@ -303,7 +303,7 @@ begin
        midikey := 60 + (lowerOctave-4)*12+count;
        keyIsPlayed := False;
       if (MidiDeviceForPlayer>=0) and (midikey >= 0) and (midikey <= 127) then
-        keyIsPlayed := midiStream.keyBoardPressed[midikey];
+        keyIsPlayed := midiKeyboardStream.keyBoardPressed[midikey];
       if ((count mod 12)=1) or ((count mod 12)=3) or ((count mod 12)=6) or ((count mod 12)=8) or ((count mod 12)=10) then
       begin
 
@@ -348,16 +348,59 @@ begin
   Result := true;
 end;
 
-procedure TScreenOptionsMidiInput.UpdateMidiStream;
+procedure testcallback(midiEvents: array of PmEvent; data: TMidiKeyboardPressedStream);
 begin
-   midiStream.setMidiDeviceID(Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]);
+  data.processEvents(midiEvents);
+end;
+
+procedure TScreenOptionsMidiInput.UpdateMidiStream;
+var
+  cb_array: array of TMidiInputDeviceMessaging.TCallbackProc;
+  cb_data_array: array of pointer;
+begin
+   //midiStream.setMidiDeviceID(Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]);
    lastEvent.message_:=0;
    lastEvent.timestamp:=0;
+   if Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]>=0 then begin
+      fluidSynthHandler.StartAudio();
+      if not (midiInputDeviceMessaging=nil) then begin
+         midiInputDeviceMessaging.stopTransfer;
+         midiInputDeviceMessaging.free;
+         midiInputDeviceMessaging:=nil;
+
+   end;
+
+      setLength(cb_array,1);
+      setLength(cb_data_array,1);
+      cb_array[0]:=@testcallback;
+      cb_data_array[0]:=midiKeyboardStream;
+      midiInputDeviceMessaging:=TMidiInputDeviceMessaging.create(
+          Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected],cb_array,false,cb_data_array);
+   end;
+end;
+
+procedure TScreenOptionsMidiInput.OnShowFinish;
+begin
+   isShown:=true;
+   UpdateMidiStream;
+   inherited;
+end;
+
+procedure TScreenOptionsMidiInput.OnHide;
+begin
+   if not (midiInputDeviceMessaging=nil) then begin
+         midiInputDeviceMessaging.stopTransfer;
+         midiInputDeviceMessaging.free;
+         midiInputDeviceMessaging:=nil;
+
+   end;
+   isShown:=false;
+   inherited;
 end;
 
 destructor TScreenOptionsMidiInput.Destroy;
 begin
-   midiStream.Free;
+   //midiStream.Free;
   inherited;
 end;
 

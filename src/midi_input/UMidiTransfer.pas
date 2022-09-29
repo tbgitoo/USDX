@@ -42,28 +42,43 @@ uses
 
 
 type
-  TMidiThrough = class(TThread)
-   protected
+  TMidiInputDeviceMessaging = class(TThread)
+  type
+       TCallbackProc = procedure (midiEvents: array of PmEvent; data: pointer);
+       // The idea here is to use the generic pointer place to let the callback know the object
+       // that is interested in the midi data. This can really be anything, it's up to
+       // the callback to know what to do with this data (pass nil if you don't need this)
+  protected
        ready: boolean; // indicates that everything has been set up succesfully for transferring
        running: boolean; // indicates that we are actually transferring
        deviceInfoSource: PPmDeviceInfo;
-       deviceInfoDestination: PPmDeviceInfo;
+       source_id: integer;
+       callback_data_array: array of pointer; // This is for the callbacks, typically the object that shold do something
+       wait_time_ms: integer;
        PmidiStreamSource: PPortMidiStream;
        midiStreamSource: PortMidiStream;
-       PmidiStreamDestination: PPortMidiStream;
-       midiStreamDestination: PortMidiStream;
        PmidiEvent: PPmEvent;
        midiEvent: array[0..4095] of PmEvent; // Buffer for reading midi events
        availableEvents: Integer;
+       callback_array: array of TCallbackProc;
        procedure Execute; override;
        function OpenInput(id: PmDeviceID): PmError;
-       function OpenOutput(id: PmDeviceID): PmError;
        procedure CloseInput();
-       procedure CloseOutput();
+       procedure TransferMessages;
+       function readEvents(): PmError;
+       function recordOnlyNotes() : PmError;
+       function setFilter(filters : CInt32 ) : PmError;
    public
-         procedure TransferMessages;
-         constructor create(id_source: Integer; id_destination: Integer);
+         procedure stopTransfer;
+         constructor create(id_source: Integer; callbacks:
+           array of TCallbackProc; readOnlyNotes: boolean;callback_data:array of pointer);
+         // The callback_data array needs to be at least as long as the callbacks array.
+         // If it is longer, the elements towards the end are ignored
+         destructor destroy(); override;
   end;
+
+
+
 
 
 
@@ -71,71 +86,140 @@ type
 
 implementation
 
-uses
-  UFluidSynth;
 
-
-function TMidiThrough.OpenInput(id: PmDeviceID): PmError;
+function TmidiInputDeviceMessaging.OpenInput(id: PmDeviceID): PmError;
  begin
     result:=Pm_OpenInput(PmidiStreamSource, id, nil,4095,nil, nil );
  end;
 
-function TMidiThrough.OpenOutput(id: PmDeviceID): PmError;
-begin
-  result:=Pm_OpenOutput(PmidiStreamDestination, id, nil,4095,nil, nil,0 );
-end;
-
-procedure TMidiThrough.CloseInput();
+procedure TmidiInputDeviceMessaging.CloseInput();
 begin
   Pm_Close(midiStreamSource);
   ready:=False;
 end;
 
-procedure TMidiThrough.CloseOutput();
+
+constructor TmidiInputDeviceMessaging.create(id_source: Integer; callbacks:
+           array of TCallbackProc; readOnlyNotes: boolean;callback_data:array of pointer);
+var
+  count: integer;
+  last_error: PmError;
 begin
-  Pm_Close(midiStreamDestination);
-  ready:=False;
-end;
+   running:=false;
+   ready:=false;
+   wait_time_ms:=5;
+   setLength(callback_array,high(callbacks)-low(callbacks)+1);
+   setLength(callback_data_array,high(callbacks)-low(callbacks)+1);
+   for count:=low(callbacks) to high(callbacks) do begin
+      callback_array[count]:=callbacks[count];
+      callback_data_array[count]:=callback_data[count];
+   end;
+
+   deviceInfoSource:=nil;
+   source_id:=-1;
 
 
 
-constructor TMidiThrough.Create(id_source: Integer; id_destination: Integer);
-begin
- running:=false;
- ready:=false;
+   availableEvents:=0;
+   for count:= 0 to 4095 do
+   begin
+       midiEvent[count].message_:=$00; // initialize buffer to zero
+       midiEvent[count].timestamp:=$00;
+   end;
+   PmidiStreamSource:=@midiStreamSource;
+   PmidiEvent:=@midiEvent[0];
+
+ last_error:=-100; // No specific error encountered but fails
  Pm_Initialize(); // Just in case this hasn't been done elsewhere
  deviceInfoSource:=Pm_GetDeviceInfo(id_source);
    if not (deviceInfoSource = nil) then
-      if OpenInput(id_source) >=0 then // succesfully opened source port
+   begin
+      if (deviceInfoSource^.opened=0) then
+         last_error:=OpenInput(id_source);
+      if last_error >=0 then // succesfully opened source port
       begin
-        deviceInfoDestination:=Pm_GetDeviceInfo(id_destination);
-        if not (deviceInfoDestination = nil) then
-          if OpenOutput(id_destination) >= 0 then // succesfully opened destination port
-          begin
-            ready:=true;
-          end;
+        source_id:=id_source;
+        if readOnlyNotes then recordOnlyNotes();
+        ready:=true;
       end;
- inherited create(false);
- running:=true;
- FreeOnTerminate := true;
+
+   end;
+ running:=ready;
+ FreeOnTerminate := false;
+ inherited create(false); // This will return immediately since running is false
+
+
 end;
 
 
-procedure TMidiThrough.Execute;
+procedure TmidiInputDeviceMessaging.Execute;
 begin
  while running do
  begin
-   ConsoleWriteLn('Executing');
-   sleep(1);
+   readEvents;
+   TransferMessages;
+   sleep(wait_time_ms);
  end;
 
 end;
 
-procedure TMidiThrough.TransferMessages;
+procedure TmidiInputDeviceMessaging.TransferMessages;
+var
+  dynamic_event_array : array of PmEvent;
+  count: integer;
+  f: TCallbackProc;
 begin
+  if availableEvents>0 then
+  begin
+    setLength(dynamic_event_array,availableEvents);
+    for count := 0 to (availableEvents-1) do
+       dynamic_event_array[count]:=midiEvent[count];
+    for count := low(callback_array) to high(callback_array) do begin
+      f:=callback_array[count];
+      f(dynamic_event_array,callback_data_array[count]);
+    end;
+  end;
 
 end;
 
+function TmidiInputDeviceMessaging.readEvents(): PmError;
+var ret: CInt;
+begin
+   ret:=Pm_Read(midiStreamSource,@midiEvent[0], 4095 );
+   if ret >= 0 then
+      availableEvents:=ret
+   else
+       availableEvents:=0;
+   result:=ret;
+end;
+
+procedure TmidiInputDeviceMessaging.stopTransfer;
+begin
+  running:=false;
+  WaitFor;
+  CloseInput;
+end;
+
+function TmidiInputDeviceMessaging.setFilter(filters : CInt32 ) : PmError;
+begin
+   result:=Pm_SetFilter(midiStreamSource, filters);
+end;
+
+function TmidiInputDeviceMessaging.recordOnlyNotes() : PmError;
+begin
+   result:=setFilter(not PM_FILT_NOTE);
+end;
+
+
+destructor TmidiInputDeviceMessaging.destroy();
+begin
+   deviceInfoSource:=nil; // this is handled by portmidi
+   PmidiStreamSource:=nil;  // this is handled by portmidi
+   PmidiEvent:=nil; // this is a pointer on the array
+   callback_data_array:=nil; // This is handled externally
+   //midiEvent This is preallocated and should be freed with the object
+   inherited;
+end;
 
 end.
 

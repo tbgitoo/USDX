@@ -37,7 +37,7 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, PortMidi, sysutils,CTypes, UCommon, UTextEncoding;
+  Classes, PortMidi, sysutils,CTypes, UCommon, UTextEncoding,UMidiTransfer;
 
 
 type
@@ -46,45 +46,42 @@ IntegerArray = array of Integer;
 PIntegerArray = ^IntegerArray;
 PInteger = ^integer;
 
-TMidiInputDeviceList = class
-  public
-    input_devices: array of Integer;
-    input_device_names: array of UTF8String;
-    input_device_names_with_none: array of UTF8String;
+TMidiDeviceList = class
+    protected
+    procedure scanDevices(input: boolean; output: boolean);
+    public
+    midi_devices: array of Integer;
+    midi_device_names: array of UTF8String;
+    midi_device_names_with_none: array of UTF8String;
     // Convenience array for choice fields, adds "None" as first element and
     // returns the other input devices in order
-    constructor Create;
+    constructor Create(input: boolean; output: boolean);
+    destructor Destroy; override;
     procedure scanInputDevices;
+    procedure scanOutputDevices;
+    procedure scanAllDevices;
     function getDeviceName(id: Integer): UTF8String;
     procedure update_names_with_none();
     function getIndexInList(device_id: Integer):Integer;
+    function getDeviceIdFromDeviceName(deviceName: UTF8String):Integer;
 
 end;
 
+TMidiInputDeviceList = class(TmidiDeviceList)
+   public
+   constructor Create;
+end;
 
+// The idea of this class is that it can be connected to
+// an instance of TMidiInputDeviceMessaging via a callback
 TMidiInputStream = class
     public
-    deviceId : integer;
-    deviceInfo: PPmDeviceInfo;
-    PmidiStream: PPortMidiStream;
-    midiStream: PortMidiStream;
-    PmidiEvent: PPmEvent;
-    midiEvent: array[0..4095] of PmEvent;
-    availableEvents: Integer;
-    isCapturing: Boolean;
+
+    midiEvent: array of PmEvent;
+
     constructor Create;
-    procedure initMidi;
-    procedure setMidiDeviceID(id: PmDeviceID);
-    function midiDeviceName(): PChar;
-    function midiDeviceInterf(): PChar;
-    function midiDeviceIsInput(): CInt;
-    function midiDeviceIsOutput(): CInt;
-    function midiDeviceIsOpened(): CInt;
-    function setFilter(filters : CInt32 ) : PmError;
-    function recordOnlyNotes() : PmError;
-    function readEvents(): PmError;
-    function OpenInput(id: PmDeviceID): PmError;
-    procedure CloseInput();
+    procedure processEvents (midiEvents: array of PmEvent);  // This is the callback
+
 
   end;
 
@@ -96,8 +93,8 @@ TMidiKeyboardPressedStream = class(TMidiInputStream)
     keyBoardPressed: array[0..127] of Boolean;
     constructor Create;
     procedure ResetKeyBoardPressed;
-    procedure setMidiDeviceID(id: PmDeviceID);
-    function readEvents(): PmError;
+    procedure processEvents (midiEvents: array of PmEvent);
+
 end;
 
 
@@ -115,39 +112,69 @@ var midiInputDeviceList : TMidiInputDeviceList;
 implementation
 
 uses
-  UIni;
+  UIni,UUnicodeUtils;
 
 constructor TMidiInputDeviceList.Create;
 begin
-  scanInputDevices;
+  inherited Create(true,false);
 end;
 
-procedure TMidiInputDeviceList.scanInputDevices;
+constructor TMidiDeviceList.Create(input: boolean; output: boolean);
+begin
+  scanDevices(input,output);
+end;
+
+procedure TMidiDeviceList.scanAllDevices;
+begin
+   scanDevices(true,true);
+end;
+
+procedure TMidiDeviceList.scanInputDevices;
+begin
+   scanDevices(true,false);
+end;
+
+procedure TMidiDeviceList.scanOutputDevices;
+begin
+   scanDevices(false,true);
+end;
+
+procedure TMidiDeviceList.scanDevices(input: boolean; output: boolean);
 var count: integer;
     deviceInfo: PPmDeviceInfo;
 begin
-   Pm_Initialize();
-   setLength(input_devices,0);
-   setLength(input_device_names,0);
+   Pm_Terminate();
+   Pm_Initialize();  // Otherwise freshly connected devices won't be seen
+   setLength(midi_devices,0);
+   setLength(midi_device_names,0);
    for count:=0 to (Pm_CountDevices()-1) do
    begin
        deviceInfo:=Pm_GetDeviceInfo(count);
-       if(deviceInfo^.input>0) then
+       if(input and (deviceInfo^.input>0)) then
        begin
-          setLength(input_devices,Length(input_devices)+1);
-          setLength(input_device_names,Length(input_devices));
-          input_devices[Length(input_devices)-1]:=count;
-          DecodeStringUTF8(deviceInfo^.name, input_device_names[Length(input_devices)-1],encLocale);
+          setLength(midi_devices,Length(midi_devices)+1);
+          setLength(midi_device_names,Length(midi_devices));
+          midi_devices[Length(midi_devices)-1]:=count;
+          DecodeStringUTF8(deviceInfo^.name, midi_device_names[Length(midi_devices)-1],encLocale);
+       end
+       else if(output and (deviceInfo^.output>0)) then
+       begin
+          setLength(midi_devices,Length(midi_devices)+1);
+          setLength(midi_device_names,Length(midi_devices));
+          midi_devices[Length(midi_devices)-1]:=count;
+          DecodeStringUTF8(deviceInfo^.name, midi_device_names[Length(midi_devices)-1],encLocale);
        end;
    end;
    update_names_with_none;
 end;
 
-function TMidiInputDeviceList.getDeviceName(id: Integer): UTF8String;
+
+
+function TMidiDeviceList.getDeviceName(id: Integer): UTF8String;
 var
     deviceInfo: PPmDeviceInfo;
 begin
-   if (id<0) or (id>=Length(input_devices)) then result:='None'
+   if (id<0) or (id>=Length(midi_devices)) then result:='None'
    else
        begin
           if(id >= Pm_CountDevices()) then // Additional safety if devices have changed as compared to stored values
@@ -160,158 +187,72 @@ begin
        end;
 end;
 
-procedure TMidiInputDeviceList.update_names_with_none();
+procedure TMidiDeviceList.update_names_with_none();
 var
     count: integer;
 begin
-   if input_devices=nil then
+   if midi_devices=nil then
    begin
-     setLength(input_device_names_with_none,1);
-     input_device_names_with_none[0]:='None';
+     setLength(midi_device_names_with_none,1);
+     midi_device_names_with_none[0]:='None';
    end
    else
      begin
-        setLength(input_device_names_with_none,1+Length(input_devices));
-        input_device_names_with_none[0]:='None';
-        for count:=0 to (Length(input_devices)-1) do
+        setLength(midi_device_names_with_none,1+Length(midi_devices));
+        midi_device_names_with_none[0]:='None';
+        for count:=0 to (Length(midi_devices)-1) do
         begin
-           input_device_names_with_none[count+1]:=input_device_names[count];
+           midi_device_names_with_none[count+1]:=midi_device_names[count];
         end;
 
      end;
 
 end;
 
-function TMidiInputDeviceList.getIndexInList(device_id: Integer):Integer;
+function TMidiDeviceList.getIndexInList(device_id: Integer):Integer;
 var
     count: Integer;
 begin
    result:=-1;
-   for count:=0 to Length(input_devices) do
-     if device_id=input_devices[count] then result:=count;
+   for count:=0 to (Length(midi_devices)-1) do
+     if device_id=midi_devices[count] then result:=count;
+end;
+
+
+function TMidiDeviceList.getDeviceIdFromDeviceName(deviceName: UTF8String):Integer;
+var
+    count: Integer;
+begin
+   result:=-1;
+   for count:=0 to (Length(midi_devices)-1) do begin
+     if UTF8CompareStr(midi_device_names[count],deviceName)=0 then
+        result:=midi_devices[count];
+   end;
+end;
+
+destructor TMidiDeviceList.destroy;
+begin
+   setlength(midi_devices,0);
+   setlength(midi_device_names,0);
+   setlength(midi_device_names_with_none,0);
+    inherited;
 end;
 
 constructor TMidiInputStream.Create;
-var
-  count: integer;
 begin
-   isCapturing:=False;
-   deviceInfo:=nil;
-   deviceId:=-1;
-   availableEvents:=0;
-   for count:= 0 to 4095 do
-   begin
-       midiEvent[count].message_:=$00; // initialize buffer to zero
-       midiEvent[count].timestamp:=$00;
-   end;
-   PmidiStream:=@midiStream;
-   PmidiEvent:=@midiEvent[0];
-   initMidi;
-end;
-
-procedure TMidiInputStream.initMidi;
-begin
-   Pm_Initialize();
-end;
-
-function TMidiInputStream.OpenInput(id: PmDeviceID): PmError;
-begin
-   result:=Pm_OpenInput(PmidiStream, id, nil,4095,nil, nil );
-   deviceId:=id;
-end;
-
-procedure TMidiInputStream.CloseInput();
-begin
-   Pm_Close(midiStream);
-   isCapturing:=False;
-end;
-
-procedure TMidiInputStream.setMidiDeviceID(id: PmDeviceID);
-var new_deviceInfo : PPmDeviceInfo;
-begin
-   new_deviceInfo:=Pm_GetDeviceInfo(id);
-   if not (new_deviceInfo = nil) then // The ID is valid
-   begin
-      if not (deviceId=id) or (deviceInfo=nil) then // we want to change
-      begin
-        if isCapturing then
-        begin
-        // We are already capturing, close the connection since we want to change
-           CloseInput;
-        end;
-        deviceInfo := new_deviceInfo;
-        deviceId := id;
-      end;
-
-      if OpenInput(id) >=0 then
-          deviceId := id;
-          isCapturing:=True;
-   end;
-end;
-
-function TMidiInputStream.midiDeviceName(): PChar;
-begin
-   if deviceInfo = nil then
-      result:=''
-   else
-       result:= deviceInfo^.name;
-end;
-
-function TMidiInputStream.midiDeviceInterf(): PChar;
-begin
-   if deviceInfo = nil then
-      result:=''
-   else
-       result:= deviceInfo^.interf;
-end;
-
-function TMidiInputStream.midiDeviceIsInput(): CInt;
-begin
-   if deviceInfo = nil then
-      result:=0
-   else
-       result:= deviceInfo^.input;
-end;
-
-function TMidiInputStream.midiDeviceIsOutput(): CInt;
-begin
-   if deviceInfo = nil then
-      result:=0
-   else
-       result:= deviceInfo^.output;
-end;
-
-function TMidiInputStream.midiDeviceIsOpened(): CInt;
-begin
-   if deviceInfo = nil then
-      result:=0
-   else
-    result:= deviceInfo^.opened;
+  setLength(midiEvent,0);
 end;
 
 
-function TMidiInputStream.setFilter(filters : CInt32 ) : PmError;
+procedure TMidiInputStream.processEvents (midiEvents: array of PmEvent);
+var count:integer;
 begin
-   result:=Pm_SetFilter(midiStream, filters);
-end;
+  // This is just copying the events over so that we have them locally
+  setLength(midiEvent,High(midiEvents)-Low(midiEvents)+1);
+  for count := Low(midiEvents) to High(midiEvents) do
+       midiEvent[count]:=midiEvents[count];
 
-function TMidiInputStream.recordOnlyNotes() : PmError;
-begin
-   result:=setFilter(not PM_FILT_NOTE);
 end;
-// This function delivers a negative error code when it fails, otherwise
-// it indicates the number of events read, which is 0 or a positive integer
-function TMidiInputStream.readEvents(): PmError;
-var ret: CInt;
-begin
-   ret:=Pm_Read(midiStream,@midiEvent[0], 4095 );
-   if ret >= 0 then
-      availableEvents:=ret
-   else
-       availableEvents:=0;
-   result:=ret;
-end;
-
 
 constructor TMidiKeyboardPressedStream.Create;
 
@@ -328,19 +269,16 @@ begin
 
 end;
 
-procedure TMidiKeyboardPressedStream.setMidiDeviceID(id: PmDeviceID);
-begin
-  inherited setMidiDeviceID(id);
-  if isCapturing then
-    recordOnlyNotes();
-
-end;
 
 
-function TMidiKeyboardPressedStream.readEvents(): PmError;
+
+procedure TMidiKeyboardPressedStream.processEvents(midiEvents: array of PmEvent);
 var count: Integer;
+    availableEvents: Integer;
 begin
-   result:=inherited readEvents;
+   inherited processEvents(midiEvents);
+   availableEvents:=High(midiEvent)-Low(midiEvent)+1;
+   ConsoleWriteln('TMidiKeyboardPressedStream callback');
    if availableEvents>0 then
    begin
       for count:=0 to (availableEvents-1) do
@@ -362,6 +300,7 @@ begin
    end;
 
 end;
+
 
 
 // Instantiate the singleton if necessary
