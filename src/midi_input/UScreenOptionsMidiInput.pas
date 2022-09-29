@@ -44,7 +44,9 @@ uses
   sdl2,
   UMidiInputStream,
   UMenuText,
-  PortMidi;
+  PortMidi,
+  UFluidSynth,
+  UMidiTransfer;
 
 
 
@@ -55,7 +57,6 @@ type
 // Tools -> Options -> Beat Tapping in the english version
   TScreenOptionsMidiInput = class(TMenu)
     private
-
        // interaction IDs
       ExitButtonIID: integer;
       MidiDeviceForPlayer: integer;
@@ -179,6 +180,9 @@ end;
 constructor TScreenOptionsMidiInput.Create;
 begin
   inherited Create;
+  createfluidSynthHandler(); // In case it hasn't been created yet
+  fluidSynthHandler.StartAudio();
+  fluidSynthHandler.StartMidi();
   lastEvent.message_:=0;
   lastEvent.timestamp:=0;
   MidiDeviceForPlayer:=0;

@@ -45,11 +45,12 @@ interface
   {$MODE Delphi}
 {$ENDIF}
 
-{$I switches.inc}
+
 
 uses
 
   cthreads,
+
   Classes, pasfluidsynth,sysutils;
 
 
@@ -61,6 +62,7 @@ type
       midiDriver: TFluidSynth.PFluidMidiDriver;
       midiRouter: TFluidSynth.PFluidMidiRouter;
       seq_id: TFluidSynth.fluid_seq_id_t;
+      midi_port_name: PChar;
       constructor Create;
       procedure StartAudio();
       procedure StopAudio();
@@ -70,18 +72,36 @@ type
       function midiIsRunning(): boolean;
     end;
 
+var  // global singleton for the connection to the synthesizer
+  fluidSynthHandler: TFluidsynthHandler;
+
+procedure createfluidSynthHandler();
+
+
 implementation
+
+// Instantiate the singleton if necessary
+procedure createfluidSynthHandler();
+begin
+   if fluidSynthHandler = nil then
+      fluidSynthHandler := TFluidsynthHandler.Create();
+end;
 
  constructor TFluidSynthHandler.Create;
  begin
+   midi_port_name:='fluidsynth_ultrastar_midi_port';
    fluidsynth := TFluidSynth.Create();
    fluidsynth.settings := fluidsynth.new_fluid_settings();
+   // Autoconnect: This would be handy, but it seems to be implemented only  in
+   // the executable, not the library libfluidsynth. So we do that manually
    // Give the midi input port a decent name
-   fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname','fluidsynth_ultrastar_midi_port');
+   fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
    fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',5); // The built-in gain of 1 is really low
    // Create the actual synthesizer instance, the TFluidSynth is already a wrapper in pasfluidsynth
    fluidsynth.synth := fluidsynth.new_fluid_synth(fluidsynth.settings);
+
    fluidsynth.fluid_synth_sfload(fluidsynth.synth, '/Applications/MuseScore 3.app/Contents/Resources/sound/MuseScore_General.sf3', 1);
+   fluidsynth.audioDriver:=nil;
    midiDriver:=nil;
 
  end;
@@ -89,12 +109,12 @@ implementation
 
 function TFluidSynthHandler.audioIsRunning(): boolean;
 begin
-  result:=(fluidsynth.audioDriver=nil);
+  result:=(not (fluidsynth.audioDriver=nil));
 end;
 
 function TFluidSynthHandler.midiIsRunning(): boolean;
 begin
-  result:=(midiDriver=nil);
+  result:=(not (midiDriver=nil));
 end;
 
 
@@ -123,6 +143,7 @@ procedure TFluidSynthHandler.StartMidi;
 begin
   if not midiIsRunning() then
   begin
+
      // The midi router takes midi events and feeds them to the synthesizer
   // This is the default way of doing it:
    midiRouter:=fluidsynth.new_fluid_midi_router(fluidsynth.settings,

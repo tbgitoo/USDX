@@ -262,12 +262,13 @@ uses
   UKeyboardRecording in 'beatNote\UKeyboardRecording.pas',
 
   //------------------------------
-  //Includes -Midi input
+  //Includes Midi input and synthesiging (fluidsynth)
   //------------------------------
 
   UMidiInputStream in 'midi_input\UMidiInputStream.pas',
   pasfluidsynth in 'lib\fluidsynth\pasfluidsynth.pas',
   UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
+  UMidiTransfer in 'midi_input\UMidiTransfer.pas',
 
   //------------------------------
   //Includes - Plugin Support
