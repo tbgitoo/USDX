@@ -62,7 +62,8 @@ type
       MidiDeviceForPlayer: integer;
       SelectMidiDeviceGraphicalNum: integer; // This is a mystery number, but we need it for the slide update
       midiKeyboardStream: TMidiKeyboardPressedStream;
-      midiInputDeviceMessaging: TmidiInputDeviceMessaging; // For sound synthesis
+      midiInputDeviceMessaging: TmidiInputDeviceMessaging; // For reading midi input
+      midiOutputDeviceMessaging: TmidiOutputDeviceMessaging; // For transferring midi to fluidsynth midi port
       isShown: boolean;
     public
       lastEvent: PmEvent;
@@ -197,6 +198,7 @@ begin
   SelectMidiDeviceGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SelectDevice, MidiDeviceForPlayer, midiInputDeviceList.midi_device_names_with_none);
   midiKeyboardStream:=TMidiKeyboardPressedStream.create;
   midiInputDeviceMessaging:=nil;
+  midiOutputDeviceMessaging:=nil;
   AddButton(Theme.OptionsMidiPlay.ButtonExit);
   if (Length(Button[0].Text)=0) then
     AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
@@ -348,10 +350,7 @@ begin
   Result := true;
 end;
 
-procedure testcallback(midiEvents: array of PmEvent; data: TMidiKeyboardPressedStream);
-begin
-  data.processEvents(midiEvents);
-end;
+
 
 procedure TScreenOptionsMidiInput.UpdateMidiStream;
 var
@@ -363,17 +362,29 @@ begin
    lastEvent.timestamp:=0;
    if Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]>=0 then begin
       fluidSynthHandler.StartAudio();
+      fluidSynthHandler.StartMidi();
+
       if not (midiInputDeviceMessaging=nil) then begin
          midiInputDeviceMessaging.stopTransfer;
          midiInputDeviceMessaging.free;
          midiInputDeviceMessaging:=nil;
 
-   end;
 
-      setLength(cb_array,1);
-      setLength(cb_data_array,1);
-      cb_array[0]:=@testcallback;
+
+      end;
+      if midiOutputDeviceMessaging=nil then begin
+        midiOutputDeviceMessaging:=TMidiOutputDeviceMessaging.create(fluidSynthHandler.midi_port_id);
+        // Here we indicate the port of the fluidsynth so that we can transfer
+        // the midi packets fromt he midiInputDeviceMessaging to
+        // fluidSynthHandler via midiOutputDeviceMessaging
+      end;
+
+      setLength(cb_array,2);
+      setLength(cb_data_array,2);
+      cb_array[0]:=@callback_midiKeyboardPressedStream;
+      cb_array[1]:=@callback_midiOutputDeviceMessaging;
       cb_data_array[0]:=midiKeyboardStream;
+      cb_data_array[1]:=midiOutputDeviceMessaging;
       midiInputDeviceMessaging:=TMidiInputDeviceMessaging.create(
           Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected],cb_array,false,cb_data_array);
    end;

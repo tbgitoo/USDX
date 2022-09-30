@@ -107,6 +107,8 @@ procedure createMidiInputDeviceList();
  // global singleton for the TBeatNoteTimerState class
 var midiInputDeviceList : TMidiInputDeviceList;
 
+procedure callback_midiKeyboardPressedStream(midiEvents: array of PmEvent; data: TMidiKeyboardPressedStream);
+
 
 
 implementation
@@ -311,7 +313,10 @@ begin
 end;
 
 
-
+procedure callback_midiKeyboardPressedStream(midiEvents: array of PmEvent; data: TMidiKeyboardPressedStream);
+begin
+  data.processEvents(midiEvents);
+end;
 
 
 

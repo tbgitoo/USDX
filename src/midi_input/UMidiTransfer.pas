@@ -79,9 +79,28 @@ type
 
 
 
+  TMidiOutputDeviceMessaging = class
+  protected
+       ready: boolean; // indicates that everything has been set up succesfully for transferring
+       deviceInfoDestination: PPmDeviceInfo;
+       destination_id: integer;
+       PmidiStreamDestination: PPortMidiStream;
+       midiStreamDestination: PortMidiStream;
+       PmidiEvent: PPmEvent;
+       midiEvent: array[0..4095] of PmEvent; // Buffer for reading midi events
+       availableEvents: Integer;
+       function OpenOutput(id: PmDeviceID): PmError;
+       procedure CloseOutput();
+   public
+
+       constructor create(id_destination: Integer);
+       function writeEvents(): PmError;
+       procedure processEvents (midiEvents: array of PmEvent);
+       destructor destroy(); override;
+  end;
 
 
-
+ procedure callback_midiOutputDeviceMessaging(midiEvents: array of PmEvent; data: TmidiOutputDeviceMessaging);
 
 
 implementation
@@ -129,9 +148,9 @@ begin
    PmidiStreamSource:=@midiStreamSource;
    PmidiEvent:=@midiEvent[0];
 
- last_error:=-100; // No specific error encountered but fails
- Pm_Initialize(); // Just in case this hasn't been done elsewhere
- deviceInfoSource:=Pm_GetDeviceInfo(id_source);
+   last_error:=-100; // No specific error encountered but fails
+   Pm_Initialize(); // Just in case this hasn't been done elsewhere
+   deviceInfoSource:=Pm_GetDeviceInfo(id_source);
    if not (deviceInfoSource = nil) then
    begin
       if (deviceInfoSource^.opened=0) then
@@ -176,6 +195,8 @@ begin
        dynamic_event_array[count]:=midiEvent[count];
     for count := low(callback_array) to high(callback_array) do begin
       f:=callback_array[count];
+      ConsoleWriteLn('callback TransferMessages');
+      ConsoleWriteln(IntToStr(count));
       f(dynamic_event_array,callback_data_array[count]);
     end;
   end;
@@ -213,12 +234,107 @@ end;
 
 destructor TmidiInputDeviceMessaging.destroy();
 begin
+   if running then stopTransfer();
+   if ready then closeInput();
    deviceInfoSource:=nil; // this is handled by portmidi
    PmidiStreamSource:=nil;  // this is handled by portmidi
    PmidiEvent:=nil; // this is a pointer on the array
    callback_data_array:=nil; // This is handled externally
    //midiEvent This is preallocated and should be freed with the object
    inherited;
+end;
+
+
+function TMidiOutputDeviceMessaging.OpenOutput(id: PmDeviceID): PmError;
+ begin
+    result:=Pm_OpenOutput(PmidiStreamDestination, id, nil,4095,nil, nil,0 );
+ end;
+
+procedure TMidiOutputDeviceMessaging.CloseOutput();
+begin
+  Pm_Close(midiStreamDestination);
+  ready:=False;
+end;
+
+constructor TMidiOutputDeviceMessaging.create(id_destination: Integer);
+var
+  count: integer;
+  last_error: PmError;
+begin
+   ready:=false;
+
+
+   deviceInfoDestination:=nil;
+   destination_id:=-1;
+
+
+
+   availableEvents:=0;
+   for count:= 0 to 4095 do
+   begin
+       midiEvent[count].message_:=$00; // initialize buffer to zero
+       midiEvent[count].timestamp:=$00;
+   end;
+   PmidiStreamDestination:=@midiStreamDestination;
+   PmidiEvent:=@midiEvent[0];
+
+   last_error:=-100; // No specific error encountered but fails
+   Pm_Initialize(); // Just in case this hasn't been done elsewhere
+   deviceInfoDestination:=Pm_GetDeviceInfo(id_destination);
+   if not (deviceInfoDestination = nil) then
+   begin
+      if (deviceInfoDestination^.opened=0) then
+         last_error:=OpenOutput(id_destination);
+      if last_error >=0 then // succesfully opened source port
+      begin
+        destination_id:=id_destination;
+        ready:=true;
+      end;
+
+   end;
+end;
+
+// This writes the available events to the output
+function TmidiOutputDeviceMessaging.writeEvents(): PmError;
+begin
+   if ready and (availableEvents>0) then begin
+      result:=Pm_Write(midiStreamDestination,@midiEvent[0], availableEvents );
+      availableEvents:=0;
+   end
+   else
+   begin
+     result:=-1;
+   end;
+end;
+
+
+procedure TmidiOutputDeviceMessaging.processEvents (midiEvents: array of PmEvent);
+var count:integer;
+begin
+  // This is just copying the events over so that we have them locally
+  availableEvents:=High(midiEvents)-Low(midiEvents)+1;
+
+  for count := Low(midiEvents) to High(midiEvents) do
+       midiEvent[count]:=midiEvents[count];
+
+end;
+
+
+destructor TmidiOutputDeviceMessaging.destroy();
+begin
+   if ready then closeOutput();
+   deviceInfoDestination:=nil; // this is handled by portmidi
+   PmidiStreamDestination:=nil;  // this is handled by portmidi
+   PmidiEvent:=nil; // this is a pointer on the array
+   inherited;
+end;
+
+
+procedure callback_midiOutputDeviceMessaging(midiEvents: array of PmEvent; data: TmidiOutputDeviceMessaging);
+begin
+ ConsoleWriteln('callback_midiOutputDeviceMessaging');
+  data.processEvents(midiEvents);
+  data.writeEvents();
 end;
 
 end.
