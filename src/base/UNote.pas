@@ -48,7 +48,8 @@ uses
   UScreenJukebox,
   USong,
   UTime,
-  UBeatNote;
+  UBeatNote,
+  UMidiNote;
 
 type
   PPLayerNote = ^TPlayerNote;
@@ -341,7 +342,10 @@ begin
 
   // make some operations when detecting new voice pitch
   if (LyricsState.CurrentBeatD >= 0) and (LyricsState.OldBeatD <> LyricsState.CurrentBeatD) then
+  begin
     NewBeatDetect(Screen);
+    handleMidiNotes(Screen);  // This is for optional input with a midi keyboard
+  end;
 
   
   // Beat detection is done at every input handling run (about every 40ms at a screen update frequency

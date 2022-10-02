@@ -68,7 +68,8 @@ type
       Genre:      UTF8String;
       Year:       UTF8String;
       Language:   UTF8String;
-      RapBeat:    Boolean; // For now, not parsed, false by definition
+      RapBeat:    Boolean; // rap beat mode for evalution on-beat instead of between beat
+      FreestyleMidi: Boolean; // For inputting freestyle notes via midi
     end;
     CountSentences: Cardinal;
     Sentences: ASentence;

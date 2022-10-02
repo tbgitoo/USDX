@@ -106,7 +106,7 @@ end;
    // the executable, not the library libfluidsynth. So we do that manually
    // Give the midi input port a decent name
    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
-   fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',5); // The built-in gain of 1 is really low
+   fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',1);
    // Create the actual synthesizer instance, the TFluidSynth is already a wrapper in pasfluidsynth
    fluidsynth.synth := fluidsynth.new_fluid_synth(fluidsynth.settings);
 

@@ -59,8 +59,10 @@ type
     private
        // interaction IDs
       ExitButtonIID: integer;
-      MidiDeviceForPlayer: integer;
+      MidiDeviceForPlayer: integer;   // Local variable to hold the device information for the current player
+      SynthesizerForPlayer: integer;
       SelectMidiDeviceGraphicalNum: integer; // This is a mystery number, but we need it for the slide update
+      SelectSynthesizerGraphicalNum: integer;
       midiKeyboardStream: TMidiKeyboardPressedStream;
       midiInputDeviceMessaging: TmidiInputDeviceMessaging; // For reading midi input
       midiOutputDeviceMessaging: TmidiOutputDeviceMessaging; // For transferring midi to fluidsynth midi port
@@ -143,7 +145,7 @@ begin
         end;
       SDLK_RIGHT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 1) then
+          if (SelInteraction >= 0) and (SelInteraction <= 2) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractInc;
@@ -152,6 +154,12 @@ begin
           begin
             Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]:=MidiDeviceForPlayer-1;
           end;
+          if SelInteraction=2 then
+          begin
+            Ini.PlayerMidiSynthesizerOn[Ini.MidiPlayPlayerSelected]:=SynthesizerForPlayer;
+          end;
+
+
           UpdateCalculatedSelectSlides(false);
           // if SelInteraction = 1 then // Player selected, update letters from known map
            //  UpdateLetterSelection();
@@ -159,7 +167,7 @@ begin
         end;
       SDLK_LEFT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 1) then
+          if (SelInteraction >= 0) and (SelInteraction <= 2) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractDec;
@@ -168,9 +176,12 @@ begin
           begin
             Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]:=MidiDeviceForPlayer-1;
           end;
+          if SelInteraction=2 then
+          begin
+            Ini.PlayerMidiSynthesizerOn[Ini.MidiPlayPlayerSelected]:=SynthesizerForPlayer;
+          end;
           UpdateCalculatedSelectSlides(false);
-          //if SelInteraction = 1 then // Player selected, update letters from known map
-          //   UpdateLetterSelection();
+
           if isShown then UpdateMidiStream;
         end;
   end;
@@ -188,14 +199,21 @@ begin
   createfluidSynthHandler(); // In case it hasn't been created yet
   lastEvent.message_:=0;
   lastEvent.timestamp:=0;
-  MidiDeviceForPlayer:=0;
   createMidiInputDeviceList;
+  MidiDeviceForPlayer:=midiInputDeviceList.getIndexInList(Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected])+1;
+  SynthesizerForPlayer:=Ini.PlayerMidiSynthesizerOn[Ini.MidiPlayPlayerSelected];
   LoadFromTheme(Theme.OptionsMidiPlay);
   Theme.OptionsMidiPlay.SelectPlayer.showArrows := true;
   Theme.OptionsMidiPlay.SelectDevice.oneItemOnly := true;
-  Theme.OptionsMidiPlay.SelectDevice.showArrows := true;
+  Theme.OptionsMidiPlay.SelectPlayer.showArrows := true;
+  Theme.OptionsMidiPlay.SynthesizerOnOff.showArrows := true;
+  Theme.OptionsMidiPlay.SynthesizerOnOff.oneItemOnly := true;
+  Theme.OptionsMidiPlay.SynthesizerOnOff.showArrows := true;
   AddSelectSlide(Theme.OptionsMidiPlay.SelectPlayer, Ini.MidiPlayPlayerSelected, IKeyPlayPlayers);
-  SelectMidiDeviceGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SelectDevice, MidiDeviceForPlayer, midiInputDeviceList.midi_device_names_with_none);
+  SelectMidiDeviceGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SelectDevice,
+        MidiDeviceForPlayer, midiInputDeviceList.midi_device_names_with_none);
+  SelectSynthesizerGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SynthesizerOnOff,
+        SynthesizerForPlayer, IMidiPlayOn);
   midiKeyboardStream:=TMidiKeyboardPressedStream.create;
   midiInputDeviceMessaging:=nil;
   midiOutputDeviceMessaging:=nil;
@@ -215,6 +233,10 @@ begin
 
   UpdateSelectSlideOptions(Theme.OptionsMidiPlay.SelectDevice,
       SelectMidiDeviceGraphicalNum,midiInputDeviceList.midi_device_names_with_none,MidiDeviceForPlayer);
+
+  UpdateSelectSlideOptions(Theme.OptionsMidiPlay.SynthesizerOnOff,
+      SelectSynthesizerGraphicalNum,IMidiPlayOn,SynthesizerForPlayer);
+
 
 
 
@@ -379,12 +401,26 @@ begin
         // fluidSynthHandler via midiOutputDeviceMessaging
       end;
 
-      setLength(cb_array,2);
-      setLength(cb_data_array,2);
-      cb_array[0]:=@callback_midiKeyboardPressedStream;
-      cb_array[1]:=@callback_midiOutputDeviceMessaging;
-      cb_data_array[0]:=midiKeyboardStream;
-      cb_data_array[1]:=midiOutputDeviceMessaging;
+      // Whether or not we transmit the midi information to the synthesizer depends on
+      // synthesizer setting for the current player
+      if Ini.PlayerMidiSynthesizerOn[Ini.MidiPlayPlayerSelected]=1 then begin
+         // This is the case where Ultrastar acts as a synthesizer, include synthesizer callback
+         // via the midiOutputDeviceMessaging system which transmits the midi messages
+         // to the midi port of the internal fluidsynth
+          setLength(cb_array,2);
+          setLength(cb_data_array,2);
+          cb_array[0]:=@callback_midiKeyboardPressedStream;
+          cb_array[1]:=@callback_midiOutputDeviceMessaging;
+          cb_data_array[0]:=midiKeyboardStream;
+          cb_data_array[1]:=midiOutputDeviceMessaging;
+      end else begin // no synthesizer, only analysis (for example with midi keyboard playing acoustically)
+          setLength(cb_array,1);
+          setLength(cb_data_array,1);
+          cb_array[0]:=@callback_midiKeyboardPressedStream;
+          cb_data_array[0]:=midiKeyboardStream;
+      end;
+
+
       midiInputDeviceMessaging:=TMidiInputDeviceMessaging.create(
           Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected],cb_array,false,cb_data_array);
    end;
@@ -393,6 +429,8 @@ end;
 procedure TScreenOptionsMidiInput.OnShowFinish;
 begin
    isShown:=true;
+   // BgMusic distracts too much, pause it
+  SoundLib.PauseBgMusic;
    UpdateMidiStream;
    inherited;
 end;
@@ -408,6 +446,10 @@ begin
    isShown:=false;
    inherited;
 end;
+
+
+
+
 
 destructor TScreenOptionsMidiInput.Destroy;
 begin

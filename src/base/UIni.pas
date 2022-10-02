@@ -249,6 +249,7 @@ type
       // Midi playing
       MidiPlayPlayerSelected: integer; // To select keyboard keys for the different  players
       PlayerMidiInputDevice:            array of integer; // Stores the midi input device for each player, -1 if no midi input
+      PlayerMidiSynthesizerOn: array of integer; // 0 for off, 1 for on
 
       // Controller
       Joypad:         integer;
@@ -1796,6 +1797,24 @@ begin
          PlayerMidiInputDevice[I]:=-1;
   end;
 
+  setLength(PlayerMidiSynthesizerOn,High(IKeyPlayPlayers)+1);
+  for I := 0 to High(PlayerKeys) do
+  begin
+
+        PlayerMidiSynthesizerOn[I] :=
+                                 ReadArrayIndex(IMidiPlayOn,
+                                   IniFile, 'MidiInputOn',Format('Player[%d]', [I+1]), IGNORE_INDEX, 'on');
+        if PlayerMidiSynthesizerOn[I]>0 then // This is the index in terms of available devices, but we need the index of the device
+          begin
+             PlayerMidiSynthesizerOn[I]:=1;
+          end else
+          begin
+             PlayerMidiSynthesizerOn[I]:=1;
+          end;
+
+
+  end;
+
 
 
   // Visualizations
@@ -2155,6 +2174,14 @@ begin
            IniFile.WriteString('MidiPlayInputDevice', Format('Player[%d]', [I+1]),
            midiInputDeviceList.getDeviceName(Ini.PlayerMidiInputDevice[I]) );
        end;
+
+    for I:=0 to High(Ini.PlayerMidiSynthesizerOn) do
+      begin
+           IniFile.WriteString('MidiInputOn', Format('Player[%d]', [I+1]),
+           IMidiPlayOn[Ini.PlayerMidiSynthesizerOn[I]] );
+       end;
+
+
 
     // Joypad
     IniFile.WriteString('Controller', 'Joypad', IJoypad[Joypad]);

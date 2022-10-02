@@ -158,7 +158,7 @@ begin
       if last_error >=0 then // succesfully opened source port
       begin
         source_id:=id_source;
-        if readOnlyNotes then recordOnlyNotes();
+        if readOnlyNotes then recordOnlyNotes() else setFilter(PM_FILT_CLOCK or PM_FILT_ACTIVE);
         ready:=true;
       end;
 
@@ -195,8 +195,6 @@ begin
        dynamic_event_array[count]:=midiEvent[count];
     for count := low(callback_array) to high(callback_array) do begin
       f:=callback_array[count];
-      ConsoleWriteLn('callback TransferMessages');
-      ConsoleWriteln(IntToStr(count));
       f(dynamic_event_array,callback_data_array[count]);
     end;
   end;
@@ -315,7 +313,11 @@ begin
   availableEvents:=High(midiEvents)-Low(midiEvents)+1;
 
   for count := Low(midiEvents) to High(midiEvents) do
+  begin
+
        midiEvent[count]:=midiEvents[count];
+
+  end;
 
 end;
 
@@ -332,7 +334,6 @@ end;
 
 procedure callback_midiOutputDeviceMessaging(midiEvents: array of PmEvent; data: TmidiOutputDeviceMessaging);
 begin
- ConsoleWriteln('callback_midiOutputDeviceMessaging');
   data.processEvents(midiEvents);
   data.writeEvents();
 end;

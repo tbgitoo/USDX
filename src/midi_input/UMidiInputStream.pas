@@ -281,19 +281,21 @@ begin
    inherited processEvents(midiEvents);
    availableEvents:=High(midiEvent)-Low(midiEvent)+1;
    ConsoleWriteln('TMidiKeyboardPressedStream callback');
+
    if availableEvents>0 then
    begin
       for count:=0 to (availableEvents-1) do
       begin
+          ConsoleWriteln(IntToStr(Pm_MessageStatus(midiEvent[count].message_)));
           if (Pm_MessageStatus(midiEvent[count].message_)=$81) or
-          ((Pm_MessageStatus(midiEvent[count].message_)=$91) and
+          ((Pm_MessageStatus(midiEvent[count].message_)=$90) and
             (Pm_MessageData2(midiEvent[count].message_)=$00)) then
             begin // Off is either because the key is off ($81) or because the
-               // velocity (aka pressure) is set to 0 for a touch ($91)
+               // velocity (aka pressure) is set to 0 for a touch ($90)
                keyBoardPressed[Pm_MessageData1(midiEvent[count].message_)]:=False;
                // The key is the second byte
             end;
-            if (Pm_MessageStatus(midiEvent[count].message_)=$91) and not
+            if (Pm_MessageStatus(midiEvent[count].message_)=$90) and not
             (Pm_MessageData2(midiEvent[count].message_)=$00) then
             begin
                 keyBoardPressed[Pm_MessageData1(midiEvent[count].message_)]:=True;

@@ -620,7 +620,7 @@ begin
       begin
         with Notes[Count] do
         begin
-          if (NoteType <> ntFreestyle) and ((NoteType <> ntRap) or not CurrentSong.RapBeat) then
+          if ((NoteType <> ntFreestyle) or (CurrentSong.freestyleMidi)) and ((NoteType <> ntRap) or not CurrentSong.RapBeat) then
           begin
             if Ini.EffectSing = 0 then
               // If Golden note Effect of then Change not Color
@@ -892,7 +892,7 @@ begin
       begin
         with Notes[Count] do
         begin
-          if (NoteType <> ntFreestyle) and (NoteType <> ntRap) then
+          if ((NoteType <> ntFreestyle) or (CurrentSong.freestyleMidi)) and (NoteType <> ntRap) then
           begin
             // begin: 14, 20
             // easy: 6, 11

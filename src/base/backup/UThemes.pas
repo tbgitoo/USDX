@@ -2497,6 +2497,7 @@ begin
        ThemeLoadBasic      (OptionsMidiPlay, 'OptionsMidiPlay');
        ThemeLoadSelectSlide(OptionsMidiPlay.SelectPlayer, 'OptionsMidiPlaySelectPlayer');
        ThemeLoadSelectSlide(OptionsMidiPlay.SelectDevice, 'OptionsMidiPlaySelectDevice');
+       ThemeLoadSelectSlide(OptionsMidiPlay.SynthesizerOnOff, 'OptionsMidiPlaySynthesizerOnOff');
        ThemeLoadButton(OptionsMidiPlay.ButtonExit,               'OptionsMidiPlayButtonExit');
 
 

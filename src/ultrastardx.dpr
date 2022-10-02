@@ -269,6 +269,7 @@ uses
   pasfluidsynth in 'lib\fluidsynth\pasfluidsynth.pas',
   UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
   UMidiTransfer in 'midi_input\UMidiTransfer.pas',
+  UMidiNote in 'midi_input\UMidiNote.pas',
 
   //------------------------------
   //Includes - Plugin Support

@@ -159,6 +159,7 @@ type
     BPM:        array of TBPM;
     GAP:        real; // in miliseconds
     RapBeat:    boolean; // rap notes: clapping (true) or standard (false)
+    freestyleMidi: boolean; // Use midi input for playing the freestyle notes
     
     Encoding:   TEncoding;
     PreviewStart: real;   // in seconds
@@ -980,6 +981,7 @@ begin
 
     //Rap beat
     self.RapBeat:=Parser.SongInfo.Header.RapBeat;
+    self.freestyleMidi:=Parser.SongInfo.Header.freestyleMidi;
   end
   else
     Log.LogError('File incomplete or not SingStar XML (A): ' + aFileName.ToNative);
@@ -1203,6 +1205,16 @@ begin
 
         end
         else self.RapBeat:=false;
+
+      end
+      else if (Identifier = 'FREESTYLE') then
+      begin
+        if Value = 'MIDI' then
+        begin
+           self.freestyleMidi:= true;
+
+        end
+        else self.freestyleMidi:=false;
 
       end
 

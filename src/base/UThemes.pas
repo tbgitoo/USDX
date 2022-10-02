@@ -963,6 +963,7 @@ type
     Description: array[0..1] of UTF8String;
     SelectPlayer:           TThemeSelectSlide;
     SelectDevice:        TThemeSelectSlide;
+    SynthesizerOnOff:    TThemeSelectSlide;
     ButtonExit:         TThemeButton;
   end;
 
@@ -2497,6 +2498,7 @@ begin
        ThemeLoadBasic      (OptionsMidiPlay, 'OptionsMidiPlay');
        ThemeLoadSelectSlide(OptionsMidiPlay.SelectPlayer, 'OptionsMidiPlaySelectPlayer');
        ThemeLoadSelectSlide(OptionsMidiPlay.SelectDevice, 'OptionsMidiPlaySelectDevice');
+       ThemeLoadSelectSlide(OptionsMidiPlay.SynthesizerOnOff, 'OptionsMidiPlaySynthesizerOnOff');
        ThemeLoadButton(OptionsMidiPlay.ButtonExit,               'OptionsMidiPlayButtonExit');
 
 
