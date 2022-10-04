@@ -250,7 +250,7 @@ type
       MidiPlayPlayerSelected: integer; // To select keyboard keys for the different  players
       PlayerMidiInputDevice:            array of integer; // Stores the midi input device for each player, -1 if no midi input
       PlayerMidiSynthesizerOn: array of integer; // 0 for off, 1 for on
-
+      PlayerMidiSynthesizerGain: array of integer; // There is a number of presets
       // Controller
       Joypad:         integer;
       Mouse:          integer;
@@ -493,6 +493,7 @@ const
   IKeyPlayLetters: array[0..6] of UTF8String = ('a', 's', 'd', 'f', 'j', 'k', 'l');
 
   IMidiPlayOn:    array[0..1] of UTF8String = ('Off', 'On');
+  IMidiInputGain: array[0..12] of UTF8String = ('-40dB','-30dB','-20dB','-10dB','0dB','+10dB','+20dB','+30dB','+40dB','+50dB','+60dB','+70dB','+80dB');
 
   ILineBonus:     array[0..1] of UTF8String = ('Off', 'On');
   IPartyPopup:    array[0..1] of UTF8String = ('Off', 'On');
@@ -1815,6 +1816,20 @@ begin
 
   end;
 
+  setLength(PlayerMidiSynthesizerGain,High(IKeyPlayPlayers)+1);
+  for I := 0 to High(PlayerKeys) do
+  begin
+
+        PlayerMidiSynthesizerGain[I] :=
+                                 ReadArrayIndex(IMidiInputGain,
+                                   IniFile, 'MidiInputGain',Format('Player[%d]', [I+1]), IGNORE_INDEX, '0dB');
+
+
+
+  end;
+
+
+
 
 
   // Visualizations
@@ -2180,6 +2195,16 @@ begin
            IniFile.WriteString('MidiInputOn', Format('Player[%d]', [I+1]),
            IMidiPlayOn[Ini.PlayerMidiSynthesizerOn[I]] );
        end;
+
+    for I:=0 to High(Ini.PlayerMidiSynthesizerGain) do
+      begin
+           IniFile.WriteString('IniFile', Format('Player[%d]', [I+1]),
+           IMidiInputGain[Ini.PlayerMidiSynthesizerGain[I]] );
+       end;
+
+
+
+
 
 
 

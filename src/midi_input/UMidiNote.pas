@@ -41,11 +41,15 @@ uses
   SysUtils,
   UIni,
   UMidiInputStream,
-  UMidiTransfer;
+  UMidiTransfer,
+  ULyrics;
 
 
 
 type
+
+
+
   TMidiNoteHandler=class
     public
     midiKeyboardStreams: array of TMidiKeyboardPressedStream; // There will be a keyboard recording stream per active player
@@ -54,6 +58,7 @@ type
     constructor Create;
     procedure updateForCurrentPlayers;
     procedure stopMidiHandling(stopFluidSynth: boolean);
+
   end;
 
 
@@ -64,8 +69,10 @@ var midiNoteHandler : TMidiNoteHandler;
 
 
 
-procedure handleMidiNotes(Screen: TScreenSingController); // General handler called at every cycle. This is NewBeatDetect from
+procedure handleMidiNotes(Screen: TScreenSingController; CP: integer); // General handler called at every cycle. This is NewBeatDetect from
 // UNote with adaptation
+
+function noteHit(availableTones: array of integer; actualTone: integer): boolean;
 
 implementation
 
@@ -77,9 +84,191 @@ begin
   if  midiNoteHandler=nil then midiNoteHandler:=TMidiNoteHandler.create;
 end;
 
-procedure handleMidiNotes(Screen: TScreenSingController);
+
+
+procedure handleMidiNotes(Screen: TScreenSingController;CP: integer );
+   var
+       NotesAvailable: array of PLineFragment; // contains the presently playing midi notes
+       TonesAvailable: array of Integer;
+       countNotesAvailable: integer;
+       ActualBeat:          integer;
+       PlayerIndex:         integer;
+       SentenceMin:         integer;
+       SentenceMax:         integer;
+       SentenceDetected:    Integer; // Highest sentence that was already started
+       SentenceIndex:       integer;
+       CurrentLineFragment: PLineFragment;
+       Line: 	       PLine;
+       LineFragmentIndex:   integer;
+       CurrentMidiKeyboardStream: TMidiKeyboardPressedStream;
+       CurrentPlayer:       PPlayer;
+       KeysCurrentlyPlayed: array of integer;
+       countKeysPlayed: integer;
+       countNotesPlayer: integer;
+       countTones: integer;
+       NewNote: boolean;
 begin
-  ConsoleWriteLn('handleMidiNotes');
+
+  setLength(NotesAvailable,0);
+
+  SentenceDetected:=0;
+  countNotesAvailable:=0;
+  if CurrentSong.freestyleMidi then begin // We only do something when the song is configured for this
+    SentenceMin := Tracks[CP].CurrentLine-1;
+    if (SentenceMin < 0) then
+       SentenceMin := 0;
+    SentenceMax := Tracks[CP].CurrentLine;
+    for PlayerIndex := 0 to PlayersPlay-1 do
+    begin
+      if (Ini.PlayerMidiInputDevice[PlayerIndex]>-1) and (Ini.PlayerMidiSynthesizerOn[PlayerIndex]=1) then
+      // also, need midi device and midi device on for the play
+      begin
+         for ActualBeat := LyricsState.OldBeatD+1 to LyricsState.CurrentBeatD do // Newly covered beats
+         // with rapid beats it can happen that we have to treat several beats in a single detection period
+         begin
+           if (not CurrentSong.isDuet) or (PlayerIndex mod 2 = CP) then
+           begin
+              setLength(NotesAvailable,0);
+              SentenceDetected:=0;
+        for SentenceIndex := SentenceMin to SentenceMax do
+        begin
+          Line := @Tracks[CP].Lines[SentenceIndex];
+
+
+          for LineFragmentIndex := 0 to Line.HighNote do
+          begin
+            CurrentLineFragment := @Line.Notes[LineFragmentIndex];
+            // check if line is active and freestyle (for which we analyze midi here
+            if (CurrentLineFragment.StartBeat <= ActualBeat) and
+              (CurrentLineFragment.StartBeat + CurrentLineFragment.Duration-1 >= ActualBeat) and
+              (CurrentLineFragment.NoteType = ntFreestyle) and // If beat mode is on, rap notes are handled separately
+              (CurrentLineFragment.Duration > 0) then                   // and make sure the note length is at least 1
+            begin
+
+              setLength(NotesAvailable, High(NotesAvailable)-Low(NotesAvailable)+2);
+               NotesAvailable[countNotesAvailable]:=CurrentLineFragment;
+               SentenceDetected:= SentenceIndex;
+               countNotesAvailable:=countNotesAvailable+1;
+            end;
+          end;
+
+        end; // Having gone through the sentences (change of notes shown) adjacent to current beat
+        // We should now know all the notes that are supposed to be played on the current beat
+
+        setLength(TonesAvailable,0);
+
+        for countTones:=low(NotesAvailable) to high(NotesAvailable) do begin
+          if (not noteHit(TonesAvailable, NotesAvailable[countTones].Tone)) then
+          begin
+            setLength(TonesAvailable,High(TonesAvailable)-Low(TonesAvailable)+2);
+            TonesAvailable[High(TonesAvailable)]:= NotesAvailable[countTones].Tone;
+          end;
+        end;
+
+
+        CurrentPlayer := @Player[PlayerIndex];
+        CurrentMidiKeyboardStream := midiNoteHandler.midiKeyboardStreams[PlayerIndex];
+        // Here I need to go on, recover the players keyboard state, that is, the keys currently playing
+        //CurrentMidiKeyboardState := AudioInputProcessor.Sound[PlayerIndex];
+        KeysCurrentlyPlayed:=CurrentMidiKeyboardStream.key_currently_pressed();
+
+        // Do the scoring here, we compare NotesAvailable, whish sould be played, to keysCurrentPlayed, which is what is actually
+        // played at present
+
+        // Now we need to see whether we can add the currently played notes to some notes already going on or whether we
+        // need to start a new one for the purpose of drawing the lines played
+
+
+        // check if we have to add a new note or extend the note's length
+        if (SentenceDetected = SentenceMax) then
+        begin
+        for countKeysPlayed:=Low(KeysCurrentlyPlayed) to High(KeysCurrentlyPlayed) do
+        begin
+          newNote:=true;
+          for countNotesPlayer := Low(CurrentPlayer.Note) to High(CurrentPlayer.Note) do
+          begin // Check whether any of
+             if (CurrentPlayer.Note[countNotesPlayer].Tone = KeysCurrentlyPlayed[countKeysPlayed]) and
+                ((CurrentPlayer.Note[countNotesPlayer].Start + CurrentPlayer.Note[countNotesPlayer].Duration) = ActualBeat)
+                then
+                begin
+                  // There is still some cases where we need to start a new note
+                  // first, if a note had been on spot, but is prolonged beyond the end of the actual note
+                  if (CurrentPlayer.Note[countNotesPlayer].Hit) and (not noteHit(TonesAvailable, KeysCurrentlyPlayed[countKeysPlayed]))
+                  then
+                      NewNote := true
+                  else if( not (CurrentPlayer.Note[countNotesPlayer].Hit)) and (noteHit(TonesAvailable, KeysCurrentlyPlayed[countKeysPlayed]))
+                  then
+                      NewNote := true
+                  else // no specific issue, we can continue
+                      NewNote := false;
+                end;
+
+            // Also, if on the tone on which we are a new note starts
+            for LineFragmentIndex := 0 to Line.HighNote do
+            begin
+              if ((Line.Notes[LineFragmentIndex].StartBeat = ActualBeat) and
+                 (Line.Notes[LineFragmentIndex].Tone = CurrentPlayer.Note[countNotesPlayer].Tone)) then
+                NewNote := true;
+            end;
+            // add new note
+            if (not NewNote) then
+            begin
+              // extend note length
+              Inc(CurrentPlayer.Note[countNotesPlayer].Duration);
+              Break;
+            end;
+          end;
+          if newNote then // Could not inscribe key being played into ongoing player notes
+          // so add a new note to the current player's note list
+          begin
+              // new note
+              Inc(CurrentPlayer.LengthNote);
+              Inc(CurrentPlayer.HighNote);
+              SetLength(CurrentPlayer.Note, CurrentPlayer.LengthNote);
+
+              // update the newly added note
+              with CurrentPlayer.Note[CurrentPlayer.HighNote] do
+              begin
+                Start    := ActualBeat;
+                Duration := 1;
+                Tone     := KeysCurrentlyPlayed[countKeysPlayed]; // Tone || ToneAbs
+                //Detect := LyricsState.MidBeat; // Not used!
+                Hit      := noteHit(TonesAvailable, KeysCurrentlyPlayed[countKeysPlayed]);
+                NoteType := ntFreestyle;
+              end;
+          end;
+
+
+
+        end; // End going through the keys being actually played
+
+        end; // End we are in the highest available sentence and actually can add to existing notes
+
+
+
+       end; // end common conditions required
+
+      end; // End loop over the beats to handle
+
+    end; // End loop over the players to be handled
+
+
+
+  end;
+
+  end;
+
+end;
+
+function noteHit(availableTones: array of integer; actualTone: integer): boolean;
+var count : integer;
+begin
+  result:=false;
+  for count:=low(availableTones) to high(availableTones) do
+  begin
+    if actualTone=availableTones[count] then
+      result:=true;
+  end;
 end;
 
 constructor TMidiNoteHandler.create;

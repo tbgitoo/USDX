@@ -86,6 +86,7 @@ TMidiInputStream = class
   end;
 
 
+TIntArray = array of Integer;
 
 
 TMidiKeyboardPressedStream = class(TMidiInputStream)
@@ -94,6 +95,7 @@ TMidiKeyboardPressedStream = class(TMidiInputStream)
     constructor Create;
     procedure ResetKeyBoardPressed;
     procedure processEvents (midiEvents: array of PmEvent);
+    function key_currently_pressed: TIntArray;
 
 end;
 
@@ -280,13 +282,12 @@ var count: Integer;
 begin
    inherited processEvents(midiEvents);
    availableEvents:=High(midiEvent)-Low(midiEvent)+1;
-   ConsoleWriteln('TMidiKeyboardPressedStream callback');
+
 
    if availableEvents>0 then
    begin
       for count:=0 to (availableEvents-1) do
       begin
-          ConsoleWriteln(IntToStr(Pm_MessageStatus(midiEvent[count].message_)));
           if (Pm_MessageStatus(midiEvent[count].message_)=$81) or
           ((Pm_MessageStatus(midiEvent[count].message_)=$90) and
             (Pm_MessageData2(midiEvent[count].message_)=$00)) then
@@ -305,6 +306,20 @@ begin
 
 end;
 
+
+function TMidiKeyboardPressedStream.key_currently_pressed: TIntArray;
+var count : integer;
+begin
+  setLength(result,0);
+  for count:=low(keyBoardPressed) to high(keyBoardPressed) do
+  begin
+     if keyBoardPressed[count] then begin
+        setLength(result,high(result)-low(result)+2); // add an element to the dynamic array
+        result[high(result)]:=count;
+     end;
+  end;
+
+end;
 
 
 // Instantiate the singleton if necessary

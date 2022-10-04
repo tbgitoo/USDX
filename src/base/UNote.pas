@@ -307,6 +307,8 @@ var
   CountGr:    integer;
   TrackIndex: integer;
   PetGr:      integer;
+  MaxCP, CP, SentenceEnd: integer;
+  J: cardinal;
 begin
   LyricsState.UpdateBeats();
 
@@ -344,7 +346,20 @@ begin
   if (LyricsState.CurrentBeatD >= 0) and (LyricsState.OldBeatD <> LyricsState.CurrentBeatD) then
   begin
     NewBeatDetect(Screen);
-    handleMidiNotes(Screen);  // This is for optional input with a midi keyboard
+    MaxCP := 0;
+    if (CurrentSong.isDuet) and (PlayersPlay <> 1) then
+      MaxCP := 1;
+
+    if (assigned(Screen)) then
+    begin
+    for J := 0 to MaxCP do
+    begin
+      CP := J;
+      handleMidiNotes(Screen,CP);  // This is for optional input with a midi keyboard
+    end;
+
+    end;
+
   end;
 
   

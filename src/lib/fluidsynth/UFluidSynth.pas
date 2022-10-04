@@ -71,6 +71,7 @@ type
       procedure StopAudio();
       procedure StartMidi();
       procedure StopMidi();
+      procedure setGain(gain: real);
       function audioIsRunning(): boolean;
       function midiIsRunning(): boolean;
     end;
@@ -79,6 +80,9 @@ var  // global singleton for the connection to the synthesizer
   fluidSynthHandler: TFluidsynthHandler;
 
 procedure createfluidSynthHandler();
+
+
+function getGainFromIniSetting(id_ini: integer): real;
 
 
 implementation
@@ -117,6 +121,24 @@ end;
 
  end;
 
+ function getGainFromIniSetting(id_ini: integer): real;
+ var midiInputGainTable: array[0..12] of real = (0.01,0.0316,0.1,0.316,1,3.16,10,31.6,100,316,1000,3160,10000);
+ begin
+   if id_ini>12 then id_ini:=12;
+   if id_ini<0 then id_ini:=0;
+
+   result:=midiInputGainTable[id_ini];
+ end;
+
+ procedure TFluidSynthHandler.setGain(gain: real);
+ var
+   audioWasRunning:boolean;
+ begin
+    audioWasRunning:=audioIsRunning();
+    StopAudio();
+    fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',gain);
+    if audioWasRunning then startAudio();
+ end;
 
 function TFluidSynthHandler.audioIsRunning(): boolean;
 begin
