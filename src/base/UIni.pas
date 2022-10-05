@@ -493,7 +493,7 @@ const
   IKeyPlayLetters: array[0..6] of UTF8String = ('a', 's', 'd', 'f', 'j', 'k', 'l');
 
   IMidiPlayOn:    array[0..1] of UTF8String = ('Off', 'On');
-  IMidiInputGain: array[0..12] of UTF8String = ('-40dB','-30dB','-20dB','-10dB','0dB','+10dB','+20dB','+30dB','+40dB','+50dB','+60dB','+70dB','+80dB');
+  IMidiInputGain: array[0..4] of UTF8String = ('-20dB','-10dB','0dB','+10dB','+20dB');
 
   ILineBonus:     array[0..1] of UTF8String = ('Off', 'On');
   IPartyPopup:    array[0..1] of UTF8String = ('Off', 'On');

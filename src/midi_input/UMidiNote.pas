@@ -74,17 +74,68 @@ procedure handleMidiNotes(Screen: TScreenSingController; CP: integer); // Genera
 
 function noteHit(availableTones: array of integer; actualTone: integer): boolean;
 
+procedure scoreNotesMidi(TonesAvailable: array of Integer;KeysCurrentlyPlayed: array of Integer;CP: integer);
+
+procedure prepareScoresForMidi;
+
 implementation
 
 uses
-  UNote,UFluidSynth;
+  UNote,UFluidSynth,Math;
 
 procedure createMidiNoteHandler();
 begin
   if  midiNoteHandler=nil then midiNoteHandler:=TMidiNoteHandler.create;
 end;
 
+procedure prepareScoresForMidi;
+var
+    MaxCP:Integer;
+    localScoreFactor: array[TNoteType] of integer = (0, 1, 2, 1, 2);
+    CP: Integer;
+    countLine:integer;
+    countNote:integer;
 
+begin
+
+  localScoreFactor[ntFreestyle]:=scoreFactor[ntFreestyle];
+  localScoreFactor[ntNormal]:=scoreFactor[ntNormal];
+  localScoreFactor[ntGolden]:=scoreFactor[ntGolden];
+  localScoreFactor[ntRap]:=scoreFactor[ntRap];
+  localScoreFactor[ntRapGolden]:=scoreFactor[ntRapGolden];
+
+
+  MaxCP := 0;
+  if (CurrentSong.isDuet) and (PlayersPlay <> 1) then
+    MaxCP := 1;
+    for CP := 0 to MaxCP do begin
+        Tracks[CP].ScoreValue:=0;
+        if CurrentSong.freestyleMidi
+             and (Ini.PlayerMidiInputDevice[CP]>-1)
+             and (Ini.PlayerMidiSynthesizerOn[CP]=1) then begin
+                 localScoreFactor[ntFreestyle] := 1;
+             end else begin
+                 localScoreFactor[ntFreestyle] := 0;
+             end;
+         for countLine:=Low(Tracks[CP].Lines) to High(Tracks[CP].Lines) do begin
+             for countNote:=Low(Tracks[CP].Lines[countLine].Notes) to High (Tracks[CP].Lines[countLine].Notes) do begin
+                Inc(Tracks[CP].ScoreValue, Tracks[CP].Lines[countLine].Notes[countNote].Duration *
+                  localScoreFactor[Tracks[CP].Lines[countLine].Notes[countNote].NoteType]);
+                Inc(Tracks[CP].Lines[countLine].ScoreValue, Tracks[CP].Lines[countLine].Notes[countNote].Duration *
+                  localScoreFactor[Tracks[CP].Lines[countLine].Notes[countNote].NoteType]);
+
+             end;
+
+         end;
+
+
+    end;
+
+
+
+
+
+end;
 
 procedure handleMidiNotes(Screen: TScreenSingController;CP: integer );
    var
@@ -179,6 +230,9 @@ begin
         // need to start a new one for the purpose of drawing the lines played
 
 
+        scoreNotesMidi(TonesAvailable,KeysCurrentlyPlayed,CP);
+
+
         // check if we have to add a new note or extend the note's length
         if (SentenceDetected = SentenceMax) then
         begin
@@ -269,6 +323,50 @@ begin
     if actualTone=availableTones[count] then
       result:=true;
   end;
+end;
+
+procedure scoreNotesMidi(TonesAvailable: array of Integer;KeysCurrentlyPlayed: array of Integer; CP: integer);
+var MaxSongPoints:       integer;
+    CurNotePoints:       real;
+    countCurrentKeysPlayed: integer;
+    nHit,nIncorrect: integer;
+begin
+  if (Ini.LineBonus > 0) then
+                  MaxSongPoints := MAX_SONG_SCORE - MAX_SONG_LINE_BONUS
+                else
+                  MaxSongPoints := MAX_SONG_SCORE;
+
+                // Note: ScoreValue is the sum of all note values of the song
+                // (MaxSongPoints / ScoreValue) is the points that a player
+                // gets for a hit of one beat of a normal note
+                // CurNotePoints is the amount of points that is meassured
+                // for a hit of the note per full beat
+  CurNotePoints := (MaxSongPoints / Tracks[CP].ScoreValue);
+  // There are three types of notes: A)notes played, but missed; B) notes played and scored; C) notes that should have been played but were not.
+  // We only care about A (for substraction) and B (for awarding points)
+  for countCurrentKeysPlayed:=Low(KeysCurrentlyPlayed) to High(KeysCurrentlyPlayed) do
+  begin
+    if noteHit(TonesAvailable, KeysCurrentlyPlayed[countCurrentKeysPlayed]) then
+       Player[CP].Score       := Player[CP].Score       + CurNotePoints
+    else
+       Player[CP].Score       := Player[CP].Score       - 0.5*CurNotePoints;
+
+  end;
+
+  Player[CP].ScoreInt := round(Player[CP].Score / 10) * 10;
+
+  if (Player[CP].ScoreInt < Player[CP].Score) then
+                  //normal score is floored so we have to ceil golden notes score
+                  Player[CP].ScoreGoldenInt := ceil(Player[CP].ScoreGolden / 10) * 10
+  else
+                  //normal score is ceiled so we have to floor golden notes score
+                  Player[CP].ScoreGoldenInt := floor(Player[CP].ScoreGolden / 10) * 10;
+
+
+  Player[CP].ScoreTotalInt := Player[CP].ScoreInt +
+                                               Player[CP].ScoreGoldenInt +
+                                               Player[CP].ScoreLineInt;
+
 end;
 
 constructor TMidiNoteHandler.create;

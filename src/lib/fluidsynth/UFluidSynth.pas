@@ -122,7 +122,7 @@ end;
  end;
 
  function getGainFromIniSetting(id_ini: integer): real;
- var midiInputGainTable: array[0..12] of real = (0.01,0.0316,0.1,0.316,1,3.16,10,31.6,100,316,1000,3160,10000);
+ var midiInputGainTable: array[0..4] of real = (0.1,0.316,1,3.16,10);
  begin
    if id_ini>12 then id_ini:=12;
    if id_ini<0 then id_ini:=0;
