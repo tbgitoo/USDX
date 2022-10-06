@@ -128,7 +128,7 @@ begin
       SDLK_RETURN:
         begin
 
-          if SelInteraction = 4 then
+          if SelInteraction = 5 then
           begin
             Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
@@ -147,7 +147,7 @@ begin
         end;
       SDLK_RIGHT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 3) then
+          if (SelInteraction >= 0) and (SelInteraction <= 4) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractInc;
@@ -165,6 +165,12 @@ begin
             Ini.PlayerMidiSynthesizerGain[Ini.MidiPlayPlayerSelected]:=SynthesizerGainForPlayer;
             fluidSynthHandler.setGain(getGainFromIniSetting(Ini.PlayerMidiSynthesizerGain[Ini.MidiPlayPlayerSelected]));
           end;
+          if SelInteraction=4 then
+          begin
+            Ini.GainFactorAudioPlayback:=IMidiAudioGainValue[Ini.GainFactorAudioPlaybackIndex];
+            SoundLib.PauseBgMusic;
+            SoundLib.StartBgMusic;
+          end;
 
 
 
@@ -176,7 +182,7 @@ begin
         end;
       SDLK_LEFT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 3) then
+          if (SelInteraction >= 0) and (SelInteraction <= 4) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractDec;
@@ -195,7 +201,12 @@ begin
             fluidSynthHandler.setGain(getGainFromIniSetting(Ini.PlayerMidiSynthesizerGain[Ini.MidiPlayPlayerSelected]));
           end;
 
-
+          if SelInteraction=4 then
+          begin
+            Ini.GainFactorAudioPlayback:=IMidiAudioGainValue[Ini.GainFactorAudioPlaybackIndex];
+            SoundLib.PauseBgMusic;
+            SoundLib.StartBgMusic;
+          end;
 
 
           UpdateCalculatedSelectSlides(false);
@@ -236,6 +247,9 @@ begin
   Theme.OptionsMidiPlay.SynthesizerGain.showArrows := true;
   Theme.OptionsMidiPlay.SynthesizerGain.oneItemOnly := true;
   Theme.OptionsMidiPlay.SynthesizerGain.showArrows := true;
+  Theme.OptionsMidiPlay.AudioGain.showArrows := true;
+  Theme.OptionsMidiPlay.AudioGain.oneItemOnly := true;
+  Theme.OptionsMidiPlay.AudioGain.showArrows := true;
 
   AddSelectSlide(Theme.OptionsMidiPlay.SelectPlayer, Ini.MidiPlayPlayerSelected, IKeyPlayPlayers);
   SelectMidiDeviceGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SelectDevice,
@@ -244,6 +258,7 @@ begin
         SynthesizerForPlayer, IMidiPlayOn);
   SelectSynthesizerGainGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SynthesizerGain,
         SynthesizerGainForPlayer, IMidiInputGain);
+  AddSelectSlide(Theme.OptionsMidiPlay.AudioGain, Ini.GainFactorAudioPlaybackIndex, IMidiAudioGain);
   midiKeyboardStream:=TMidiKeyboardPressedStream.create;
   midiInputDeviceMessaging:=nil;
   midiOutputDeviceMessaging:=nil;
@@ -397,7 +412,7 @@ begin
 
   DrawCaptureField(70, 300, 200, 40);
 
-  DrawPiano(70,350,600,100,2,5);
+  DrawPiano(70,380,600,80,2,5);
 
 
 
@@ -461,8 +476,6 @@ end;
 procedure TScreenOptionsMidiInput.OnShowFinish;
 begin
    isShown:=true;
-   // BgMusic distracts too much, pause it
-  SoundLib.PauseBgMusic;
    UpdateMidiStream;
    inherited;
 end;

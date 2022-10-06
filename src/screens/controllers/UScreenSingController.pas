@@ -1298,9 +1298,7 @@ begin
 
   eSongLoaded.CallHookChain(False);
 
-  if CurrentSong.freestyleMidi then begin
-    prepareScoresForMidi;
-  end;
+
 
   if (ScreenSong.Mode = smMedley) and (PlaylistMedley.CurrentMedleySong>1) then
     onShowFinish;

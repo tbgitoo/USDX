@@ -965,6 +965,7 @@ type
     SelectDevice:        TThemeSelectSlide;
     SynthesizerOnOff:    TThemeSelectSlide;
     SynthesizerGain:     TThemeselectSlide;
+    AudioGain:           TThemeselectSlide;
     ButtonExit:         TThemeButton;
   end;
 
@@ -2501,6 +2502,8 @@ begin
        ThemeLoadSelectSlide(OptionsMidiPlay.SelectDevice, 'OptionsMidiPlaySelectDevice');
        ThemeLoadSelectSlide(OptionsMidiPlay.SynthesizerOnOff, 'OptionsMidiPlaySynthesizerOnOff');
        ThemeLoadSelectSlide(OptionsMidiPlay.SynthesizerGain, 'OptionsMidiPlaySynthesizerGain');
+       ThemeLoadSelectSlide(OptionsMidiPlay.AudioGain, 'OptionsMidiAttenuateAudio');
+
        ThemeLoadButton(OptionsMidiPlay.ButtonExit,               'OptionsMidiPlayButtonExit');
 
 

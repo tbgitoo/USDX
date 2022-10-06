@@ -2501,7 +2501,6 @@ begin
        ThemeLoadSelectSlide(OptionsMidiPlay.SelectDevice, 'OptionsMidiPlaySelectDevice');
        ThemeLoadSelectSlide(OptionsMidiPlay.SynthesizerOnOff, 'OptionsMidiPlaySynthesizerOnOff');
        ThemeLoadSelectSlide(OptionsMidiPlay.SynthesizerGain, 'OptionsMidiPlaySynthesizerGain');
-
        ThemeLoadButton(OptionsMidiPlay.ButtonExit,               'OptionsMidiPlayButtonExit');
 
 

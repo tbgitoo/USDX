@@ -64,7 +64,7 @@ type
 
   procedure createMidiNoteHandler();
 
- // global singleton for the TBeatNoteTimerState class
+ // global singleton for the TMidiNoteHandler class
 var midiNoteHandler : TMidiNoteHandler;
 
 
@@ -111,8 +111,7 @@ begin
     for CP := 0 to MaxCP do begin
         Tracks[CP].ScoreValue:=0;
         if CurrentSong.freestyleMidi
-             and (Ini.PlayerMidiInputDevice[CP]>-1)
-             and (Ini.PlayerMidiSynthesizerOn[CP]=1) then begin
+             and (Ini.PlayerMidiInputDevice[CP]>-1) then begin
                  localScoreFactor[ntFreestyle] := 1;
              end else begin
                  localScoreFactor[ntFreestyle] := 0;
@@ -171,7 +170,7 @@ begin
     SentenceMax := Tracks[CP].CurrentLine;
     for PlayerIndex := 0 to PlayersPlay-1 do
     begin
-      if (Ini.PlayerMidiInputDevice[PlayerIndex]>-1) and (Ini.PlayerMidiSynthesizerOn[PlayerIndex]=1) then
+      if (Ini.PlayerMidiInputDevice[PlayerIndex]>-1) then
       // also, need midi device and midi device on for the play
       begin
          for ActualBeat := LyricsState.OldBeatD+1 to LyricsState.CurrentBeatD do // Newly covered beats
@@ -229,8 +228,11 @@ begin
         // Now we need to see whether we can add the currently played notes to some notes already going on or whether we
         // need to start a new one for the purpose of drawing the lines played
 
-
-        scoreNotesMidi(TonesAvailable,KeysCurrentlyPlayed,CP);
+        // We are still within the song, that is it's not the last sentence (aka Line with regards to notes)
+        // and if it is, we are still in the line.
+        // in this case, we need to do scoring
+        if ((not Line.LastLine) or (ActualBeat<=Line.EndBeat)) then
+           scoreNotesMidi(TonesAvailable,KeysCurrentlyPlayed,CP);
 
 
         // check if we have to add a new note or extend the note's length
@@ -349,7 +351,10 @@ begin
     if noteHit(TonesAvailable, KeysCurrentlyPlayed[countCurrentKeysPlayed]) then
        Player[CP].Score       := Player[CP].Score       + CurNotePoints
     else
+       begin
        Player[CP].Score       := Player[CP].Score       - 0.5*CurNotePoints;
+           if Player[CP].Score <0 then Player[CP].Score:=0; // do not go below 0
+       end;
 
   end;
 

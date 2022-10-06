@@ -251,6 +251,8 @@ type
       PlayerMidiInputDevice:            array of integer; // Stores the midi input device for each player, -1 if no midi input
       PlayerMidiSynthesizerOn: array of integer; // 0 for off, 1 for on
       PlayerMidiSynthesizerGain: array of integer; // There is a number of presets
+      GainFactorAudioPlayback: real;
+      GainFactorAudioPlaybackIndex: integer;
       // Controller
       Joypad:         integer;
       Mouse:          integer;
@@ -494,6 +496,8 @@ const
 
   IMidiPlayOn:    array[0..1] of UTF8String = ('Off', 'On');
   IMidiInputGain: array[0..4] of UTF8String = ('-20dB','-10dB','0dB','+10dB','+20dB');
+  IMidiAudioGain: array[0..3] of UTF8String = ('0dB','-20dB','-40dB','-60dB');
+  IMidiAudioGainValue: array[0..3] of real = (1,0.1,0.01,0.001);
 
   ILineBonus:     array[0..1] of UTF8String = ('Off', 'On');
   IPartyPopup:    array[0..1] of UTF8String = ('Off', 'On');
@@ -1828,8 +1832,8 @@ begin
 
   end;
 
-
-
+   GainFactorAudioPlaybackIndex:=ReadArrayIndex(IMidiAudioGain, IniFile, 'MidiPlay', 'MidiAudioAttenuation', IGNORE_INDEX, '0dB');
+   GainFactorAudioPlayback:= IMidiAudioGainValue[GainFactorAudioPlaybackIndex];
 
 
   // Visualizations
@@ -2201,6 +2205,10 @@ begin
            IniFile.WriteString('IniFile', Format('Player[%d]', [I+1]),
            IMidiInputGain[Ini.PlayerMidiSynthesizerGain[I]] );
        end;
+
+    IniFile.WriteString('MidiPlay', 'MidiAudioAttenuation', IMidiAudioGain[GainFactorAudioPlaybackIndex]);
+
+
 
 
 

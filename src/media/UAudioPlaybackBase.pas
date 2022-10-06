@@ -323,19 +323,19 @@ end;
 procedure TAudioPlaybackBase.SetVolume(Volume: single);
 begin
   if assigned(MusicStream) then
-    MusicStream.Volume := Volume;
+    MusicStream.Volume := Volume*Ini.GainFactorAudioPlayback;
 end;
 
 procedure TAudioPlaybackBase.FadeIn(Time: real; TargetVolume: single);
 begin
   if assigned(MusicStream) then
-    MusicStream.FadeIn(Time, TargetVolume);
+    MusicStream.FadeIn(Time, TargetVolume*Ini.GainFactorAudioPlayback);
 end;
 
 procedure TAudioPlaybackBase.Fade(Time: real; TargetVolume: single);
 begin
   if assigned(MusicStream) then
-    MusicStream.Fade(Time, TargetVolume);
+    MusicStream.Fade(Time, TargetVolume*Ini.GainFactorAudioPlayback);
 end;
 
 procedure TAudioPlaybackBase.SetLoop(Enabled: boolean);
@@ -375,8 +375,10 @@ end;
 
 procedure TAudioPlaybackBase.PlaySound(stream: TAudioPlaybackStream);
 begin
-  if assigned(stream) then
+  if assigned(stream) then      begin
+    stream.Volume:=Ini.GainFactorAudioPlayback;
     stream.Play();
+  end;
 end;
 
 procedure TAudioPlaybackBase.StopSound(stream: TAudioPlaybackStream);
