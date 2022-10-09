@@ -253,6 +253,7 @@ type
       PlayerMidiSynthesizerGain: array of integer; // There is a number of presets
       GainFactorAudioPlayback: real;
       GainFactorAudioPlaybackIndex: integer;
+      SoundfontFluidSynth: string;
       // Controller
       Joypad:         integer;
       Mouse:          integer;
@@ -1835,7 +1836,7 @@ begin
    GainFactorAudioPlaybackIndex:=ReadArrayIndex(IMidiAudioGain, IniFile, 'MidiPlay', 'MidiAudioAttenuation', IGNORE_INDEX, '0dB');
    GainFactorAudioPlayback:= IMidiAudioGainValue[GainFactorAudioPlaybackIndex];
 
-
+   SoundfontFluidSynth:='fluidr3_gm.sf2';
   // Visualizations
   // <mog> this could be of use later..
   //  VisualizerOption :=

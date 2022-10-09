@@ -959,6 +959,8 @@ type
     Description: array[0..1] of UTF8String;
   end;
 
+
+
   TThemeOptionsMidiPlay = class(TThemeBasic)
     Description: array[0..1] of UTF8String;
     SelectPlayer:           TThemeSelectSlide;
@@ -966,7 +968,15 @@ type
     SynthesizerOnOff:    TThemeSelectSlide;
     SynthesizerGain:     TThemeselectSlide;
     AudioGain:           TThemeselectSlide;
+    ButtonSoundfont:     TThemeButton;
     ButtonExit:         TThemeButton;
+  end;
+
+  TThemeOptionsSoundfont = class(TThemeBasic)
+    Description: array[0..1] of UTF8String;
+    ButtonPath:         TThemeButton; // Not really an active button, just to hightlight the path
+    ButtonExit:         TThemeButton;
+    SoundfontFile:           TThemeselectSlide;
   end;
 
   TThemeOptionsNetwork = class(TThemeBasic)
@@ -1460,6 +1470,7 @@ type
     OptionsAdvanced:  TThemeOptionsAdvanced;
     OptionsBeatPlay:  TThemeOptionsBeatPlay;
     OptionsMidiPlay: TThemeOptionsMidiPlay;
+    OptionsSoundfont: TThemeOptionsSoundfont;
     OptionsBeatDetect: TThemeOptionsBeatDetect;
     OptionsKeyPlay: TThemeOptionsKeyPlay;
     OptionsNetwork:   TThemeOptionsNetwork;
@@ -1634,6 +1645,7 @@ begin
   OptionsAdvanced := TThemeOptionsAdvanced.Create;
   OptionsBeatPlay := TThemeOptionsBeatPlay.Create;
   OptionsMidiPlay := TThemeOptionsMidiPlay.Create;
+  OptionsSoundfont := TThemeOptionsSoundfont.Create;
   OptionsBeatDetect := TThemeOptionsBeatDetect.Create;
   OptionsKeyPlay := TThemeOptionsKeyPlay.Create;
   OptionsNetwork := TThemeOptionsNetwork.Create;
@@ -2504,8 +2516,18 @@ begin
        ThemeLoadSelectSlide(OptionsMidiPlay.SynthesizerGain, 'OptionsMidiPlaySynthesizerGain');
        ThemeLoadSelectSlide(OptionsMidiPlay.AudioGain, 'OptionsMidiAttenuateAudio');
 
+
+       ThemeLoadButton(OptionsMidiPlay.ButtonSoundfont,          'OptionsMidiPlayButtonSoundFont');
        ThemeLoadButton(OptionsMidiPlay.ButtonExit,               'OptionsMidiPlayButtonExit');
 
+       OptionsMidiPlay.Description[0] := Language.Translate('SING_OPTIONS_CHOOSE_SOUNDFONT');
+       OptionsMidiPlay.Description[1] := '';
+
+       // Choice of soundfont for midi playing
+       ThemeLoadBasic      (OptionsSoundfont, 'OptionsSoundfont');
+       ThemeLoadButton(OptionsSoundfont.ButtonExit,               'OptionsSoundfontButtonExit');
+       ThemeLoadButton(OptionsSoundfont.ButtonPath,               'OptionsSoundfontPath');
+       ThemeLoadSelectSlide(OptionsSoundfont.SoundfontFile, 'OptionsSoundfontFile');
 
       //Options Network
       ThemeLoadBasic(OptionsNetwork, 'OptionsNetwork');

@@ -49,7 +49,7 @@ type
        // that is interested in the midi data. This can really be anything, it's up to
        // the callback to know what to do with this data (pass nil if you don't need this)
   protected
-       ready: boolean; // indicates that everything has been set up succesfully for transferring
+        // indicates that everything has been set up succesfully for transferring
        running: boolean; // indicates that we are actually transferring
        deviceInfoSource: PPmDeviceInfo;
        source_id: integer;
@@ -69,6 +69,7 @@ type
        function recordOnlyNotes() : PmError;
        function setFilter(filters : CInt32 ) : PmError;
    public
+         ready: boolean;
          procedure stopTransfer;
          constructor create(id_source: Integer; callbacks:
            array of TCallbackProc; readOnlyNotes: boolean;callback_data:array of pointer);
@@ -90,9 +91,9 @@ type
        midiEvent: array[0..4095] of PmEvent; // Buffer for reading midi events
        availableEvents: Integer;
        function OpenOutput(id: PmDeviceID): PmError;
-       procedure CloseOutput();
-   public
 
+   public
+       procedure CloseOutput();
        constructor create(id_destination: Integer);
        function writeEvents(): PmError;
        procedure processEvents (midiEvents: array of PmEvent);
@@ -151,15 +152,19 @@ begin
    last_error:=-100; // No specific error encountered but fails
    Pm_Initialize(); // Just in case this hasn't been done elsewhere
    deviceInfoSource:=Pm_GetDeviceInfo(id_source);
+
    if not (deviceInfoSource = nil) then
    begin
+
       if (deviceInfoSource^.opened=0) then
          last_error:=OpenInput(id_source);
+
       if last_error >=0 then // succesfully opened source port
       begin
         source_id:=id_source;
         if readOnlyNotes then recordOnlyNotes() else setFilter(PM_FILT_CLOCK or PM_FILT_ACTIVE);
         ready:=true;
+
       end;
 
    end;
@@ -281,8 +286,12 @@ begin
    deviceInfoDestination:=Pm_GetDeviceInfo(id_destination);
    if not (deviceInfoDestination = nil) then
    begin
+
       if (deviceInfoDestination^.opened=0) then
-         last_error:=OpenOutput(id_destination);
+         last_error:=OpenOutput(id_destination)
+      else
+         last_error:=0; // This is not very elegant, but if somebody left the device open
+                         // to write, then we can still use it.
       if last_error >=0 then // succesfully opened source port
       begin
         destination_id:=id_destination;
@@ -295,13 +304,18 @@ end;
 // This writes the available events to the output
 function TmidiOutputDeviceMessaging.writeEvents(): PmError;
 begin
-   if ready and (availableEvents>0) then begin
+   if ready then begin
+
+   if availableEvents>0 then begin
+
       result:=Pm_Write(midiStreamDestination,@midiEvent[0], availableEvents );
       availableEvents:=0;
    end
    else
    begin
      result:=-1;
+   end;
+
    end;
 end;
 

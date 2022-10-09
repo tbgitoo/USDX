@@ -203,7 +203,7 @@ type
      * If UseNativeDelim is set to true, the native path delimiter ('\' on win32)
      * is used. If it is set to false the (more) portable '/' delimiter will used.
      *}
-    function ToUTF8(UseNativeDelim: boolean = true): UTF8String;
+      function ToUTF8(UseNativeDelim: boolean = true): UTF8String;
 
     {**
      * Returns the path as an UTF-16 encoded string.

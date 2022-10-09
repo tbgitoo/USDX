@@ -65,6 +65,7 @@ uses
   UScreenOptionsBeatPlay,
   UScreenOptionsBeatPlayPeakAnalysis,
   UScreenOptionsMidiInput,
+  UScreenOptionsSoundfont,
   UScreenOptionsNetwork,
   UScreenOptionsWebcam,
   UScreenOptionsJukebox,
@@ -165,6 +166,7 @@ var
   ScreenOptionsBeatPlay:   TScreenOptionsBeatPlay;
   ScreenOptionsBeatPlayPeakAnalysis: TScreenOptionsBeatPlayPeakAnalysis;
   ScreenOptionsMidiInput: TScreenOptionsMidiInput;
+  ScreenOptionsSoundfont: TScreenOptionsSoundfont;
   ScreenOptionsNetwork:   TScreenOptionsNetwork;
   ScreenOptionsWebcam:    TScreenOptionsWebcam;
   ScreenOptionsJukebox:   TScreenOptionsJukebox;
@@ -979,6 +981,8 @@ begin
   ScreenOptionsBeatPlayPeakAnalysis :=    TScreenOptionsBeatPlayPeakAnalysis.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsMidiInput')); // Screen for configuring midi input
   ScreenOptionsMidiInput :=    TScreenOptionsMidiInput.Create;
+  SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsSoundfont')); // Screen for configuring midi sound font
+  ScreenOptionsSoundfont :=    TScreenOptionsSoundfont.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsNetwork'));
   ScreenOptionsNetwork :=    TScreenOptionsNetwork.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptionsWebCam'));
@@ -1082,6 +1086,8 @@ begin
   ScreenPartyTournamentWin.Free;
   ScreenStatMain.Free;
   ScreenStatDetail.Free;
+  ScreenOptionsMidiInput.Free;
+  ScreenOptionsSoundfont.Free;
 end;
 
 end.

@@ -254,6 +254,7 @@ type
       PlayerMidiSynthesizerGain: array of integer; // There is a number of presets
       GainFactorAudioPlayback: real;
       GainFactorAudioPlaybackIndex: integer;
+      SoundfontFluidSynth: string;
       // Controller
       Joypad:         integer;
       Mouse:          integer;
@@ -499,7 +500,7 @@ const
 
   IMidiPlayOn:    array[0..1] of UTF8String = ('Off', 'On');
   IMidiInputGain: array[0..4] of UTF8String = ('-20dB','-10dB','0dB','+10dB','+20dB');
-  IMidiAudioGain: array[0..3] of UTF8String = ('0dB',-'20dB','-40dB','-60dB');
+  IMidiAudioGain: array[0..3] of UTF8String = ('0dB','-20dB','-40dB','-60dB');
   IMidiAudioGainValue: array[0..3] of real = (1,0.1,0.01,0.001);
 
   ILineBonus:     array[0..1] of UTF8String = ('Off', 'On');

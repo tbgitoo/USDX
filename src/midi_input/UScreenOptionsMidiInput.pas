@@ -127,13 +127,19 @@ begin
       end;
       SDLK_RETURN:
         begin
-
           if SelInteraction = 5 then
+          begin
+            Ini.Save;
+            FadeTo(@ScreenOptionsSoundfont);
+          end;
+
+          if SelInteraction = 6 then
           begin
             Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
             FadeTo(@ScreenOptionsBeatPlay);
           end;
+
         end;
       SDLK_DOWN:
         begin
@@ -262,8 +268,13 @@ begin
   midiKeyboardStream:=TMidiKeyboardPressedStream.create;
   midiInputDeviceMessaging:=nil;
   midiOutputDeviceMessaging:=nil;
-  AddButton(Theme.OptionsMidiPlay.ButtonExit);
+  AddButton(Theme.OptionsMidiPlay.ButtonSoundfont);
   if (Length(Button[0].Text)=0) then
+    AddButtonText(20, 5, Theme.OptionsMidiPlay.Description[0]);
+  AddButton(Theme.OptionsMidiPlay.ButtonExit);
+
+
+  if (Length(Button[1].Text)=0) then
     AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
 
   UpdateCalculatedSelectSlides(true); // Calculate dependent slides
@@ -486,6 +497,12 @@ begin
          midiInputDeviceMessaging.stopTransfer;
          midiInputDeviceMessaging.free;
          midiInputDeviceMessaging:=nil;
+
+   end;
+   if not (midiOutputDeviceMessaging=nil) then begin
+         midiOutputDeviceMessaging.closeOutput;
+         midiOutputDeviceMessaging.free;
+         midiOutputDeviceMessaging:=nil;
 
    end;
    isShown:=false;

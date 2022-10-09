@@ -59,6 +59,7 @@ type
     TFluidsynthHandler = class
     protected
       soundFondLoaded: boolean;
+      currentSoundFont: string;
     public
       fluidsynth : TFluidSynth;
       midiDriver: TFluidSynth.PFluidMidiDriver;
@@ -73,7 +74,10 @@ type
       procedure StopMidi();
       procedure setGain(gain: real);
       function audioIsRunning(): boolean;
+      function soundFontIsLoaded(): boolean;
+      function soundFontFile(): string;
       function midiIsRunning(): boolean;
+      procedure updateSoundFontFromIni;
     end;
 
 var  // global singleton for the connection to the synthesizer
@@ -88,7 +92,7 @@ function getGainFromIniSetting(id_ini: integer): real;
 implementation
 
 uses
-  UMidiInputStream, UTextEncoding, UCommon;
+  UMidiInputStream, UTextEncoding, UCommon,UPlatform,UIni,UUnicodeUtils;
 
 // Instantiate the singleton if necessary
 procedure createfluidSynthHandler();
@@ -103,7 +107,7 @@ end;
  constructor TFluidSynthHandler.Create;
  begin
    midi_port_name:='fluidsynth_ultrastar_midi_port';
-   soundFondLoaded:=false;
+
    fluidsynth := TFluidSynth.Create();
    fluidsynth.settings := fluidsynth.new_fluid_settings();
    // Autoconnect: This would be handy, but it seems to be implemented only  in
@@ -118,7 +122,8 @@ end;
    fluidsynth.audioDriver:=nil;
    midiDriver:=nil;
    midi_port_id:=-1;
-
+   currentSoundFont:='';
+   soundFondLoaded:=false;
  end;
 
  function getGainFromIniSetting(id_ini: integer): real;
@@ -150,17 +155,37 @@ begin
   result:=(not (midiDriver=nil));
 end;
 
+procedure TFluidSynthHandler.updateSoundFontFromIni;
+var soundfont_path: AnsiString;
+begin
+  if soundFontIsLoaded() and (UTF8CompareStr(Ini.SoundfontFluidSynth,fluidSynthHandler.soundFontFile())<>0) then
+  begin
+     EncodeStringUTF8(Platform.GetGameSharedPath.Append('soundfonts').Append(Ini.SoundfontFluidSynth).ToUTF8(),
+           soundfont_path,encLocale);   // Convert to non-utf8 string
+        fluidsynth.fluid_synth_sfload(fluidsynth.synth,
+        PChar(soundfont_path), 1); // Type conversion, this has to be PChar
+     currentSoundFont:=Ini.SoundfontFluidSynth;
+  end;
 
+end;
 
 procedure TFluidSynthHandler.StartAudio;
+var soundfont_path: AnsiString;
 begin
   if not audioIsRunning() then
   begin
      if not soundFondLoaded then begin // only load the audiofont when really needed, this
         // takes a while
+
+        //ConsoleWriteln(Platform.GetGameUserPath.ToNative());
+        //
+        EncodeStringUTF8(Platform.GetGameSharedPath.Append('soundfonts').Append(Ini.SoundfontFluidSynth).ToUTF8(),
+           soundfont_path,encLocale);   // Convert to non-utf8 string
         fluidsynth.fluid_synth_sfload(fluidsynth.synth,
-        '/Applications/MuseScore 3.app/Contents/Resources/sound/MuseScore_General.sf3', 1);
+        PChar(soundfont_path), 1); // Type conversion, this has to be PChar
+
         soundFondLoaded:=true;
+        currentSoundFont:=Ini.SoundfontFluidSynth;
      end;
    // This is starts the synthesis thread, which will produce the actual sound
    // So this is more than an instation, it creates a background process
@@ -228,6 +253,18 @@ end;
     end;
   end;
 
+  function TFluidSynthHandler.soundFontIsLoaded(): boolean;
+  begin
+    result:=soundFondLoaded;
+  end;
+
+  function TFluidSynthHandler.soundFontFile(): string;
+  begin
+    if soundFontIsLoaded() then
+       result:=currentSoundFont
+    else
+       result:='';
+  end;
 
 
 end.
