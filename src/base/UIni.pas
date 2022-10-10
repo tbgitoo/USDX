@@ -499,8 +499,8 @@ const
   IMidiPlayOn:    array[0..1] of UTF8String = ('Off', 'On');
   IMidiInputGain: array[0..4] of UTF8String = ('-20dB','-10dB','0dB','+10dB','+20dB');
   IMidiInputGainValue: array[0..4] of real = (0.1,0.32,1,3.2,10);
-  IMidiAudioGain: array[0..6] of UTF8String = ('0dB','-10dB','-20dB','-30dB','-40dB','-50dB','-60dB');
-  IMidiAudioGainValue: array[0..6] of real = (1,0.32,0.1,0.032,0.01,0.0032,0.001);
+  IMidiAudioGain: array[0..6] of UTF8String = ('-60dB','-50dB','-40dB','-30dB','-20dB','-10dB', '0dB');
+  IMidiAudioGainValue: array[0..6] of real = (0.001,0.0032,0.01,0.032,0.1,0.32,1);
 
   ILineBonus:     array[0..1] of UTF8String = ('Off', 'On');
   IPartyPopup:    array[0..1] of UTF8String = ('Off', 'On');
