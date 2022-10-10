@@ -251,7 +251,8 @@ type
       MidiPlayPlayerSelected: integer; // To select keyboard keys for the different  players
       PlayerMidiInputDevice:            array of integer; // Stores the midi input device for each player, -1 if no midi input
       PlayerMidiSynthesizerOn: array of integer; // 0 for off, 1 for on
-      PlayerMidiSynthesizerGain: array of integer; // There is a number of presets
+      MidiSynthesizerGainIndex: integer; // There is a number of presets, these are the indexes
+      MidiSynthesizerGainValue: real; // the synthesizer only has a common gain, there is only one synthesizer
       GainFactorAudioPlayback: real;
       GainFactorAudioPlaybackIndex: integer;
       SoundfontFluidSynth: string;
@@ -500,8 +501,9 @@ const
 
   IMidiPlayOn:    array[0..1] of UTF8String = ('Off', 'On');
   IMidiInputGain: array[0..4] of UTF8String = ('-20dB','-10dB','0dB','+10dB','+20dB');
-  IMidiAudioGain: array[0..3] of UTF8String = ('0dB','-20dB','-40dB','-60dB');
-  IMidiAudioGainValue: array[0..3] of real = (1,0.1,0.01,0.001);
+  IMidiInputGainValue: array[0..4] of real = (0.1,0.32,1,3.2,10);
+  IMidiAudioGain: array[0..6] of UTF8String = ('0dB','-10dB','-20dB','-30dB','-40dB','-50dB','-60dB');
+  IMidiAudioGainValue: array[0..6] of real = (1,'.32,0.1,0.032,0.01,0.0032,0.001);
 
   ILineBonus:     array[0..1] of UTF8String = ('Off', 'On');
   IPartyPopup:    array[0..1] of UTF8String = ('Off', 'On');
@@ -1831,21 +1833,14 @@ begin
 
   end;
 
-  setLength(PlayerMidiSynthesizerGain,High(IKeyPlayPlayers)+1);
-  for I := 0 to High(PlayerKeys) do
-  begin
-
-        PlayerMidiSynthesizerGain[I] :=
-                                 ReadArrayIndex(IMidiInputGain,
-                                   IniFile, 'MidiInputGain',Format('Player[%d]', [I+1]), IGNORE_INDEX, '0dB');
-
-
-
-  end;
+  MidiSynthesizerGainIndex:=ReadArrayIndex(IMidiInputGain, IniFile,'MidiPlay', 'SynthesizerGain',2);
+  MidiSynthesizerGainValue:=IMidiInputGainValue[MidiSynthesizerGainIndex];
 
    GainFactorAudioPlaybackIndex:=ReadArrayIndex(IMidiAudioGain, IniFile, 'MidiPlay', 'MidiAudioAttenuation', IGNORE_INDEX, '0dB');
    GainFactorAudioPlayback:= IMidiAudioGainValue[GainFactorAudioPlaybackIndex];
 
+
+   SoundfontFluidSynth:=IniFile.ReadString('MidiPlay', 'Soundfont', 'HL4MGM.sf2');
 
   // Visualizations
   // <mog> this could be of use later..
@@ -2213,14 +2208,13 @@ begin
            IniFile.WriteString('MidiInputOn', Format('Player[%d]', [I+1]),
            IMidiPlayOn[Ini.PlayerMidiSynthesizerOn[I]] );
        end;
+    IniFile.WriteString('MidiPlay', 'SynthesizerGain', IMidiInputGain[MidiSynthesizerGainIndex]);
 
-    for I:=0 to High(Ini.PlayerMidiSynthesizerGain) do
-      begin
-           IniFile.WriteString('IniFile', Format('Player[%d]', [I+1]),
-           IMidiInputGain[Ini.PlayerMidiSynthesizerGain[I]] );
-       end;
+
 
     IniFile.WriteString('MidiPlay', 'MidiAudioAttenuation', IMidiAudioGain[GainFactorAudioPlaybackIndex]);
+    IniFile.WriteString('MidiPlay', 'Soundfont', SoundfontFluidSynth);
+
 
 
 

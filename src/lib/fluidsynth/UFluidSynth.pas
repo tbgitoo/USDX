@@ -78,6 +78,7 @@ type
       function soundFontFile(): string;
       function midiIsRunning(): boolean;
       procedure updateSoundFontFromIni;
+      procedure setGainFromIni();
     end;
 
 var  // global singleton for the connection to the synthesizer
@@ -86,7 +87,7 @@ var  // global singleton for the connection to the synthesizer
 procedure createfluidSynthHandler();
 
 
-function getGainFromIniSetting(id_ini: integer): real;
+
 
 
 implementation
@@ -114,7 +115,7 @@ end;
    // the executable, not the library libfluidsynth. So we do that manually
    // Give the midi input port a decent name
    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
-   fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',1);
+   fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',Ini.MidiSynthesizerGainValue);
    // Create the actual synthesizer instance, the TFluidSynth is already a wrapper in pasfluidsynth
    fluidsynth.synth := fluidsynth.new_fluid_synth(fluidsynth.settings);
 
@@ -126,13 +127,11 @@ end;
    soundFondLoaded:=false;
  end;
 
- function getGainFromIniSetting(id_ini: integer): real;
- var midiInputGainTable: array[0..4] of real = (0.1,0.316,1,3.16,10);
- begin
-   if id_ini>12 then id_ini:=12;
-   if id_ini<0 then id_ini:=0;
 
-   result:=midiInputGainTable[id_ini];
+
+ procedure TFluidSynthHandler.setGainFromIni();
+ begin
+   setGain(Ini.MidiSynthesizerGainValue);
  end;
 
  procedure TFluidSynthHandler.setGain(gain: real);

@@ -11,6 +11,11 @@ ffmpeg:
 - many IFDEFS were added to the header to support multiple versions of ffmpeg (starting with end of 2006) and not only one specific version. This is necessary as we cannot control which version is used on linux. We could ship the ffmpeg lib with USDX and link statically but a stripped down ffmpeg is 15MB in size and takes 5 minutes to compile (so static linkage is not a good option).
 - the headers were updated to reflect the changes in the ffmpeg C-headers (http://svn.mplayerhq.hu/ffmpeg/trunk/ and http://svn.mplayerhq.hu/mplayer/trunk/libswscale/)
 
+Fluidsynth:
+- Pascal translation of FluidSynth headers by Kirinn Bunnylin / MoonCore.
+- https://gitlab.com/bunnylin/pasfluidsynth
+
+
 freeimage:
 - inserted by eddie. Some compatibility fixes for platforms different than mac os x.
 - not used anymore

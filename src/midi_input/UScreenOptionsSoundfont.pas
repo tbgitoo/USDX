@@ -368,6 +368,8 @@ begin
 
    end;
 
+   fluidSynthHandler.StopAudio();
+
    inherited;
 end;
 

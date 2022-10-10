@@ -61,7 +61,6 @@ type
       ExitButtonIID: integer;
       MidiDeviceForPlayer: integer;   // Local variable to hold the device information for the current player
       SynthesizerForPlayer: integer;
-      SynthesizerGainForPlayer: integer;
       SelectMidiDeviceGraphicalNum: integer; // This is a mystery number, but we need it for the slide update
       SelectSynthesizerGraphicalNum: integer;
       SelectSynthesizerGainGraphicalNum: integer;
@@ -168,8 +167,8 @@ begin
           end;
           if SelInteraction=3 then
           begin
-            Ini.PlayerMidiSynthesizerGain[Ini.MidiPlayPlayerSelected]:=SynthesizerGainForPlayer;
-            fluidSynthHandler.setGain(getGainFromIniSetting(Ini.PlayerMidiSynthesizerGain[Ini.MidiPlayPlayerSelected]));
+            Ini.MidiSynthesizerGainValue:=IMidiInputGainValue[Ini.MidiSynthesizerGainIndex];
+            fluidSynthHandler.setGainFromIni();
           end;
           if SelInteraction=4 then
           begin
@@ -203,8 +202,8 @@ begin
           end;
           if SelInteraction=3 then
           begin
-            Ini.PlayerMidiSynthesizerGain[Ini.MidiPlayPlayerSelected]:=SynthesizerGainForPlayer;
-            fluidSynthHandler.setGain(getGainFromIniSetting(Ini.PlayerMidiSynthesizerGain[Ini.MidiPlayPlayerSelected]));
+            Ini.MidiSynthesizerGainValue:=IMidiInputGainValue[Ini.MidiSynthesizerGainIndex];
+            fluidSynthHandler.setGainFromIni();
           end;
 
           if SelInteraction=4 then
@@ -237,7 +236,7 @@ begin
   createMidiInputDeviceList;
   MidiDeviceForPlayer:=midiInputDeviceList.getIndexInList(Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected])+1;
   SynthesizerForPlayer:=Ini.PlayerMidiSynthesizerOn[Ini.MidiPlayPlayerSelected];
-  SynthesizerGainForPlayer:=Ini.PlayerMidiSynthesizerGain[Ini.MidiPlayPlayerSelected];
+
 
 
   LoadFromTheme(Theme.OptionsMidiPlay);
@@ -263,7 +262,7 @@ begin
   SelectSynthesizerGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SynthesizerOnOff,
         SynthesizerForPlayer, IMidiPlayOn);
   SelectSynthesizerGainGraphicalNum:=AddSelectSlide(Theme.OptionsMidiPlay.SynthesizerGain,
-        SynthesizerGainForPlayer, IMidiInputGain);
+        Ini.MidiSynthesizerGainIndex, IMidiInputGain);
   AddSelectSlide(Theme.OptionsMidiPlay.AudioGain, Ini.GainFactorAudioPlaybackIndex, IMidiAudioGain);
   midiKeyboardStream:=TMidiKeyboardPressedStream.create;
   midiInputDeviceMessaging:=nil;
@@ -293,8 +292,6 @@ begin
   UpdateSelectSlideOptions(Theme.OptionsMidiPlay.SynthesizerOnOff,
       SelectSynthesizerGraphicalNum,IMidiPlayOn,SynthesizerForPlayer);
 
-  UpdateSelectSlideOptions(Theme.OptionsMidiPlay.SynthesizerGain,
-      SelectSynthesizerGainGraphicalNum,IMidiInputGain,SynthesizerGainForPlayer);
 
 
 
@@ -505,6 +502,7 @@ begin
          midiOutputDeviceMessaging:=nil;
 
    end;
+   fluidSynthHandler.StopAudio();
    isShown:=false;
    inherited;
 end;

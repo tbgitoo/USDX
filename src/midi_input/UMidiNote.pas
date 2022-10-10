@@ -403,6 +403,7 @@ begin
   for count:=Low(midiOutputDeviceMessaging) to High(midiOutputDeviceMessaging) do
   begin
   if not (midiOutputDeviceMessaging[count]=nil) then begin
+         midiOutputDeviceMessaging[count].CloseOutput();
          midiOutputDeviceMessaging[count].free;
          midiOutputDeviceMessaging[count]:=nil;
 
