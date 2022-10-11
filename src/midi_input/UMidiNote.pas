@@ -127,7 +127,6 @@ begin
 
          end;
 
-
     end;
 
 
@@ -233,6 +232,7 @@ begin
         // in this case, we need to do scoring
         if ((not Line.LastLine) or (ActualBeat<=Line.EndBeat)) then
            scoreNotesMidi(TonesAvailable,KeysCurrentlyPlayed,CP);
+
 
 
         // check if we have to add a new note or extend the note's length
@@ -371,6 +371,8 @@ begin
   Player[CP].ScoreTotalInt := Player[CP].ScoreInt +
                                                Player[CP].ScoreGoldenInt +
                                                Player[CP].ScoreLineInt;
+
+
 
 end;
 

@@ -111,9 +111,10 @@ end;
 
    fluidsynth := TFluidSynth.Create();
    fluidsynth.settings := fluidsynth.new_fluid_settings();
-   // Autoconnect: This would be handy, but it seems to be implemented only  in
-   // the executable, not the library libfluidsynth. So we do that manually
-   // Give the midi input port a decent name
+   // For just synthesizing, one could also use autoconnect (although it doesn't seem to work
+   // with libfluidsynth, only the executable), but anyways, we need to treat the midi messages
+   // to get the keys being hit, and so we need to shuffle the midi messages to
+   // fluidsynth AND analyse them.
    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
    fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',Ini.MidiSynthesizerGainValue);
    // Create the actual synthesizer instance, the TFluidSynth is already a wrapper in pasfluidsynth

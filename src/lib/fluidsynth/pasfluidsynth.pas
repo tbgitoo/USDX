@@ -2,6 +2,15 @@ unit pasfluidsynth;
 
 {$mode objfpc}
 
+{$IFDEF LINKOBJECT}
+  {$LINKLIB fluidsynth.o}
+{$ELSE}
+  {$IFDEF Darwin}
+    {$LINKLIB libfluidsynth}
+  {$ENDIF}
+{$ENDIF}
+
+
 interface
 
 // Pascal translation of FluidSynth headers by Kirinn Bunnylin / MoonCore.
@@ -67,6 +76,9 @@ interface
 {$ENDIF}
 
 type TFluidSynth = class
+        protected
+        procedure _GetFunc(dest : pointer; const funcname : ansistring); inline; // Get the pointer to a given fluidsynth function
+        procedure _GetFuncs(); // populate the points to all the fluidsynth functions
 	public
 	const
 	FLUID_OK = 0;
@@ -557,15 +569,17 @@ begin
 	result := lib <> 0;
 end;
 
-constructor TFluidSynth.Create;
-
-	procedure _GetFunc(dest : pointer; const funcname : ansistring); inline;
-	begin
+procedure TFluidSynth._GetFunc(dest : pointer; const funcname : ansistring); inline;
+begin
 		pointer(dest^) := GetProcAddress(lib, funcname);
 		{$ifdef DEBUG}
 		if pointer(dest^) = NIL then writeln('GET FAIL: ',funcname);
 		{$endif}
 	end;
+
+
+
+constructor TFluidSynth.Create;
 
 var libname : ansistring;
 begin
@@ -599,7 +613,24 @@ begin
 	end;
 	status := 'Loaded ' + libname;
 
-	_GetFunc(@delete_fluid_audio_driver, 'delete_fluid_audio_driver');
+        _GetFuncs();
+
+end;
+
+
+
+
+destructor TFluidSynth.Destroy;
+begin
+	if lib <> 0 then FreeLibrary(lib);
+	inherited;
+end;
+
+
+
+procedure TFluidSynth._GetFuncs();
+begin
+        _GetFunc(@delete_fluid_audio_driver, 'delete_fluid_audio_driver');
 	_GetFunc(@delete_fluid_cmd_handler, 'delete_fluid_cmd_handler');
 	_GetFunc(@delete_fluid_event, 'delete_fluid_event');
 	_GetFunc(@delete_fluid_file_renderer, 'delete_fluid_file_renderer');
@@ -809,12 +840,6 @@ begin
 	_GetFunc(@new_fluid_shell, 'new_fluid_shell');
 	_GetFunc(@new_fluid_synth, 'new_fluid_synth');
 
-end;
-
-destructor TFluidSynth.Destroy;
-begin
-	if lib <> 0 then FreeLibrary(lib);
-	inherited;
 end;
 
 end.
