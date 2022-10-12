@@ -230,7 +230,7 @@ begin
         // We are still within the song, that is it's not the last sentence (aka Line with regards to notes)
         // and if it is, we are still in the line.
         // in this case, we need to do scoring
-        if ((not Line.LastLine) or (ActualBeat<=Line.EndBeat)) then
+        if ((not Line.LastLine) or (ActualBeat<Line.EndBeat)) then
            scoreNotesMidi(TonesAvailable,KeysCurrentlyPlayed,CP);
 
 
