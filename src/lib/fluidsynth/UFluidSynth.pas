@@ -130,8 +130,9 @@ end;
  end;
 
  procedure TFluidSynthHandler.sendNotesOff();
+ var noteIndex:Integer;
  begin
-
+   for noteIndex:=0 to 127 do fluidsynth.fluid_synth_noteoff(fluidsynth.synth,0,noteIndex);
  end;
 
 

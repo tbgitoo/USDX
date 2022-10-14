@@ -114,6 +114,7 @@ begin
            end;
 
   if not (fluidSynthHandler=nil) then begin
+    fluidSynthHandler.sendNotesOff();
     fluidSynthHandler.StopAudio();
     fluidSynthHandler.StopMidi();
   end;
@@ -253,10 +254,12 @@ begin
           if SelInteraction=1 then
           begin
             Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]:=MidiDeviceForPlayer-1;
+            stopFluidSynthAndMidi;
           end;
           if SelInteraction=2 then
           begin
             Ini.PlayerMidiSynthesizerOn[Ini.MidiPlayPlayerSelected]:=SynthesizerForPlayer;
+            stopFluidSynthAndMidi;
           end;
           if SelInteraction=3 then
           begin
