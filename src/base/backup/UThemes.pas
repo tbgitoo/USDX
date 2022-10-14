@@ -962,13 +962,15 @@ type
 
 
   TThemeOptionsMidiPlay = class(TThemeBasic)
-    Description: array[0..1] of UTF8String;
+    Description: array[0..2] of UTF8String;
     SelectPlayer:           TThemeSelectSlide;
     SelectDevice:        TThemeSelectSlide;
     SynthesizerOnOff:    TThemeSelectSlide;
     SynthesizerGain:     TThemeselectSlide;
     AudioGain:           TThemeselectSlide;
     ButtonSoundfont:     TThemeButton;
+    ButtonToggleAudio:  TThemeButton;
+    ButtonScanMidi:     TThemeButton;
     ButtonExit:         TThemeButton;
   end;
 
@@ -976,6 +978,7 @@ type
     Description: array[0..1] of UTF8String;
     ButtonPath:         TThemeButton; // Not really an active button, just to hightlight the path
     ButtonExit:         TThemeButton;
+    SoundfontFile:           TThemeselectSlide;
   end;
 
   TThemeOptionsNetwork = class(TThemeBasic)
@@ -2517,10 +2520,12 @@ begin
 
 
        ThemeLoadButton(OptionsMidiPlay.ButtonSoundfont,          'OptionsMidiPlayButtonSoundFont');
+       ThemeLoadButton(OptionsMidiPlay.ButtonToggleAudio,               'OptionsMidiPlayToggleAudio');
        ThemeLoadButton(OptionsMidiPlay.ButtonExit,               'OptionsMidiPlayButtonExit');
 
        OptionsMidiPlay.Description[0] := Language.Translate('SING_OPTIONS_CHOOSE_SOUNDFONT');
-       OptionsMidiPlay.Description[1] := '';
+       OptionsMidiPlay.Description[1] := Language.Translate('SING_OPTIONS_TOGGLE_AUDIO');
+       OptionsMidiPlay.Description[2] := Language.Translate('SING_OPTIONS_SCAN_MIDI_DEVICES');
 
        // Choice of soundfont for midi playing
        ThemeLoadBasic      (OptionsSoundfont, 'OptionsSoundfont');

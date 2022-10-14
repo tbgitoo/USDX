@@ -68,6 +68,7 @@ type
       midiInputDeviceMessaging: TmidiInputDeviceMessaging; // For reading midi input
       midiOutputDeviceMessaging: TmidiOutputDeviceMessaging; // For transferring midi to fluidsynth midi port
       isShown: boolean;
+      bgMusicOn: boolean;
     public
       lastEvent: PmEvent;
       constructor Create; override;
@@ -80,6 +81,7 @@ type
       function  Draw: boolean; override;
       procedure OnShowFinish; override;
       procedure OnHide; override;
+      procedure stopFluidSynthAndMidi;
 
   end;
 
@@ -96,6 +98,27 @@ uses
   UCommon,
   TextGL;
 
+procedure TScreenOptionsMidiInput.stopFluidSynthAndMidi;
+begin
+  if not (midiInputDeviceMessaging=nil) then begin
+               midiInputDeviceMessaging.stopTransfer;
+               midiInputDeviceMessaging.free;
+               midiInputDeviceMessaging:=nil;
+
+           end;
+           if not (midiOutputDeviceMessaging=nil) then begin
+              midiOutputDeviceMessaging.closeOutput;
+              midiOutputDeviceMessaging.free;
+              midiOutputDeviceMessaging:=nil;
+
+           end;
+
+  if not (fluidSynthHandler=nil) then begin
+    fluidSynthHandler.StopAudio();
+    fluidSynthHandler.StopMidi();
+  end;
+
+end;
 
 function TScreenOptionsMidiInput.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
 begin
@@ -125,6 +148,7 @@ begin
         ScreenPopupHelp.ShowPopup();
       end;
       SDLK_RETURN:
+
         begin
           if SelInteraction = 5 then
           begin
@@ -133,6 +157,38 @@ begin
           end;
 
           if SelInteraction = 6 then
+          begin
+            bgMusicOn := not bgMusicOn;
+
+            if bgMusicOn then begin
+               SoundLib.StartBgMusic;  end else begin
+               SoundLib.PauseBgMusic;
+               end;
+          end;
+
+          if SelInteraction = 7 then
+          begin  // For safety, shut down the messaging
+
+           stopFluidSynthAndMidi;
+
+           // Save current ini options
+
+           Ini.Save;
+
+           midiInputDeviceList.scanInputDevices;
+
+           Ini.Load;
+
+           UpdateCalculatedSelectSlides(false);
+
+           if isShown then UpdateMidiStream;
+
+           // With correctly read and device comptable setting, we should be set to
+           // go and the update functions will reset everything
+
+          end;
+
+          if SelInteraction = 8 then
           begin
             Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
@@ -160,10 +216,12 @@ begin
           if SelInteraction=1 then
           begin
             Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected]:=MidiDeviceForPlayer-1;
+            stopFluidSynthAndMidi;
           end;
           if SelInteraction=2 then
           begin
             Ini.PlayerMidiSynthesizerOn[Ini.MidiPlayPlayerSelected]:=SynthesizerForPlayer;
+            stopFluidSynthAndMidi;
           end;
           if SelInteraction=3 then
           begin
@@ -267,17 +325,29 @@ begin
   midiKeyboardStream:=TMidiKeyboardPressedStream.create;
   midiInputDeviceMessaging:=nil;
   midiOutputDeviceMessaging:=nil;
+
   AddButton(Theme.OptionsMidiPlay.ButtonSoundfont);
   if (Length(Button[0].Text)=0) then
     AddButtonText(20, 5, Theme.OptionsMidiPlay.Description[0]);
+
+  AddButton(Theme.OptionsMidiPlay.ButtonToggleAudio);
+  if (Length(Button[1].Text)=0) then
+    AddButtonText(20, 5, Theme.OptionsMidiPlay.Description[1]);
+
+  AddButton(Theme.OptionsMidiPlay.ButtonScanMidi);
+  if (Length(Button[2].Text)=0) then
+    AddButtonText(20, 5, Theme.OptionsMidiPlay.Description[2]);
+
+
   AddButton(Theme.OptionsMidiPlay.ButtonExit);
 
-
-  if (Length(Button[1].Text)=0) then
+  if (Length(Button[3].Text)=0) then
     AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
 
   UpdateCalculatedSelectSlides(true); // Calculate dependent slides
   //UpdateMidiStream;
+
+  bgMusicOn:=true;
   end;
 
 
@@ -478,6 +548,21 @@ begin
 
       midiInputDeviceMessaging:=TMidiInputDeviceMessaging.create(
           Ini.PlayerMidiInputDevice[Ini.MidiPlayPlayerSelected],cb_array,false,cb_data_array);
+   end else begin // Currently selected player has no midi input so stop transfer at all levels if taking place
+        fluidSynthHandler.StopMidi();
+        fluidSynthHandler.StopAudio();
+
+      if not (midiInputDeviceMessaging=nil) then begin
+         midiInputDeviceMessaging.stopTransfer;
+         midiInputDeviceMessaging.free;
+         midiInputDeviceMessaging:=nil;
+     end;
+
+      if not (midiOutputDeviceMessaging=nil) then begin
+        midiOutputDeviceMessaging.free;
+        midiOutputDeviceMessaging:=nil;
+
+      end;
    end;
 end;
 
@@ -485,24 +570,15 @@ procedure TScreenOptionsMidiInput.OnShowFinish;
 begin
    isShown:=true;
    UpdateMidiStream;
+   if bgMusicOn then
+      SoundLib.StartBgMusic else
+      SoundLib.PauseBgMusic;
    inherited;
 end;
 
 procedure TScreenOptionsMidiInput.OnHide;
 begin
-   if not (midiInputDeviceMessaging=nil) then begin
-         midiInputDeviceMessaging.stopTransfer;
-         midiInputDeviceMessaging.free;
-         midiInputDeviceMessaging:=nil;
-
-   end;
-   if not (midiOutputDeviceMessaging=nil) then begin
-         midiOutputDeviceMessaging.closeOutput;
-         midiOutputDeviceMessaging.free;
-         midiOutputDeviceMessaging:=nil;
-
-   end;
-   fluidSynthHandler.StopAudio();
+   stopFluidSynthAndMidi;
    isShown:=false;
    inherited;
 end;
