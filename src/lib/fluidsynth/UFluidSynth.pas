@@ -79,6 +79,7 @@ type
       function midiIsRunning(): boolean;
       procedure updateSoundFontFromIni;
       procedure setGainFromIni();
+      procedure sendNotesOff();
     end;
 
 var  // global singleton for the connection to the synthesizer
@@ -128,6 +129,10 @@ end;
    soundFondLoaded:=false;
  end;
 
+ procedure TFluidSynthHandler.sendNotesOff();
+ begin
+
+ end;
 
 
  procedure TFluidSynthHandler.setGainFromIni();
