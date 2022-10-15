@@ -71,6 +71,7 @@ type
         isLoading: boolean; // If true indicates that we are still doing the loading
       public
         constructor create(handler: TFluidsynthHandler);
+        function soundFontLoading(): boolean;
 
 
       end;
@@ -221,7 +222,7 @@ procedure TFluidSynthHandler.StartAudio;
 begin
   if not audioIsRunning() then
   begin
-     if not soundFondLoaded then begin // only load the audiofont when really needed, this
+     if not soundFontIsLoaded() then begin // only load the audiofont when really needed, this
         // takes a while
 
         //ConsoleWriteln(Platform.GetGameUserPath.ToNative());
@@ -296,6 +297,9 @@ end;
 
   function TFluidSynthHandler.soundFontIsLoaded(): boolean;
   begin
+    if not (soundFontLoader = nil) then
+      if soundFontLoader.soundFontLoading() then
+        soundFontLoader.waitFor();
     result:=soundFondLoaded;
   end;
 
@@ -311,9 +315,7 @@ end;
   begin
     if isLoading then
     begin
-         ConsoleWriteln('Start loading soundfont');
          theHandler.loadSoundFontSynchronous();
-         ConsoleWriteln('Done loading soundfont');
          isLoading:=false;
 
     end;
@@ -326,6 +328,10 @@ end;
      inherited create(false);
   end;
 
+  function TFluidSynthHandler.TAsynchronousSoundFontLoader.soundFontLoading(): boolean;
+  begin
+    result:=isLoading;
+  end;
 
   procedure TFluidSynthHandler.loadSoundFontAsynchronous();
   begin
