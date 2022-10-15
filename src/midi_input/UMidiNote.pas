@@ -335,8 +335,16 @@ procedure scoreNotesMidi(TonesAvailable: array of Integer;KeysCurrentlyPlayed: a
 var MaxSongPoints:       integer;
     CurNotePoints:       real;
     countCurrentKeysPlayed: integer;
-    nHit,nIncorrect: integer;
+    countCurrentNotesAvailable: integer;
+    penaltyWronglyPlayed, penaltyMissed: real;
 begin
+
+  case Ini.PlayerLevel[CP] of
+      0: begin penaltyWronglyPlayed:=0.5; penaltyMissed:=0; end;
+      1: begin penaltyWronglyPlayed:=4; penaltyMissed:=1; end;
+      2: begin penaltyWronglyPlayed:=8; penaltyMissed:=4; end;
+  end;
+
   if (Ini.LineBonus > 0) then
                   MaxSongPoints := MAX_SONG_SCORE - MAX_SONG_LINE_BONUS
                 else
@@ -349,17 +357,25 @@ begin
                 // for a hit of the note per full beat
   CurNotePoints := (MaxSongPoints / Tracks[CP].ScoreValue);
   // There are three types of notes: A)notes played, but missed; B) notes played and scored; C) notes that should have been played but were not.
-  // We only care about A (for substraction) and B (for awarding points)
+  // We first handle the two cases A (for substraction) and B (for awarding points)
   for countCurrentKeysPlayed:=Low(KeysCurrentlyPlayed) to High(KeysCurrentlyPlayed) do
   begin
     if noteHit(TonesAvailable, KeysCurrentlyPlayed[countCurrentKeysPlayed]) then
        Player[CP].Score       := Player[CP].Score       + CurNotePoints
     else
        begin
-       Player[CP].Score       := Player[CP].Score       - 0.5*CurNotePoints;
+       Player[CP].Score       := Player[CP].Score       - penaltyWronglyPlayed*CurNotePoints;
            if Player[CP].Score <0 then Player[CP].Score:=0; // do not go below 0
        end;
 
+  end;
+  // And now we can handle the last case, notes that should have been played but are not
+  for countCurrentNotesAvailable:=Low(TonesAvailable) to High(TonesAvailable) do
+  begin
+    if not noteHit(KeysCurrentlyPlayed,TonesAvailable[countCurrentNotesAvailable]) then begin
+       Player[CP].Score       := Player[CP].Score       - penaltyMissed*CurNotePoints;
+           if Player[CP].Score <0 then Player[CP].Score:=0; // do not go below 0
+    end;
   end;
 
   Player[CP].ScoreInt := round(Player[CP].Score / 10) * 10;
