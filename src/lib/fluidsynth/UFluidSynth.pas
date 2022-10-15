@@ -80,6 +80,7 @@ type
       procedure updateSoundFontFromIni;
       procedure setGainFromIni();
       procedure sendNotesOff();
+      procedure loadSoundFontSynchronous();
     end;
 
 var  // global singleton for the connection to the synthesizer
@@ -167,22 +168,29 @@ begin
   result:=(not (midiDriver=nil));
 end;
 
-procedure TFluidSynthHandler.updateSoundFontFromIni;
-var soundfont_path: AnsiString;
+procedure TFluidSynthHandler.updateSoundFontFromIni; // only reload sound font file name is different
 begin
   if soundFontIsLoaded() and (UTF8CompareStr(Ini.SoundfontFluidSynth,fluidSynthHandler.soundFontFile())<>0) then
   begin
-     EncodeStringUTF8(Platform.GetGameSharedPath.Append('soundfonts').Append(Ini.SoundfontFluidSynth).ToUTF8(),
-           soundfont_path,encLocale);   // Convert to non-utf8 string
-        fluidsynth.fluid_synth_sfload(fluidsynth.synth,
-        PChar(soundfont_path), 1); // Type conversion, this has to be PChar
-     currentSoundFont:=Ini.SoundfontFluidSynth;
+     loadSoundFontSynchronous();
   end;
 
 end;
 
-procedure TFluidSynthHandler.StartAudio;
+procedure TFluidSynthHandler.loadSoundFontSynchronous();  // Forces sound font load, blocking (synchronous, in current thread)
 var soundfont_path: AnsiString;
+begin
+  EncodeStringUTF8(Platform.GetGameSharedPath.Append('soundfonts').Append(Ini.SoundfontFluidSynth).ToUTF8(),
+           soundfont_path,encLocale);   // Convert to non-utf8 string
+  fluidsynth.fluid_synth_sfload(fluidsynth.synth,
+        PChar(soundfont_path), 1); // Type conversion, this has to be PChar
+
+  soundFondLoaded:=true;
+  currentSoundFont:=Ini.SoundfontFluidSynth;
+
+end;
+
+procedure TFluidSynthHandler.StartAudio;
 begin
   if not audioIsRunning() then
   begin
@@ -191,13 +199,7 @@ begin
 
         //ConsoleWriteln(Platform.GetGameUserPath.ToNative());
         //
-        EncodeStringUTF8(Platform.GetGameSharedPath.Append('soundfonts').Append(Ini.SoundfontFluidSynth).ToUTF8(),
-           soundfont_path,encLocale);   // Convert to non-utf8 string
-        fluidsynth.fluid_synth_sfload(fluidsynth.synth,
-        PChar(soundfont_path), 1); // Type conversion, this has to be PChar
-
-        soundFondLoaded:=true;
-        currentSoundFont:=Ini.SoundfontFluidSynth;
+        loadSoundFontSynchronous();
      end;
    // This is starts the synthesis thread, which will produce the actual sound
    // So this is more than an instation, it creates a background process
