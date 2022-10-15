@@ -114,8 +114,8 @@ begin
            end;
 
   if not (fluidSynthHandler=nil) then begin
-    fluidSynthHandler.sendNotesOff();
     fluidSynthHandler.StopAudio();
+    fluidSynthHandler.sendNotesOff();
     fluidSynthHandler.StopMidi();
   end;
 

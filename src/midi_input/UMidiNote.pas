@@ -413,6 +413,7 @@ begin
    end;
    if stopFluidSynth then begin
      fluidSynthHandler.StopMidi();
+     fluidSynthHandler.sendNotesOff();
      fluidSynthHandler.StopAudio();
    end;
 
