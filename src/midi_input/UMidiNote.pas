@@ -413,8 +413,8 @@ begin
    end;
    if stopFluidSynth then begin
      fluidSynthHandler.StopMidi();
-     fluidSynthHandler.sendNotesOff();
      fluidSynthHandler.StopAudio();
+     fluidSynthHandler.sendNotesOff();
    end;
 
    setLength(midiInputDeviceMessaging,0);

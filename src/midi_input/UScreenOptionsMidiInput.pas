@@ -115,9 +115,11 @@ begin
 
   if not (fluidSynthHandler=nil) then begin
     fluidSynthHandler.StopAudio();
-    fluidSynthHandler.sendNotesOff();
     fluidSynthHandler.StopMidi();
+    fluidSynthHandler.sendNotesOff();
   end;
+
+  midiKeyboardStream.ResetKeyBoardPressed();
 
 end;
 

@@ -128,11 +128,17 @@ end;
    currentSoundFont:='';
    soundFondLoaded:=false;
  end;
-
+ // Even if the audio is stopped, fluidsynth will keep track of notes played
+ // so to avoid having notes carried over when interrupting audio play,
+ // it is necessary to take precautions and swith all notes off direclty at the
+ // synthesizer
  procedure TFluidSynthHandler.sendNotesOff();
  var noteIndex:Integer;
+     channelIndex:Integer;
  begin
-   for noteIndex:=0 to 127 do fluidsynth.fluid_synth_noteoff(fluidsynth.synth,0,noteIndex);
+   for noteIndex:=0 to 127 do
+     for channelIndex:=0 to 15 do
+       fluidsynth.fluid_synth_noteoff(fluidsynth.synth,channelIndex,noteIndex);
  end;
 
 
