@@ -175,6 +175,7 @@ begin
          for ActualBeat := LyricsState.OldBeatD+1 to LyricsState.CurrentBeatD do // Newly covered beats
          // with rapid beats it can happen that we have to treat several beats in a single detection period
          begin
+           ConsoleWriteln(IntToStr(ActualBeat));
            if (not CurrentSong.isDuet) or (PlayerIndex mod 2 = CP) then
            begin
               setLength(NotesAvailable,0);
@@ -236,17 +237,19 @@ begin
 
 
         // check if we have to add a new note or extend the note's length
-        if (SentenceDetected = SentenceMax) then
+        if (SentenceDetected = SentenceMax) or (SentenceDetected = 0) then // We also want to score when no notes could be detected
         begin
+
         for countKeysPlayed:=Low(KeysCurrentlyPlayed) to High(KeysCurrentlyPlayed) do
         begin
           newNote:=true;
           for countNotesPlayer := Low(CurrentPlayer.Note) to High(CurrentPlayer.Note) do
-          begin // Check whether any of
+          begin // Check whether any of the tones already registered correspond to the ones being play
              if (CurrentPlayer.Note[countNotesPlayer].Tone = KeysCurrentlyPlayed[countKeysPlayed]) and
                 ((CurrentPlayer.Note[countNotesPlayer].Start + CurrentPlayer.Note[countNotesPlayer].Duration) = ActualBeat)
                 then
                 begin
+
                   // There is still some cases where we need to start a new note
                   // first, if a note had been on spot, but is prolonged beyond the end of the actual note
                   if (CurrentPlayer.Note[countNotesPlayer].Hit) and (not noteHit(TonesAvailable, KeysCurrentlyPlayed[countKeysPlayed]))
@@ -266,7 +269,7 @@ begin
                  (Line.Notes[LineFragmentIndex].Tone = CurrentPlayer.Note[countNotesPlayer].Tone)) then
                 NewNote := true;
             end;
-            // add new note
+            // not a add new note
             if (not NewNote) then
             begin
               // extend note length
@@ -274,6 +277,7 @@ begin
               Break;
             end;
           end;
+
           if newNote then // Could not inscribe key being played into ongoing player notes
           // so add a new note to the current player's note list
           begin
