@@ -57,10 +57,30 @@ uses
 
 type
     TFluidsynthHandler = class
-    protected
-      soundFondLoaded: boolean;
-      currentSoundFont: string;
     public
+    type
+      TAsynchronousSoundFontLoader = class(TThread)
+
+      protected
+        theHandler: TFluidsynthHandler;
+        procedure Execute; override;
+
+
+
+        var
+        isLoading: boolean; // If true indicates that we are still doing the loading
+      public
+        constructor create(handler: TFluidsynthHandler);
+
+
+      end;
+    protected
+
+      currentSoundFont: string;
+      soundFontLoader: TAsynchronousSoundFontLoader;
+      soundFondLoaded: boolean;
+
+      public
       fluidsynth : TFluidSynth;
       midiDriver: TFluidSynth.PFluidMidiDriver;
       midiRouter: TFluidSynth.PFluidMidiRouter;
@@ -81,13 +101,19 @@ type
       procedure setGainFromIni();
       procedure sendNotesOff();
       procedure loadSoundFontSynchronous();
+      procedure loadSoundFontAsynchronous();
     end;
+
+
 
 var  // global singleton for the connection to the synthesizer
   fluidSynthHandler: TFluidsynthHandler;
 
 procedure createfluidSynthHandler();
 
+// The idea here is to be able to load soundfonts in the background. This
+// is useful for large soundfonts which otherwise cause a noticeable delay
+// in program startup.
 
 
 
@@ -128,6 +154,7 @@ end;
    midi_port_id:=-1;
    currentSoundFont:='';
    soundFondLoaded:=false;
+   loadSoundFontAsynchronous();
  end;
  // Even if the audio is stopped, fluidsynth will keep track of notes played
  // so to avoid having notes carried over when interrupting audio play,
@@ -278,6 +305,31 @@ end;
        result:=currentSoundFont
     else
        result:='';
+  end;
+
+  procedure TFluidSynthHandler.TAsynchronousSoundFontLoader.Execute;
+  begin
+    if isLoading then
+    begin
+         ConsoleWriteln('Start loading soundfont');
+         theHandler.loadSoundFontSynchronous();
+         ConsoleWriteln('Done loading soundfont');
+         isLoading:=false;
+
+    end;
+  end;
+
+  constructor TFluidSynthHandler.TAsynchronousSoundFontLoader.create(handler: TFluidsynthHandler);
+  begin
+     theHandler:=handler;
+     isLoading:=true;
+     inherited create(false);
+  end;
+
+
+  procedure TFluidSynthHandler.loadSoundFontAsynchronous();
+  begin
+    soundFontLoader:= TAsynchronousSoundFontLoader.create(self);
   end;
 
 
