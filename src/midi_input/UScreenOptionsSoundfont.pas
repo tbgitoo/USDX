@@ -136,6 +136,12 @@ begin
   if (Length(Button[0].Text)=0) then
     AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
 
+  AddButton(Theme.OptionsSoundfont.ButtonToccata  );
+  if (Length(Button[1].Text)=0) then
+    AddButtonText(20, 5, Theme.OptionsSoundfont.Description[0]);
+
+
+
 
   AddButton(Theme.OptionsSoundfont.ButtonPath);
   EncodeStringUTF8(Platform.GetGameSharedPath.Append('soundfonts').ToUTF8(),
@@ -226,6 +232,19 @@ begin
           begin
             Ini.Save;
             FadeTo(@ScreenOptionsMidiInput);
+          end;
+
+          if SelInteraction = 3 then
+          begin
+            ConsoleWriteln('test');
+            if not FluidSynthHandler.isPlayingMidiFile() then begin
+               FluidSynthHandler.playMidiFile('toccata.mid');
+               updateFluidSynthFromIni;
+               fluidSynthHandler.applyTuningFromIni();
+            end
+
+            else
+               FluidSynthHandler.stopMidiFile();
           end;
 
 

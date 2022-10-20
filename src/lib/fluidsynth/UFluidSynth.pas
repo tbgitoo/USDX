@@ -85,7 +85,7 @@ type
 
       end;
     protected
-
+      presentSoundFontID: Integer; // Soundfont id internally to fluidsynth. We need this because we only want one soundfont in memory
       currentSoundFont: string;
       soundFontLoader: TAsynchronousSoundFontLoader;
       soundFondLoaded: boolean;
@@ -117,6 +117,9 @@ type
       procedure loadSoundFontAsynchronous();
       function get_info_for_channel(chan : Integer; out sfont_id : Integer; out bank_num : Integer; out preset_num : Integer): Integer;
       procedure applyTuningFromIni();
+      procedure playMidiFile(filename: UTF8string);
+      procedure stopMidiFile();
+      function isPlayingMidiFile(): boolean;
     end;
 
 
@@ -152,7 +155,7 @@ end;
  constructor TFluidSynthHandler.Create;
  begin
    midi_port_name:='fluidsynth_ultrastar_midi_port';
-
+   presentSoundFontID:=-1;
    fluidsynth := TFluidSynth.Create();
    fluidsynth.settings := fluidsynth.new_fluid_settings();
    // For just synthesizing, one could also use autoconnect (although it doesn't seem to work
@@ -225,12 +228,41 @@ var soundfont_path: AnsiString;
 begin
   EncodeStringUTF8(Platform.GetGameSharedPath.Append('soundfonts').Append(Ini.SoundfontFluidSynth).ToUTF8(),
            soundfont_path,encLocale);   // Convert to non-utf8 string
-  fluidsynth.fluid_synth_sfload(fluidsynth.synth,
+  if soundFondLoaded then begin
+     fluidsynth.fluid_synth_sfunload(fluidsynth.synth,presentSoundFontID,1);
+     soundFondLoaded:=false;
+  end;
+  presentSoundFontID:=fluidsynth.fluid_synth_sfload(fluidsynth.synth,
         PChar(soundfont_path), 1); // Type conversion, this has to be PChar
 
   soundFondLoaded:=true;
   currentSoundFont:=Ini.SoundfontFluidSynth;
 
+end;
+
+procedure TFluidSynthHandler.playMidiFile(filename: UTF8string);
+var midifile_path: AnsiString;
+begin
+  if not (fluidsynth.player=nil) then stopMidiFile();
+  fluidsynth.player := fluidsynth.new_fluid_player(fluidsynth.synth);
+  EncodeStringUTF8(Platform.GetGameSharedPath.Append('sounds').Append(filename).ToUTF8(),
+           midifile_path,encLocale);   // Convert to non-utf8 string
+  fluidsynth.fluid_player_add(fluidsynth.player, PChar(midifile_path));
+  fluidsynth.fluid_player_play(fluidsynth.player);
+end;
+
+procedure TFluidSynthHandler.stopMidiFile();
+begin
+   if not (fluidsynth.player=nil) then begin
+      fluidsynth.fluid_player_stop(fluidsynth.player);
+      fluidsynth.delete_fluid_player(fluidsynth.player);
+      fluidsynth.player:=nil;
+   end;
+end;
+
+function TFluidSynthHandler.isPlayingMidiFile(): boolean;
+begin
+  result:=not (fluidsynth.player=nil);
 end;
 
 procedure TFluidSynthHandler.StartAudio;

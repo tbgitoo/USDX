@@ -977,6 +977,7 @@ type
   TThemeOptionsSoundfont = class(TThemeBasic)
     Description: array[0..1] of UTF8String;
     ButtonPath:         TThemeButton; // Not really an active button, just to hightlight the path
+    ButtonToccata:      TThemeButton;
     ButtonExit:         TThemeButton;
     SoundfontFile:           TThemeselectSlide;
     SoundfontTuning:         TThemeselectSlide;
@@ -2533,8 +2534,11 @@ begin
        ThemeLoadBasic      (OptionsSoundfont, 'OptionsSoundfont');
        ThemeLoadButton(OptionsSoundfont.ButtonExit,               'OptionsSoundfontButtonExit');
        ThemeLoadButton(OptionsSoundfont.ButtonPath,               'OptionsSoundfontPath');
+       ThemeLoadButton(OptionsSoundfont.ButtonToccata,               'OptionsSoundfontButtonToccata');
+
        ThemeLoadSelectSlide(OptionsSoundfont.SoundfontFile, 'OptionsSoundfontFile');
        ThemeLoadSelectSlide(OptionsSoundfont.SoundfontTuning, 'OptionsSoundfontTuning');
+       OptionsSoundfont.Description[0] := Language.Translate('SOUNDFONT_OPTIONS_TOCCATA');
 
       //Options Network
       ThemeLoadBasic(OptionsNetwork, 'OptionsNetwork');
