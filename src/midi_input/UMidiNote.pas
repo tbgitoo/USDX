@@ -175,7 +175,6 @@ begin
          for ActualBeat := LyricsState.OldBeatD+1 to LyricsState.CurrentBeatD do // Newly covered beats
          // with rapid beats it can happen that we have to treat several beats in a single detection period
          begin
-           ConsoleWriteln(IntToStr(ActualBeat));
            if (not CurrentSong.isDuet) or (PlayerIndex mod 2 = CP) then
            begin
               setLength(NotesAvailable,0);
@@ -464,6 +463,7 @@ begin
        begin
           midiKeyboardStreams[count]:=TMidiKeyboardPressedStream.create;
           if (Ini.PlayerMidiSynthesizerOn[count]=1) then begin // Connect the synthesizer
+             fluidSynthHandler.applyTuningFromIni();
              fluidSynthHandler.StartAudio(); // In case this has not been initialized elsewhere
              fluidSynthHandler.StartMidi();
              midiOutputDeviceMessaging[count]:=TMidiOutputDeviceMessaging.create(fluidSynthHandler.midi_port_id);

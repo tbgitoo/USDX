@@ -578,6 +578,7 @@ begin
    if bgMusicOn then
       SoundLib.StartBgMusic else
       SoundLib.PauseBgMusic;
+   fluidSynthHandler.applyTuningFromIni();
    inherited;
 end;
 

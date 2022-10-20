@@ -58,19 +58,21 @@ type
        // interaction IDs
       ExitButtonIID: integer;
       soundfont_index: integer;
+      current_tuning_index: integer;
+
+      soundFontTuningGraphicalNum: integer;
+
       midiInputDeviceMessaging: TmidiInputDeviceMessaging; // For reading midi input
       midiOutputDeviceMessaging: TmidiOutputDeviceMessaging; // For transferring midi to fluidsynth midi port
 
     public
-      availableSoundFontFiles: array of UTF8String;
       constructor Create; override;
       function ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean; override;
-      procedure scanAvailableSoundFontFiles;
       procedure updateFluidSynthFromIni;
       procedure UpdateMidiStream;
       procedure OnShowFinish; override;
       procedure OnHide; override;
-
+      procedure updateTuningSlide;
   end;
 
 
@@ -98,22 +100,35 @@ constructor TScreenOptionsSoundfont.Create;
 var soundfontpath : string;
      firstPart: string;
      secondPart: string;
+     countTuning: integer;
+     countSoundFont: integer;
 begin
   inherited Create;
+
+
+
 
   midiInputDeviceMessaging:=nil; // For reading midi input
   midiOutputDeviceMessaging:=nil;
 
-  soundfont_index:=0;
+  soundfont_index:=Ini.IndexInArray(Ini.SoundfontFluidSynth,Ini.availableSoundFontFiles);
+  current_tuning_index:=Ini.IndexInArray(Ini.TuningForSoundFont[soundfont_index],Ini.availableTunings);
 
   LoadFromTheme(Theme.OptionsSoundfont);
   Theme.OptionsSoundfont.SoundfontFile.showArrows := true;
   Theme.OptionsSoundfont.SoundfontFile.oneItemOnly := true;
   Theme.OptionsSoundfont.SoundfontFile.showArrows := true;
 
-  scanAvailableSoundFontFiles();
 
-  AddSelectSlide(Theme.OptionsSoundfont.SoundfontFile, soundfont_index, availableSoundFontFiles);
+  AddSelectSlide(Theme.OptionsSoundfont.SoundfontFile, soundfont_index, Ini.availableSoundFontFiles);
+
+
+  Theme.OptionsSoundfont.SoundfontTuning.showArrows := true;
+  Theme.OptionsSoundfont.SoundfontTuning.oneItemOnly := true;
+  Theme.OptionsSoundfont.SoundfontTuning.showArrows := true;
+
+  soundFontTuningGraphicalNum:=AddSelectSlide(Theme.OptionsSoundfont.SoundfontTuning, current_tuning_index, Ini.availableTunings);
+
 
   AddButton(Theme.OptionsSoundfont.ButtonExit);
 
@@ -174,34 +189,7 @@ begin
 
 end;
 
-procedure TScreenOptionsSoundfont.scanAvailableSoundFontFiles;
-var
 
-     file_listing: IFileIterator;
-     working_directory: IPath;
-begin
-  working_directory:=FileSystem().GetCurrentDir();
-
-  FileSystem().SetCurrentDir(Platform.GetGameSharedPath.Append('soundfonts'));
-
-  file_listing:=FileSystem().FileFind(Path('*.sf*'),0);
-
-  setLength(availableSoundFontFiles,0);
-
-   while(file_listing.HasNext()) do
-   begin
-      setLength(availableSoundFontFiles,High(availableSoundFontFiles)-Low(availableSoundFontFiles)+2);
-      availableSoundFontFiles[High(availableSoundFontFiles)]:=file_listing.Next().Name.ToUTF8();
-      if UTF8CompareStr(Ini.SoundfontFluidSynth,availableSoundFontFiles[High(availableSoundFontFiles)])=0 then
-        soundfont_index:=High(availableSoundFontFiles);
-   end;
-
-
-
-
-  FileSystem().SetCurrentDir(working_directory); // Reset working directory to what it was before
-
-end;
 
 function TScreenOptionsSoundfont.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
 begin
@@ -234,7 +222,7 @@ begin
       end;
       SDLK_RETURN:
         begin
-          if SelInteraction = 1 then
+          if SelInteraction = 2 then
           begin
             Ini.Save;
             FadeTo(@ScreenOptionsMidiInput);
@@ -256,7 +244,7 @@ begin
       SDLK_RIGHT:
         begin
 
-        if SelInteraction=0 then
+        if (SelInteraction >= 0) and (SelInteraction <= 1) then
         begin
              AudioPlayback.PlaySound(SoundLib.Option);
              InteractInc;
@@ -265,26 +253,47 @@ begin
         if SelInteraction=0 then
           begin
 
-            if length(availableSoundFontFiles)>0 then begin
-               Ini.SoundfontFluidSynth:=availableSoundFontFiles[soundfont_index];
+            if length(Ini.availableSoundFontFiles)>0 then begin
+               Ini.SoundfontFluidSynth:=Ini.availableSoundFontFiles[soundfont_index];
                updateFluidSynthFromIni;
+               current_tuning_index:=Ini.IndexInArray(Ini.TuningForSoundFont[soundfont_index],Ini.availableTunings);
+               updateTuningSlide;
+               fluidSynthHandler.applyTuningFromIni();
             end;
           end;
+
+        if SelInteraction=1 then
+          begin
+             Ini.TuningForSoundFont[soundfont_index]:= Ini.availableTunings[current_tuning_index];
+             fluidSynthHandler.applyTuningFromIni();
+          end;
+
+
 
         end;
       SDLK_LEFT:
         begin
-        if SelInteraction=0 then
+        if (SelInteraction >= 0) and (SelInteraction <= 1) then
         begin
              AudioPlayback.PlaySound(SoundLib.Option);
              InteractDec;
         end;
-           if SelInteraction=0 then
+        if SelInteraction=0 then
           begin
-            if length(availableSoundFontFiles)>0 then begin
-               Ini.SoundfontFluidSynth:=availableSoundFontFiles[soundfont_index];
+            if length(Ini.availableSoundFontFiles)>0 then begin
+               Ini.SoundfontFluidSynth:=Ini.availableSoundFontFiles[soundfont_index];
                updateFluidSynthFromIni;
+                // we have changed soundfont, now we need to update the tuning according to precedent select
+               current_tuning_index:=Ini.IndexInArray(Ini.TuningForSoundFont[soundfont_index],Ini.availableTunings);
+               updateTuningSlide;
+               fluidSynthHandler.applyTuningFromIni();
             end;
+          end;
+
+        if SelInteraction=1 then
+          begin
+             Ini.TuningForSoundFont[soundfont_index]:= Ini.availableTunings[current_tuning_index];
+             fluidSynthHandler.applyTuningFromIni();
           end;
 
         end;
@@ -296,6 +305,13 @@ end;
 
 end;
 
+procedure TScreenOptionsSoundfont.updateTuningSlide;
+begin
+
+  UpdateSelectSlideOptions(Theme.OptionsSoundfont.SoundfontTuning,
+      soundFontTuningGraphicalNum, Ini.availableTunings,current_tuning_index);
+
+end;
 
 procedure TScreenOptionsSoundfont.UpdateMidiStream;
 var
@@ -350,6 +366,7 @@ end;
 procedure TScreenOptionsSoundfont.OnShowFinish;
 begin
    UpdateMidiStream;
+   fluidSynthHandler.applyTuningFromIni();
    inherited;
 end;
 
@@ -372,6 +389,8 @@ begin
 
    inherited;
 end;
+
+
 
 
 

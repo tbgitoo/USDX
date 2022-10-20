@@ -979,6 +979,7 @@ type
     ButtonPath:         TThemeButton; // Not really an active button, just to hightlight the path
     ButtonExit:         TThemeButton;
     SoundfontFile:           TThemeselectSlide;
+    SoundfontTuning:         TThemeselectSlide;
   end;
 
   TThemeOptionsNetwork = class(TThemeBasic)
@@ -2533,6 +2534,7 @@ begin
        ThemeLoadButton(OptionsSoundfont.ButtonExit,               'OptionsSoundfontButtonExit');
        ThemeLoadButton(OptionsSoundfont.ButtonPath,               'OptionsSoundfontPath');
        ThemeLoadSelectSlide(OptionsSoundfont.SoundfontFile, 'OptionsSoundfontFile');
+       ThemeLoadSelectSlide(OptionsSoundfont.SoundfontTuning, 'OptionsSoundfontTuning');
 
       //Options Network
       ThemeLoadBasic(OptionsNetwork, 'OptionsNetwork');

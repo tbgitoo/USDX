@@ -58,6 +58,15 @@ uses
 type
     TFluidsynthHandler = class
     public
+    const
+      Lehman_III: array[0..11] of double =
+        ( 0, -5.865, -3.91, -1.955, -7.82, -1.955, -3.91, -1.955, 0, -5.865, 0, -6 );
+        // For testing: then all notes are equal and even the non-musical ones
+        // can here whether a tuning is applied
+        // (0,-100,-200,-300, -400,-500,-600,-700,-800,-900,-1000,-1100);
+      equal: array[0..11] of double = (0,0,0,0,0,0,0,0,0,0,0,0);
+      availableTunings: array[0..1] of UTF8String=('none (equal)','Lehman III');
+
     type
       TAsynchronousSoundFontLoader = class(TThread)
 
@@ -80,6 +89,9 @@ type
       currentSoundFont: string;
       soundFontLoader: TAsynchronousSoundFontLoader;
       soundFondLoaded: boolean;
+      function getTuningConstantsC(tuningName: UTF8string): PDouble;
+      function convertToCTuningConstants(pitch_in_cents: array of double): PDouble;
+      procedure applyOctaveTuning(tuningName: UTF8string);
 
       public
       fluidsynth : TFluidSynth;
@@ -103,7 +115,10 @@ type
       procedure sendNotesOff();
       procedure loadSoundFontSynchronous();
       procedure loadSoundFontAsynchronous();
+      function get_info_for_channel(chan : Integer; out sfont_id : Integer; out bank_num : Integer; out preset_num : Integer): Integer;
+      procedure applyTuningFromIni();
     end;
+
 
 
 
@@ -225,8 +240,7 @@ begin
      if not soundFontIsLoaded() then begin // only load the audiofont when really needed, this
         // takes a while
 
-        //ConsoleWriteln(Platform.GetGameUserPath.ToNative());
-        //
+
         loadSoundFontSynchronous();
      end;
    // This is starts the synthesis thread, which will produce the actual sound
@@ -338,6 +352,80 @@ end;
     soundFontLoader:= TAsynchronousSoundFontLoader.create(self);
   end;
 
+  function TFluidSynthHandler.get_info_for_channel(chan : Integer; out sfont_id : Integer; out bank_num : Integer; out preset_num : Integer): Integer;
+  begin
+    if not soundFontIsLoaded() then
+    begin
+       sfont_id := -1;
+       bank_num := -1;
+       preset_num := -1;
+       result:=TFluidSynth.FLUID_FAILED;
+       exit;
+    end;
+    result:=fluidsynth.fluid_synth_get_program(fluidsynth.synth,chan,sfont_id,bank_num,preset_num);
+  end;
+
+  function TFluidSynthHandler.getTuningConstantsC(tuningName: UTF8string): PDouble;
+  var count: integer;
+      pitch: array of double;
+  begin
+     setlength(pitch,12);
+     for count:=0 to 11 do
+       pitch[count]:=0; // by default, equal temperament, so zero departure from equal temperament
+     if UTF8CompareStr(tuningName,availableTunings[1])=0 then
+       for count:=0 to 11 do
+           pitch[count]:=Lehman_III[count];
+     result:=convertToCTuningConstants(pitch);
+
+
+  end;
+
+
+
+  function TFluidSynthHandler.convertToCTuningConstants(pitch_in_cents: array of double): PDouble;
+  var
+      pitch_in_cents_12: array of double;
+      count: integer;
+  begin
+    setlength(pitch_in_cents_12,12);
+    result:= @pitch_in_cents_12[0];
+    for count:=0 to 11 do
+       pitch_in_cents_12[count]:=0;
+    for count:=low(pitch_in_cents) to high(pitch_in_cents) do
+     if count<12 then
+         pitch_in_cents_12[count]:=pitch_in_cents[count];
+  end;
+
+  procedure TFluidSynthHandler.applyOctaveTuning(tuningName: UTF8string);
+  var
+      pointer_to_first_note: PDouble;
+      count: integer;
+      sfont_id : Integer;
+      bank_num : Integer;  // this complicated because tuning is technically applied to bank/preset and then selected for a channel
+      preset_num : Integer;
+      channel: Integer;
+  begin
+    if not soundFontIsLoaded() then
+      exit; // We need a soundfont
+
+    pointer_to_first_note:=getTuningConstantsC(tuningName);
+
+    for channel:=0 to 15 do begin
+        if get_info_for_channel(channel,sfont_id,bank_num,preset_num)=TFluidSynth.FLUID_OK then
+        begin
+
+           fluidsynth.fluid_synth_activate_octave_tuning(fluidsynth.synth,bank_num, preset_num,
+              PChar(tuningName), pointer_to_first_note, 1);
+           fluidsynth.fluid_synth_activate_tuning(fluidsynth.synth, channel, bank_num, preset_num,1);
+        end;
+
+    end;
+  end;
+
+  procedure TFluidSynthHandler.applyTuningFromIni();
+  begin
+     applyOctaveTuning(Ini.getCurrentTuning());
+  end;
 
 end.
 

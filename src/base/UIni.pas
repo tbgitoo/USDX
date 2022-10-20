@@ -45,7 +45,8 @@ uses
   UTextEncoding,
   UFilesystem,
   UPath,
-  UMidiInputStream;
+  UMidiInputStream,
+  UFluidSynth;
 
 type
   {**
@@ -132,6 +133,10 @@ type
       procedure LoadPaths(IniFile: TCustomIniFile);
       procedure LoadScreenModes(IniFile: TCustomIniFile);
       procedure LoadWebcamSettings(IniFile: TCustomIniFile);
+
+      procedure LoadSoundfontCfg(IniFile: TCustomIniFile);
+
+
 
     public
       // Players or Teams colors
@@ -255,6 +260,12 @@ type
       GainFactorAudioPlayback: real;
       GainFactorAudioPlaybackIndex: integer;
       SoundfontFluidSynth: string;
+      // This section concerns the choice of tuning, for each soundfont
+      TuningForSoundFont: array of UTF8String; // tuning chosen for each of the soundfonts
+      availableSoundFontFiles: array of UTF8String;
+      availableTunings: array of UTF8String;
+
+
       // Controller
       Joypad:         integer;
       Mouse:          integer;
@@ -358,6 +369,12 @@ type
       function GetResolutionFullscreen(index: integer; out ResolutionString: string): boolean; overload;
 
       procedure ClearCustomResolutions();
+
+      procedure scanAvailableSoundFontFiles();
+
+      function IndexInArray(needle: UTF8String; haystack: array of UTF8String): Integer;
+
+      function getCurrentTuning():string;
 
   end;
 
@@ -639,6 +656,9 @@ var
   IGreen:     array[0..255] of UTF8String;
   IBlue:      array[0..255] of UTF8String;
 
+// Utlity string function to find a string in an array of strings
+
+
 
 implementation
 
@@ -659,6 +679,20 @@ uses
 
 const
   IGNORE_INDEX = -1;
+
+// Utility string function
+function TIni.IndexInArray(needle: UTF8String; haystack: array of UTF8String): Integer;
+  var count:integer;
+  begin
+    result:=-1;
+    if (high(haystack)-low(haystack)+1)>0 then
+    begin
+      result:=0;
+      for count:=low(haystack) to high(haystack) do
+          if UTF8CompareStr(needle,haystack[count])=0 then
+            result:=count;
+    end;
+  end;
 
 (**
  * Translate and set the values of options, which need translation.
@@ -1058,6 +1092,44 @@ begin
   for I:= 1 to 180 do
     IWebcamHue[I + 180]   := '+' + IntToStr(I);
 
+end;
+
+
+procedure TIni.LoadSoundfontCfg(IniFile: TCustomIniFile);
+var countTuning, countSoundFont, tuningIndex: Integer;
+    tuningRead: string;
+begin
+  setlength(availableTunings,High(TFluidSynthHandler.availableTunings)-Low(TFluidSynthHandler.availableTunings)+1);
+  if High(TFluidSynthHandler.availableTunings)-Low(TFluidSynthHandler.availableTunings)+1 > 0 then
+     for countTuning:=0 to High(TFluidSynthHandler.availableTunings)-Low(TFluidSynthHandler.availableTunings) do
+        availableTunings[countTuning]:=TFluidSynthHandler.availableTunings[countTuning+low(TFluidSynthHandler.availableTunings)];
+  scanAvailableSoundFontFiles();
+
+  setlength(TuningForSoundFont,high(availableSoundFontFiles)-low(availableSoundFontFiles)+1);
+  for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
+     TuningForSoundFont[countSoundFont]:=availableTunings[0];
+
+  for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
+  begin
+      tuningRead:=IniFile.ReadString('MidiPlayTuning', availableSoundFontFiles[countSoundFont], availableTunings[0]);
+      tuningIndex:=IndexInArray(tuningRead,availableTunings);
+      if tuningIndex >= 0 then
+         TuningForSoundFont[countSoundFont]:=availableTunings[tuningIndex]
+      else
+         TuningForSoundFont[countSoundFont]:=availableTunings[0];
+  end;
+
+
+
+end;
+
+function TIni.getCurrentTuning():string;
+var indexSoundFont: integer;
+begin
+   indexSoundFont:=IndexInArray(SoundfontFluidSynth,availableSoundFontFiles);
+   if indexSoundFont>(-1) then
+      result:= TuningForSoundFont[indexSoundFont] else
+      result:=availableTunings[0];
 end;
 
 (**
@@ -1600,6 +1672,7 @@ var
   IShowWebScore: array of UTF8String;
   HexColor: string;
   Col: TRGB;
+  soundFontIndex: integer;
 begin
   LoadFontFamilyNames;
   ILyricsFont := FontFamilyNames;
@@ -1832,6 +1905,20 @@ begin
 
    SoundfontFluidSynth:=IniFile.ReadString('MidiPlay', 'Soundfont', 'HL4MGM.sf2');
 
+   LoadSoundfontCfg(IniFile);
+
+   // Sanity check: the chosen soundfont must be in the available files
+   soundFontIndex:=IndexInArray(SoundfontFluidSynth,availableSoundFontFiles);
+
+   // It's either the first or there is a mismatch, in any case, then the first soundfont file found
+   if (soundFontIndex<=0) and (high(availableSoundFontFiles)-low(availableSoundFontFiles) +1 >0) then
+       SoundfontFluidSynth:=availableSoundFontFiles[0];
+
+
+
+
+
+
   // Visualizations
   // <mog> this could be of use later..
   //  VisualizerOption :=
@@ -2005,6 +2092,7 @@ var
   HexColor: string;
   I: integer;
   C: TRGB;
+  countSoundFont: Integer;
 begin
   try
   begin
@@ -2178,22 +2266,22 @@ begin
     IniFile.WriteString('KeyPlay', 'KeyPlayOn', IKeyPlayOn[KeyPlayOn]);
     // Keyboard playing for beats: association between players and keys
 
-    for I:=0 to High(Ini.PlayerKeys) do
+    for I:=0 to High(PlayerKeys) do
       begin
-           IniFile.WriteString('KeyPlay', Format('Player[%d]', [I+1]), IKeyPlayLetters[Ini.PlayerKeys[I]] );
+           IniFile.WriteString('KeyPlay', Format('Player[%d]', [I+1]), IKeyPlayLetters[PlayerKeys[I]] );
        end;
 
     // Midi input
-    for I:=0 to High(Ini.PlayerMidiInputDevice) do
+    for I:=0 to High(PlayerMidiInputDevice) do
       begin
            IniFile.WriteString('MidiPlayInputDevice', Format('Player[%d]', [I+1]),
            midiInputDeviceList.getDeviceName(Ini.PlayerMidiInputDevice[I]) );
        end;
 
-    for I:=0 to High(Ini.PlayerMidiSynthesizerOn) do
+    for I:=0 to High(PlayerMidiSynthesizerOn) do
       begin
            IniFile.WriteString('MidiInputOn', Format('Player[%d]', [I+1]),
-           IMidiPlayOn[Ini.PlayerMidiSynthesizerOn[I]] );
+           IMidiPlayOn[PlayerMidiSynthesizerOn[I]] );
        end;
     IniFile.WriteString('MidiPlay', 'SynthesizerGain', IMidiInputGain[MidiSynthesizerGainIndex]);
 
@@ -2201,6 +2289,10 @@ begin
 
     IniFile.WriteString('MidiPlay', 'MidiAudioAttenuation', IMidiAudioGain[GainFactorAudioPlaybackIndex]);
     IniFile.WriteString('MidiPlay', 'Soundfont', SoundfontFluidSynth);
+
+    for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
+        IniFile.WriteString('MidiPlayTuning',availableSoundFontFiles[countSoundFont] , TuningForSoundFont[countSoundFont]);
+
 
 
 
@@ -2667,6 +2759,33 @@ begin
 
   // update index
   Resolution := GetArrayIndex(IResolution, ResString);
+end;
+
+procedure TIni.scanAvailableSoundFontFiles;
+var
+
+     file_listing: IFileIterator;
+     working_directory: IPath;
+begin
+  working_directory:=FileSystem().GetCurrentDir();
+
+  FileSystem().SetCurrentDir(Platform.GetGameSharedPath.Append('soundfonts'));
+
+  file_listing:=FileSystem().FileFind(Path('*.sf*'),0);
+
+  setLength(availableSoundFontFiles,0);
+
+   while(file_listing.HasNext()) do
+   begin
+      setLength(availableSoundFontFiles,High(availableSoundFontFiles)-Low(availableSoundFontFiles)+2);
+      availableSoundFontFiles[High(availableSoundFontFiles)]:=file_listing.Next().Name.ToUTF8();
+   end;
+
+
+
+
+  FileSystem().SetCurrentDir(working_directory); // Reset working directory to what it was before
+
 end;
 
 end.

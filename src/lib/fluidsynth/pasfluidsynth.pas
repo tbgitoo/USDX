@@ -363,9 +363,12 @@ type TFluidSynth = class
 	fluid_sfont_iteration_start : procedure(sfont : PFluidSoundFont);
 	fluid_sfont_set_data : function(sfont : PFluidSoundFont; data : pointer) : longint;
 	fluid_source : function(handler : PFluidCmdHandler; filename : pchar) : longint;
-	//fluid_synth_activate_key_tuning
-	//fluid_synth_activate_octave_tuning
-	//fluid_synth_activate_tuning
+	//fluid_synth_activate_key_tunings
+        fluid_synth_activate_octave_tuning: function(synth : PFluidSynth; bank, prog: longint;
+                                   name: pchar; pitch: pdouble; apply:longint): longint;
+        fluid_synth_activate_tuning: function(synth : PFluidSynth; chan, bank, prog,apply: longint): longint;
+
+        //fluid_synth_activate_tuning
 	//fluid_synth_add_default_mod
 	fluid_synth_add_sfloader : procedure(synth : PFluidSynth; loader : PFluidSoundFontLoader);
 	fluid_synth_add_sfont : function(synth : PFluidSynth; sfont : PFluidSoundFont) : longint;
@@ -752,6 +755,8 @@ begin
 	_GetFunc(@fluid_sfont_iteration_start, 'fluid_sfont_iteration_start');
 	_GetFunc(@fluid_sfont_set_data, 'fluid_sfont_set_data');
 	_GetFunc(@fluid_source, 'fluid_source');
+        _GetFunc(@fluid_synth_activate_octave_tuning, 'fluid_synth_activate_octave_tuning');
+        _GetFunc(@fluid_synth_activate_tuning, 'fluid_synth_activate_tuning');
 	_GetFunc(@fluid_synth_add_sfloader, 'fluid_synth_add_sfloader');
 	_GetFunc(@fluid_synth_add_sfont, 'fluid_synth_add_sfont');
 	_GetFunc(@fluid_synth_all_notes_off, 'fluid_synth_all_notes_off');

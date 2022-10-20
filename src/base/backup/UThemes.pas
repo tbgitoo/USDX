@@ -2521,6 +2521,7 @@ begin
 
        ThemeLoadButton(OptionsMidiPlay.ButtonSoundfont,          'OptionsMidiPlayButtonSoundFont');
        ThemeLoadButton(OptionsMidiPlay.ButtonToggleAudio,               'OptionsMidiPlayToggleAudio');
+       ThemeLoadButton(OptionsMidiPlay.ButtonScanMidi,            'OptionsMidiPlayScanDevices');
        ThemeLoadButton(OptionsMidiPlay.ButtonExit,               'OptionsMidiPlayButtonExit');
 
        OptionsMidiPlay.Description[0] := Language.Translate('SING_OPTIONS_CHOOSE_SOUNDFONT');
@@ -2532,6 +2533,7 @@ begin
        ThemeLoadButton(OptionsSoundfont.ButtonExit,               'OptionsSoundfontButtonExit');
        ThemeLoadButton(OptionsSoundfont.ButtonPath,               'OptionsSoundfontPath');
        ThemeLoadSelectSlide(OptionsSoundfont.SoundfontFile, 'OptionsSoundfontFile');
+       ThemeLoadSelectSlide(OptionsSoundfont.SoundfontTuning, 'OptionsSoundfontTuning');
 
       //Options Network
       ThemeLoadBasic(OptionsNetwork, 'OptionsNetwork');
