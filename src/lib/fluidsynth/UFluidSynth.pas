@@ -172,7 +172,6 @@ type
       fluidsynth : TFluidSynth;
       midiDriver: TFluidSynth.PFluidMidiDriver;
       midiRouter: TFluidSynth.PFluidMidiRouter;
-      //seq_id: TFluidSynth.fluid_seq_id_t;
       midi_port_name: PChar;
       midi_port_id: Integer;
       constructor Create;
@@ -358,11 +357,7 @@ begin
 
 
   fluidsynth.audioDriver := fluidsynth.new_fluid_audio_driver(fluidsynth.settings, fluidsynth.synth);
-  // We don't need a sequencer, apparently the default midi router callback dispatches the
-  // midi messages directly to the synth
-  //fluidsynth.sequencer:=fluidsynth.new_fluid_sequencer2(0);
-  // This establishes the connection between sequencer and synthesizer.
-   //seq_id:=fluidsynth.fluid_sequencer_register_fluidsynth(fluidsynth.sequencer,fluidsynth.synth);
+
    end;
 end;
 
