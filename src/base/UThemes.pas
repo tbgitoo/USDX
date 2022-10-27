@@ -978,9 +978,11 @@ type
     Description: array[0..1] of UTF8String;
     ButtonPath:         TThemeButton; // Not really an active button, just to hightlight the path
     ButtonToccata:      TThemeButton;
+    ButtonFlowerABit:   TThemeButton;
     ButtonExit:         TThemeButton;
     SoundfontFile:           TThemeselectSlide;
     SoundfontTuning:         TThemeselectSlide;
+    SoundfontTuningKey:      TThemeselectSlide;
   end;
 
   TThemeOptionsNetwork = class(TThemeBasic)
@@ -2535,10 +2537,14 @@ begin
        ThemeLoadButton(OptionsSoundfont.ButtonExit,               'OptionsSoundfontButtonExit');
        ThemeLoadButton(OptionsSoundfont.ButtonPath,               'OptionsSoundfontPath');
        ThemeLoadButton(OptionsSoundfont.ButtonToccata,               'OptionsSoundfontButtonToccata');
+       ThemeLoadButton(OptionsSoundfont.ButtonFlowerABit,               'OptionsSoundfontButtonFlowerABit');
+
 
        ThemeLoadSelectSlide(OptionsSoundfont.SoundfontFile, 'OptionsSoundfontFile');
        ThemeLoadSelectSlide(OptionsSoundfont.SoundfontTuning, 'OptionsSoundfontTuning');
+       ThemeLoadSelectSlide(OptionsSoundfont.SoundfontTuningKey, 'OptionsSoundfontTuningKey');
        OptionsSoundfont.Description[0] := Language.Translate('SOUNDFONT_OPTIONS_TOCCATA');
+       OptionsSoundfont.Description[1] := Language.Translate('SOUNDFONT_OPTIONS_FLOWER');
 
       //Options Network
       ThemeLoadBasic(OptionsNetwork, 'OptionsNetwork');

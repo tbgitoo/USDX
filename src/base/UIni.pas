@@ -262,6 +262,8 @@ type
       SoundfontFluidSynth: string;
       // This section concerns the choice of tuning, for each soundfont
       TuningForSoundFont: array of UTF8String; // tuning chosen for each of the soundfonts
+      BaseKeyForSoundFont: array of UTF8String; // base key for the tuning for the particular sound font. This is irrelevant for
+        // equal temperament, there all the keys are equal
       availableSoundFontFiles: array of UTF8String;
       availableTunings: array of UTF8String;
 
@@ -375,6 +377,12 @@ type
       function IndexInArray(needle: UTF8String; haystack: array of UTF8String): Integer;
 
       function getCurrentTuning():string;
+
+      function getCurrentBaseKey():string;
+
+      function getCurrentBaseKeyInt(): integer;
+
+
 
   end;
 
@@ -518,6 +526,7 @@ const
   IMidiInputGainValue: array[0..4] of real = (0.1,0.32,1,3.2,10);
   IMidiAudioGain: array[0..6] of UTF8String = ('-60dB','-50dB','-40dB','-30dB','-20dB','-10dB', '0dB');
   IMidiAudioGainValue: array[0..6] of real = (0.001,0.0032,0.01,0.032,0.1,0.32,1);
+  IKey: array[0..11] of UTF8String = ('C','C#','D','D#','E','F','F#','G','G#','A', 'A#', 'B');
 
   ILineBonus:     array[0..1] of UTF8String = ('Off', 'On');
   IPartyPopup:    array[0..1] of UTF8String = ('Off', 'On');
@@ -1096,8 +1105,9 @@ end;
 
 
 procedure TIni.LoadSoundfontCfg(IniFile: TCustomIniFile);
-var countTuning, countSoundFont, tuningIndex: Integer;
+var countTuning, countSoundFont, tuningIndex, keyIndex: Integer;
     tuningRead: string;
+    keyRead: string;
 begin
   setlength(availableTunings,High(TFluidSynthHandler.availableTunings)-Low(TFluidSynthHandler.availableTunings)+1);
   if High(TFluidSynthHandler.availableTunings)-Low(TFluidSynthHandler.availableTunings)+1 > 0 then
@@ -1109,6 +1119,8 @@ begin
   for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
      TuningForSoundFont[countSoundFont]:=availableTunings[0];
 
+
+
   for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
   begin
       tuningRead:=IniFile.ReadString('MidiPlayTuning', availableSoundFontFiles[countSoundFont], availableTunings[0]);
@@ -1117,6 +1129,21 @@ begin
          TuningForSoundFont[countSoundFont]:=availableTunings[tuningIndex]
       else
          TuningForSoundFont[countSoundFont]:=availableTunings[0];
+  end;
+
+  setlength(BaseKeyForSoundFont,high(availableSoundFontFiles)-low(availableSoundFontFiles)+1);
+  for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
+     BaseKeyForSoundFont[countSoundFont]:=IKey[0];
+
+
+  for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
+  begin
+      keyRead:=IniFile.ReadString('MidiPlayTuningKey', availableSoundFontFiles[countSoundFont], IKey[0]);
+      keyIndex:=IndexInArray(keyRead,IKey);
+      if keyIndex >= 0 then
+         BaseKeyForSoundFont[countSoundFont]:=IKey[keyIndex]
+      else
+         BaseKeyForSoundFont[countSoundFont]:=IKey[0];
   end;
 
 
@@ -1131,6 +1158,25 @@ begin
       result:= TuningForSoundFont[indexSoundFont] else
       result:=availableTunings[0];
 end;
+
+function TIni.getCurrentBaseKey():string;
+var indexSoundFont: integer;
+begin
+   indexSoundFont:=IndexInArray(SoundfontFluidSynth,availableSoundFontFiles);
+   if indexSoundFont>(-1) then
+      result:= BaseKeyForSoundFont[indexSoundFont] else
+      result:=Ikey[0];
+end;
+
+function TIni.getCurrentBaseKeyInt():integer;
+var indexSoundFont: integer;
+begin
+   indexSoundFont:=IndexInArray(SoundfontFluidSynth,availableSoundFontFiles);
+   if indexSoundFont>(-1) then
+      result:= IndexInArray(BaseKeyForSoundFont[indexSoundFont],IKey) else
+      result:=0;
+end;
+
 
 (**
  * Extracts an index of a key that is surrounded by a Prefix/Suffix pair.
@@ -2292,6 +2338,9 @@ begin
 
     for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
         IniFile.WriteString('MidiPlayTuning',availableSoundFontFiles[countSoundFont] , TuningForSoundFont[countSoundFont]);
+
+    for countSoundFont:=low(availableSoundFontFiles) to high(availableSoundFontFiles) do
+        IniFile.WriteString('MidiPlayTuningKey',availableSoundFontFiles[countSoundFont] , BaseKeyForSoundFont[countSoundFont]);
 
 
 

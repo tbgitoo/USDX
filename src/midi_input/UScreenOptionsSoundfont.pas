@@ -59,8 +59,10 @@ type
       ExitButtonIID: integer;
       soundfont_index: integer;
       current_tuning_index: integer;
+      current_key_index: integer;
 
       soundFontTuningGraphicalNum: integer;
+      soundFontTuningKeyGraphicalNum: integer;
 
       midiInputDeviceMessaging: TmidiInputDeviceMessaging; // For reading midi input
       midiOutputDeviceMessaging: TmidiOutputDeviceMessaging; // For transferring midi to fluidsynth midi port
@@ -73,6 +75,7 @@ type
       procedure OnShowFinish; override;
       procedure OnHide; override;
       procedure updateTuningSlide;
+      procedure updateKeySlide;
   end;
 
 
@@ -130,9 +133,14 @@ begin
   soundFontTuningGraphicalNum:=AddSelectSlide(Theme.OptionsSoundfont.SoundfontTuning, current_tuning_index, Ini.availableTunings);
 
 
+  Theme.OptionsSoundfont.SoundfontTuningKey.showArrows := true;
+  Theme.OptionsSoundfont.SoundfontTuningKey.oneItemOnly := true;
+  Theme.OptionsSoundfont.SoundfontTuningKey.showArrows := true;
+
+  soundFontTuningKeyGraphicalNum:=AddSelectSlide(Theme.OptionsSoundfont.SoundfontTuningKey, current_key_index, IKey);
+
+
   AddButton(Theme.OptionsSoundfont.ButtonExit);
-
-
   if (Length(Button[0].Text)=0) then
     AddButtonText(20, 5, Theme.Options.Description[OPTIONS_DESC_INDEX_BACK]);
 
@@ -140,8 +148,9 @@ begin
   if (Length(Button[1].Text)=0) then
     AddButtonText(20, 5, Theme.OptionsSoundfont.Description[0]);
 
-
-
+  AddButton(Theme.OptionsSoundfont.ButtonFlowerABit  );
+  if (Length(Button[2].Text)=0) then
+    AddButtonText(20, 5, Theme.OptionsSoundfont.Description[1]);
 
   AddButton(Theme.OptionsSoundfont.ButtonPath);
   EncodeStringUTF8(Platform.GetGameSharedPath.Append('soundfonts').ToUTF8(),
@@ -228,15 +237,14 @@ begin
       end;
       SDLK_RETURN:
         begin
-          if SelInteraction = 2 then
+          if SelInteraction = 3 then
           begin
             Ini.Save;
             FadeTo(@ScreenOptionsMidiInput);
           end;
 
-          if SelInteraction = 3 then
+          if SelInteraction = 4 then
           begin
-            ConsoleWriteln('test');
             if not FluidSynthHandler.isPlayingMidiFile() then begin
                FluidSynthHandler.playMidiFile('toccata.mid');
                updateFluidSynthFromIni;
@@ -247,6 +255,17 @@ begin
                FluidSynthHandler.stopMidiFile();
           end;
 
+          if SelInteraction = 5 then
+          begin
+            if not FluidSynthHandler.isPlayingMidiFile() then begin
+               FluidSynthHandler.playMidiFile('a_bit_of_flower.mid');
+               updateFluidSynthFromIni;
+               fluidSynthHandler.applyTuningFromIni();
+            end
+
+            else
+               FluidSynthHandler.stopMidiFile();
+          end;
 
 
         end;
@@ -263,7 +282,7 @@ begin
       SDLK_RIGHT:
         begin
 
-        if (SelInteraction >= 0) and (SelInteraction <= 1) then
+        if (SelInteraction >= 0) and (SelInteraction <= 2) then
         begin
              AudioPlayback.PlaySound(SoundLib.Option);
              InteractInc;
@@ -287,12 +306,18 @@ begin
              fluidSynthHandler.applyTuningFromIni();
           end;
 
+        if SelInteraction=2 then
+          begin
+             Ini.BaseKeyForSoundFont[soundfont_index]:= IKey[current_key_index];
+             fluidSynthHandler.applyTuningFromIni();
+          end;
+
 
 
         end;
       SDLK_LEFT:
         begin
-        if (SelInteraction >= 0) and (SelInteraction <= 1) then
+        if (SelInteraction >= 0) and (SelInteraction <= 2) then
         begin
              AudioPlayback.PlaySound(SoundLib.Option);
              InteractDec;
@@ -304,7 +329,9 @@ begin
                updateFluidSynthFromIni;
                 // we have changed soundfont, now we need to update the tuning according to precedent select
                current_tuning_index:=Ini.IndexInArray(Ini.TuningForSoundFont[soundfont_index],Ini.availableTunings);
+               current_key_index:=Ini.IndexInArray(Ini.BaseKeyForSoundFont[soundfont_index],IKey);
                updateTuningSlide;
+               updateKeySlide;
                fluidSynthHandler.applyTuningFromIni();
             end;
           end;
@@ -312,6 +339,12 @@ begin
         if SelInteraction=1 then
           begin
              Ini.TuningForSoundFont[soundfont_index]:= Ini.availableTunings[current_tuning_index];
+             fluidSynthHandler.applyTuningFromIni();
+          end;
+
+         if SelInteraction=2 then
+          begin
+             Ini.BaseKeyForSoundFont[soundfont_index]:= IKey[current_key_index];
              fluidSynthHandler.applyTuningFromIni();
           end;
 
@@ -329,6 +362,14 @@ begin
 
   UpdateSelectSlideOptions(Theme.OptionsSoundfont.SoundfontTuning,
       soundFontTuningGraphicalNum, Ini.availableTunings,current_tuning_index);
+
+end;
+
+procedure TScreenOptionsSoundfont.updateKeySlide;
+begin
+
+  UpdateSelectSlideOptions(Theme.OptionsSoundfont.SoundfontTuningKey,
+      soundFontTuningKeyGraphicalNum, IKey,current_key_index);
 
 end;
 
@@ -384,6 +425,7 @@ end;
 
 procedure TScreenOptionsSoundfont.OnShowFinish;
 begin
+   SoundLib.PauseBgMusic;
    UpdateMidiStream;
    fluidSynthHandler.applyTuningFromIni();
    inherited;
@@ -403,7 +445,7 @@ begin
          midiOutputDeviceMessaging:=nil;
 
    end;
-
+   FluidSynthHandler.stopMidiFile();
    fluidSynthHandler.StopAudio();
 
    inherited;

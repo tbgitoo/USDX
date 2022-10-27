@@ -63,9 +63,82 @@ type
         ( 0, -5.865, -3.91, -1.955, -7.82, -1.955, -3.91, -1.955, 0, -5.865, 0, -6 );
         // For testing: then all notes are equal and even the non-musical ones
         // can here whether a tuning is applied
-        // (0,-100,-200,-300, -400,-500,-600,-700,-800,-900,-1000,-1100);
+         //(0,-100,-200,-300, -400,-500,-600,-700,-800,-900,-1000,-1100);
       equal: array[0..11] of double = (0,0,0,0,0,0,0,0,0,0,0,0);
-      availableTunings: array[0..1] of UTF8String=('none (equal)','Lehman III');
+      pythagorean: array[0..11] of double = (
+      0, // unison
+      -9.78, // minor second,
+      3.91, // major second
+      -5.87, // minor third
+      7.82, // major third
+      -1.96, // perfect fourth
+      11.73, // augmented fourth
+      1.96, // perfect fifth
+      -7.82, // minor sixth
+      5.87, // major sixth
+      -3.91,// minor seventh
+      9.78 // major seventh
+      );  // wikipedia, pythagorean tuning, from C instead of D on, that is C=unison and then following the intervals
+      just_intonation: array[0..11] of double = (
+      0, // unison
+      11.73, // minor second 16/15, cents offset=log(16/15,2)*1200-100
+      3.91, // major second 9/8, cents offset=log(9/8,2)*1200-200
+      -5.87, // minor third 6/5, cents offset=log(6/5,2)*1200-300
+      13.69, // major third 4/5, cents offset=log(5/4,2)*1200-400
+      -1.96, // perfect fourth 4/3, cents offset=log(4/3,2)*1200-500
+      -9.78, // augmented fourth, 45/32, cents offset=log(45/32,2)*1200-600
+      1.96, // perfect fifth, 3/2, cents offset= log(3/2,2)*1200-700
+      13.69, // minor sixth, 8/5, cents offset=log(8/5,2)*1200-800
+      -15.64, // major sixth, 5/3, cents offset=log(5/3,2)*1200-900
+      17.60,// minor seventh, 9/5, cents offset=log(9/5,2)*1200-1000
+      -11.73 // major seventh, 15/8, cents offset=log(15/8,2)*1200-1100
+      ); // kylegann just intonation
+      mean_tone: array[0..11] of double = (
+      0, // unison
+      -23.95, // minor second cents offset=1200*(7/4*log(5,2)-4)-100
+      -6.84, // major second, cents offset=1200*(1/2*log(5,2)-1)-200
+      10.26, // minor third, cents offset=1200*(-3/4*log(5,2)+2)-300
+      13.69, // perfect major third 4/5, cents offset=log(5/4,2)*1200-400
+      3.42, // fourth, cents offset=1200*(-1/4*log(5,2)+1)-500
+      -20.53, // augmented fourth, cents offset=1200*(3/2*log(5,2)-3)-600
+      -3.42, // fifth, cents offset= 1200*(1/4*log(5,2))-700
+      13.69, // perfect minor sixth, 8/5, cents offset=log(8/5,2)*1200-800
+      -10.26, // major sixth, cents offset=1200*(3/4*log(5,2)-1)-900
+      6.84,// minor seventh, cents offset=1200*(-1/2*log(5,2)+2)-1000
+      -17.10 // major seventh, 15/8, cents offset=1200*(5/4*log(5,2)-2)-1100
+      );
+
+
+      mersenne: array[0..11] of double = (
+      0,-29.325,3.91,15.64,-13.685,-1.955,-31.28,1.955,13.685,-15.64,-3.91,-11.73); //http://www.instrument-tuner.com/temperaments_de.html
+      kirnberger: array[0..11] of double = (
+      0,-9.775,3.91,-5.865,-13.686,-1.955,-9.776,1.955,-7.82,-4.888,-3.91,-11.731
+
+      );
+      custom: array[0..11] of double = (
+      0,-9.775,3.91,-5.865,-13.68,-1.96,-9.776,1.96,-7.82,-15.64,-3.91,-11.731);
+
+
+
+
+
+
+
+
+
+
+
+        // C: from D, *3/2 for perfect fifth * 6/5 for minor third from A
+        // Csharp: 15/8 from D
+        // D, starting point
+        // Dsharp:
+        // E
+        // F as a minor third from D, this is 6:5 and instead of 300 cents, it's log(6/5,2)*1200
+         // Fsharp as major third from D, this is 4:5 and intead of 300 cents, it's log(4/5,2)*1200
+         // G as perfect fourth
+         // A as perfect fifth (3/2)
+
+      availableTunings: array[0..7] of UTF8String=('none (equal)','Pythagorean','Just Intonation','Mean tone','Lehman III','Mersenne','Kirnberger II','custom');
 
     type
       TAsynchronousSoundFontLoader = class(TThread)
@@ -89,15 +162,17 @@ type
       currentSoundFont: string;
       soundFontLoader: TAsynchronousSoundFontLoader;
       soundFondLoaded: boolean;
-      function getTuningConstantsC(tuningName: UTF8string): PDouble;
+      function getTuningConstantsC(tuningName: UTF8string; shift: integer): PDouble; // shift indicates
+        // which note is the base note, that is, which note (from C=0 to B=11) receives the 12 shifts indicated
       function convertToCTuningConstants(pitch_in_cents: array of double): PDouble;
-      procedure applyOctaveTuning(tuningName: UTF8string);
+      procedure applyOctaveTuning(tuningName: UTF8string; shift: integer); // shift indicates
+        // which note is the base note, that is, which note (from C=0 to B=11) receives the 12 shifts indicated
 
       public
       fluidsynth : TFluidSynth;
       midiDriver: TFluidSynth.PFluidMidiDriver;
       midiRouter: TFluidSynth.PFluidMidiRouter;
-      seq_id: TFluidSynth.fluid_seq_id_t;
+      //seq_id: TFluidSynth.fluid_seq_id_t;
       midi_port_name: PChar;
       midi_port_id: Integer;
       constructor Create;
@@ -245,6 +320,7 @@ var midifile_path: AnsiString;
 begin
   if not (fluidsynth.player=nil) then stopMidiFile();
   fluidsynth.player := fluidsynth.new_fluid_player(fluidsynth.synth);
+  fluidsynth.fluid_player_set_loop(fluidsynth.player, 1);
   EncodeStringUTF8(Platform.GetGameSharedPath.Append('sounds').Append(filename).ToUTF8(),
            midifile_path,encLocale);   // Convert to non-utf8 string
   fluidsynth.fluid_player_add(fluidsynth.player, PChar(midifile_path));
@@ -257,6 +333,7 @@ begin
       fluidsynth.fluid_player_stop(fluidsynth.player);
       fluidsynth.delete_fluid_player(fluidsynth.player);
       fluidsynth.player:=nil;
+      sendNotesOff();
    end;
 end;
 
@@ -281,12 +358,11 @@ begin
 
 
   fluidsynth.audioDriver := fluidsynth.new_fluid_audio_driver(fluidsynth.settings, fluidsynth.synth);
-  // Initialize sequencer, this is the thing that actually dispatches the midi messages directly to the synth
-  // Here it is used merely to directly transmit the messages, but it can have call-back and timer functions
-  // in general
-  fluidsynth.sequencer:=fluidsynth.new_fluid_sequencer2(0);
+  // We don't need a sequencer, apparently the default midi router callback dispatches the
+  // midi messages directly to the synth
+  //fluidsynth.sequencer:=fluidsynth.new_fluid_sequencer2(0);
   // This establishes the connection between sequencer and synthesizer.
-   seq_id:=fluidsynth.fluid_sequencer_register_fluidsynth(fluidsynth.sequencer,fluidsynth.synth);
+   //seq_id:=fluidsynth.fluid_sequencer_register_fluidsynth(fluidsynth.sequencer,fluidsynth.synth);
    end;
 end;
 
@@ -397,16 +473,37 @@ end;
     result:=fluidsynth.fluid_synth_get_program(fluidsynth.synth,chan,sfont_id,bank_num,preset_num);
   end;
 
-  function TFluidSynthHandler.getTuningConstantsC(tuningName: UTF8string): PDouble;
+  function TFluidSynthHandler.getTuningConstantsC(tuningName: UTF8string; shift: integer): PDouble;
   var count: integer;
       pitch: array of double;
   begin
      setlength(pitch,12);
      for count:=0 to 11 do
        pitch[count]:=0; // by default, equal temperament, so zero departure from equal temperament
-     if UTF8CompareStr(tuningName,availableTunings[1])=0 then
+    if UTF8CompareStr(tuningName,availableTunings[1])=0 then
        for count:=0 to 11 do
-           pitch[count]:=Lehman_III[count];
+           pitch[count]:=pythagorean[(count-shift+12) mod 12];
+    if UTF8CompareStr(tuningName,availableTunings[2])=0 then
+       for count:=0 to 11 do
+           pitch[count]:=just_intonation[(count-shift+12) mod 12];
+    if UTF8CompareStr(tuningName,availableTunings[3])=0 then
+       for count:=0 to 11 do
+           pitch[count]:=mean_tone[(count-shift+12) mod 12];
+     if UTF8CompareStr(tuningName,availableTunings[4])=0 then
+       for count:=0 to 11 do begin
+           pitch[count]:=Lehman_III[(count-shift+12) mod 12];
+       end;
+     if UTF8CompareStr(tuningName,availableTunings[5])=0 then
+       for count:=0 to 11 do
+           pitch[count]:=mersenne[(count-shift+12) mod 12];
+     if UTF8CompareStr(tuningName,availableTunings[6])=0 then
+       for count:=0 to 11 do
+           pitch[count]:=kirnberger[(count-shift+12) mod 12];
+     if UTF8CompareStr(tuningName,availableTunings[7])=0 then
+       for count:=0 to 11 do
+           pitch[count]:=custom[(count-shift+12) mod 12];
+
+
      result:=convertToCTuningConstants(pitch);
 
 
@@ -428,7 +525,7 @@ end;
          pitch_in_cents_12[count]:=pitch_in_cents[count];
   end;
 
-  procedure TFluidSynthHandler.applyOctaveTuning(tuningName: UTF8string);
+  procedure TFluidSynthHandler.applyOctaveTuning(tuningName: UTF8string; shift: integer);
   var
       pointer_to_first_note: PDouble;
       count: integer;
@@ -440,7 +537,7 @@ end;
     if not soundFontIsLoaded() then
       exit; // We need a soundfont
 
-    pointer_to_first_note:=getTuningConstantsC(tuningName);
+    pointer_to_first_note:=getTuningConstantsC(tuningName,shift);
 
     for channel:=0 to 15 do begin
         if get_info_for_channel(channel,sfont_id,bank_num,preset_num)=TFluidSynth.FLUID_OK then
@@ -456,7 +553,7 @@ end;
 
   procedure TFluidSynthHandler.applyTuningFromIni();
   begin
-     applyOctaveTuning(Ini.getCurrentTuning());
+     applyOctaveTuning(Ini.getCurrentTuning(), Ini.getCurrentBaseKeyInt());
   end;
 
 end.
