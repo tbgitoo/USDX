@@ -126,6 +126,7 @@ type
     // filenames
     Cover:      IPath;
     Mp3:        IPath;
+    Midi:       IPath;
     Background: IPath;
     Video:      IPath;
 
@@ -267,6 +268,7 @@ begin
   Self.FileName := PATH_NONE();
   Self.Cover    := PATH_NONE();
   Self.Mp3      := PATH_NONE();
+  Self.Midi     := PATH_NONE();
   Self.Background:= PATH_NONE();
   Self.Video    := PATH_NONE();
 end;
@@ -935,6 +937,12 @@ begin
     if (Self.Path.Append(Self.Mp3).IsFile()) then
       Done := Done or 4;
 
+    // Midi and mp3 are alternatives (or can even be played together)
+    if (Self.Path.Append(Self.Midi).IsFile()) then
+      Done := Done or 4;
+
+
+
     //Beats per Minute
     SetLength(self.BPM, 1);
     self.BPM[0].StartBeat := 0;
@@ -995,7 +1003,7 @@ begin
     if (Done and 8) = 0 then      //No BPM Flag
       Log.LogError('BPM tag missing: ' + self.FileName.ToNative)
     else if (Done and 4) = 0 then //No MP3 Flag
-      Log.LogError('MP3 tag/file missing: ' + self.FileName.ToNative)
+      Log.LogError('MP3 (or Midi) tag/file missing: ' + self.FileName.ToNative)
     else if (Done and 2) = 0 then //No Artist Flag
       Log.LogError('Artist tag missing: ' + self.FileName.ToNative)
     else if (Done and 1) = 0 then //No Title Flag
@@ -1139,6 +1147,23 @@ begin
         begin
           self.Mp3 := EncFile;
           
+          //Add Mp3 Flag to Done
+          Done := Done or 4;
+        end
+        else
+        begin
+          Log.LogError('Can''t find audio file in song: ' + DecodeStringUTF8(FullFileName, Encoding));
+        end;
+      end
+
+      //MP3 File
+      else if (Identifier = 'MIDI') then
+      begin
+        EncFile := DecodeFilename(Value);
+        if (Self.Path.Append(EncFile).IsFile) then
+        begin
+          self.Midi := EncFile;
+
           //Add Mp3 Flag to Done
           Done := Done or 4;
         end
@@ -1756,6 +1781,7 @@ begin
 
   //Required Information
   Mp3    := PATH_NONE;
+  Midi   := PATH_NONE;
   SetLength(BPM, 0);
 
   GAP    := 0;
