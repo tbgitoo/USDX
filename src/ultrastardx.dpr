@@ -271,6 +271,7 @@ uses
   UMidiTransfer in 'midi_input\UMidiTransfer.pas',
   UMidiNote in 'midi_input\UMidiNote.pas',
   UScreenOptionsSoundfont in 'midi_input\UScreenOptionsSoundfont.pas',
+  UMidiPlayback in 'midi_input\UMidiPlayback.pas',
 
   //------------------------------
   //Includes - Plugin Support
