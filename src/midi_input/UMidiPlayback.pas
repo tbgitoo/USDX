@@ -41,7 +41,10 @@ uses
   UMusic,
   UFluidSynth;
 
+
 type
+
+
 
   IMidiPlayback = Interface( IGenericPlayback )
   ['{6A76264F-BBCF-46D3-B63D-612E641C04F0}']
@@ -89,7 +92,19 @@ type
 
   TMidiPlayback = class(TInterfacedObject, IMidiPlayback)
 
+    protected
+
     fluidSynthHandlerInternal : TFluidSynthHandler;
+
+    midiTicksPerQuarterNote: integer;
+
+    currentMidiFile: IPath;
+
+    BPM: integer;
+
+    song_length_seconds: real;
+
+    procedure AnalyseFile;
 
     public
       function GetName: AnsiString;
@@ -119,7 +134,10 @@ type
       function GetPosition: real;
       constructor create(handler: TFluidSynthHandler);
       property Position: real read GetPosition write SetPosition;
+
+
   end;
+
 
 
  procedure InitializeMidiPlayback;
@@ -136,7 +154,10 @@ uses
   UCommandLine,
   URecord,
   ULog,
-  UPathUtils;
+  UPathUtils,
+  UTextEncoding,
+  UCommon,
+  MidiFile;
 
 var
 
@@ -159,9 +180,12 @@ begin
 end;
 
 
+
 constructor TMidiPlayback.create(handler: TFluidSynthHandler);
 begin
   fluidSynthHandlerInternal:=handler;
+  midiTicksPerQuarterNote:=480; // Midi default value, has to be re-evaluated for a given file
+  currentMidiFile:=PATH_NONE();
   inherited create;
 end;
 
@@ -174,29 +198,39 @@ end;
 
 function TMidiPlayback.InitializePlayback;
 begin
-  // nothing to do
+  fluidSynthHandlerInternal.StartAudio();
   result:=true;
 end;
 
 function TMidiPlayback.FinalizePlayback: boolean;
 begin
-  // nothing to do, fluidsynth is handled elsewhere
+  fluidSynthHandlerInternal.StopAudio();
   Result := true;
 end;
 
+
+
 function TMidiPlayback.Open(const Filename: IPath): boolean;
 begin
-  Result := true;
+  Result:=false;
+  if Filename.isFile() then begin
+     fluidSynthHandlerInternal.setMidiFile(Filename.toUTF8());
+     Result := true;
+     currentMidiFile:=Filename;
+     analyseFile;
+  end;
 end;
 
 procedure TMidiPlayback.Close;
 begin
+
+   fluidSynthHandlerInternal.StopAudio();
 end;
 
 
 procedure TMidiPlayback.Play;
 begin
-
+  fluidSynthHandlerInternal.startMidiFilePlay();
 end;
 
 procedure TMidiPlayback.Pause;
@@ -206,13 +240,76 @@ end;
 
 procedure TMidiPlayback.Stop;
 begin
+   fluidSynthHandlerInternal.stopMidiFile();
+end;
+
+procedure TMidiPlayback.analyseFile();
+  var
+  mFile: TMidiFile;
+  T:    integer; // track index
+  N:    integer; // note index
+  MidiTrack: TMidiTrack;
+  MidiEvent: PMidiEvent;
+  max_tick: double;
+begin
+
+    song_length_seconds:=0;
+
+    max_tick:=0;
+
+
+
+    if not (currentMidiFile = PATH_NONE()) then
+    begin
+    mFile:=TMidiFile.Create(nil); // We are not in a component here and do not need these functionalities
+
+    mFile.Filename:=currentMidiFile;
+
+    mFile.readFile;
+
+    for T := 0 to mFile.NumberOfTracks-1 do
+    begin
+       MidiTrack := mFile.GetTrack(T);
+       for N := 0 to MidiTrack.getEventCount-1 do
+       begin
+          MidiEvent := MidiTrack.GetEvent(N);
+          if ((MidiEvent.event shr 4) = $8) or ((MidiEvent.event shr 4) = $9) then // on/off note events
+             if max_tick<MidiEvent.time then max_tick:=MidiEvent.time;
+       end;
+
+
+    end;
+
+    midiTicksPerQuarterNote:=mFile.TicksPerQuarter;
+    BPM:=mFile.Bpm;
+
+    song_length_seconds:=max_tick/midiTicksPerQuarterNote/BPM*60.0;
+
+
+
+    end;
+
+    // in principle, it would have been more simple and to the point to get this information from
+    // fluid synth directly, but unfortunately, there is no guarantee that the file is already loaded,
+    // or if loaded, fully loaded,and so midiFileTotalTickLength is typically incorrect unless the file is already
+    // playing
+
+
+    //Result:=fluidSynthHandlerInternal.midiFileTotalTickLength();
+    //Result:=Result/midiTicksPerQuarterNote;  // now we have it in numbers of quarter notes
+    //Result:=Result/fluidSynthHandlerInternal.midiFileBPM()*60.0; // conversion to seconds via BPM (quarter notes per minute)
+
 
 end;
 
+// Length of the midi file in seconds. There is no length meta tag in midi
+// and so one literally has to go through the midi messages and look for the noteon or
+// more likely noteoff event with the highest time information.
+// also, time in midi files is ticks so we have to convert to seconds with both
+// the number of ticks per quarter and the bpm of the file.
 function TMidiPlayback.Length: real;
 begin
-
-    Result := 0;
+   Result:=song_length_seconds;
 end;
 
 function TMidiPlayback.GetPosition: real;
@@ -256,6 +353,9 @@ end;
 procedure TMidiPlayback.SetLoop(Enabled: boolean);
 begin
 end;
+
+
+
 
 
 

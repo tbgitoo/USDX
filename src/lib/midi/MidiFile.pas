@@ -110,7 +110,7 @@ uses
 
 type
   TChunkType = (illegal, header, track);
-  TFileFormat = (single, multi_synch, multi_asynch);
+  TFileFormat = (singleFile, multi_synch, multi_asynch);
   PByte = ^byte;
 
   TMidiEvent = record
@@ -759,7 +759,7 @@ begin
   if chunkType = header then
   begin
     case chunkIndex^ of
-      0: FfileFormat := single;
+      0: FfileFormat := singleFile;
       1: FfileFormat := multi_synch;
       2: FfileFormat := multi_asynch;
     end;

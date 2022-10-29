@@ -194,6 +194,13 @@ type
       procedure playMidiFile(filename: UTF8string);
       procedure stopMidiFile();
       function isPlayingMidiFile(): boolean;
+
+
+      procedure setMidiFile(filename: UTF8string);
+
+      procedure startMidiFilePlay();
+
+
     end;
 
 
@@ -315,16 +322,28 @@ begin
 end;
 
 procedure TFluidSynthHandler.playMidiFile(filename: UTF8string);
+begin
+  setMidiFile(filename);
+  startMidiFilePlay();
+end;
+
+procedure TFluidSynthHandler.setMidiFile(filename: UTF8string);
 var midifile_path: AnsiString;
 begin
   if not (fluidsynth.player=nil) then stopMidiFile();
   fluidsynth.player := fluidsynth.new_fluid_player(fluidsynth.synth);
   fluidsynth.fluid_player_set_loop(fluidsynth.player, 1);
-  EncodeStringUTF8(Platform.GetGameSharedPath.Append('sounds').Append(filename).ToUTF8(),
+  EncodeStringUTF8(filename,
            midifile_path,encLocale);   // Convert to non-utf8 string
   fluidsynth.fluid_player_add(fluidsynth.player, PChar(midifile_path));
-  fluidsynth.fluid_player_play(fluidsynth.player);
 end;
+
+procedure TFluidSynthHandler.startMidiFilePlay();
+begin
+  StartAudio();
+  if not (fluidsynth.player=nil) then fluidsynth.fluid_player_play(fluidsynth.player);
+end;
+
 
 procedure TFluidSynthHandler.stopMidiFile();
 begin
@@ -332,8 +351,9 @@ begin
       fluidsynth.fluid_player_stop(fluidsynth.player);
       fluidsynth.delete_fluid_player(fluidsynth.player);
       fluidsynth.player:=nil;
-      sendNotesOff();
+
    end;
+   sendNotesOff();
 end;
 
 function TFluidSynthHandler.isPlayingMidiFile(): boolean;
@@ -550,6 +570,15 @@ end;
   begin
      applyOctaveTuning(Ini.getCurrentTuning(), Ini.getCurrentBaseKeyInt());
   end;
+
+
+
+
+
+
+
+
+
 
 end.
 
