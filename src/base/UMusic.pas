@@ -676,7 +676,8 @@ uses
   UCommandLine,
   URecord,
   ULog,
-  UPathUtils;
+  UPathUtils,
+  UMidiPlayback;
 
 var
   DefaultVideoPlayback : IVideoPlayback;
@@ -851,6 +852,9 @@ begin
 
   // Load in-game sounds
   SoundLib := TSoundLibrary.Create;
+
+  // For playing midi files in the same way as mp3 files
+  InitializeMidiPlayback;
 end;
 
 procedure InitializeVideo();

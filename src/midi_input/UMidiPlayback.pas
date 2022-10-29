@@ -38,7 +38,8 @@ uses
   Classes,
   UTime,
   UPath,
-  UMusic;
+  UMusic,
+  UFluidSynth;
 
 type
 
@@ -88,6 +89,8 @@ type
 
   TMidiPlayback = class(TInterfacedObject, IMidiPlayback)
 
+    fluidSynthHandlerInternal : TFluidSynthHandler;
+
     public
       function GetName: AnsiString;
 
@@ -114,7 +117,7 @@ type
 
       procedure SetPosition(Time: real);
       function GetPosition: real;
-
+      constructor create(handler: TFluidSynthHandler);
       property Position: real read GetPosition write SetPosition;
   end;
 
@@ -146,13 +149,21 @@ begin
 end;
 
 
-
+// For now, use the global singleton for audio synthesis from midi
 procedure InitializeMidiPlayback;
-
 begin
+  if fluidSynthHandler=nil then
+     createfluidSynthHandler();
+  DefaultMidiPlayback:=TMidiPlayback.create(fluidSynthHandler);
 
 end;
 
+
+constructor TMidiPlayback.create(handler: TFluidSynthHandler);
+begin
+  fluidSynthHandlerInternal:=handler;
+  inherited create;
+end;
 
 
 
@@ -163,11 +174,13 @@ end;
 
 function TMidiPlayback.InitializePlayback;
 begin
+  // nothing to do
   result:=true;
 end;
 
 function TMidiPlayback.FinalizePlayback: boolean;
 begin
+  // nothing to do, fluidsynth is handled elsewhere
   Result := true;
 end;
 

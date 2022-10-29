@@ -222,7 +222,7 @@ begin
    if fluidSynthHandler = nil then
    begin
       fluidSynthHandler := TFluidsynthHandler.Create();
-      fluidSynthHandler.StartMidi(); // This opens the midi port
+      //fluidSynthHandler.StartMidi();
    end;
 end;
 
