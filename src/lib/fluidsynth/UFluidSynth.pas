@@ -512,27 +512,48 @@ end;
      for count:=0 to 11 do
        pitch[count]:=0; // by default, equal temperament, so zero departure from equal temperament
     if UTF8CompareStr(tuningName,availableTunings[1])=0 then
+    begin
        for count:=0 to 11 do
            pitch[count]:=pythagorean[(count-shift+12) mod 12];
+
+    end;
     if UTF8CompareStr(tuningName,availableTunings[2])=0 then
+    begin
        for count:=0 to 11 do
            pitch[count]:=just_intonation[(count-shift+12) mod 12];
+
+    end;
     if UTF8CompareStr(tuningName,availableTunings[3])=0 then
+    begin
        for count:=0 to 11 do
            pitch[count]:=mean_tone[(count-shift+12) mod 12];
+
+    end;
      if UTF8CompareStr(tuningName,availableTunings[4])=0 then
+     begin
        for count:=0 to 11 do begin
            pitch[count]:=Lehman_III[(count-shift+12) mod 12];
        end;
+
+     end;
      if UTF8CompareStr(tuningName,availableTunings[5])=0 then
+     begin
        for count:=0 to 11 do
            pitch[count]:=mersenne[(count-shift+12) mod 12];
+
+     end;
      if UTF8CompareStr(tuningName,availableTunings[6])=0 then
+     begin
        for count:=0 to 11 do
            pitch[count]:=kirnberger[(count-shift+12) mod 12];
+
+     end;
      if UTF8CompareStr(tuningName,availableTunings[7])=0 then
+     begin
        for count:=0 to 11 do
            pitch[count]:=custom[(count-shift+12) mod 12];
+
+     end;
 
 
      result:=convertToCTuningConstants(pitch);

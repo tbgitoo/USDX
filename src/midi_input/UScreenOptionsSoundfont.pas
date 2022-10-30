@@ -207,6 +207,7 @@ end;
 
 
 function TScreenOptionsSoundfont.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
+var midifile_path: AnsiString;
 begin
   Result := true;
 
@@ -246,7 +247,7 @@ begin
           if SelInteraction = 4 then
           begin
             if not FluidSynthHandler.isPlayingMidiFile() then begin
-               FluidSynthHandler.playMidiFile('toccata.mid');
+               FluidSynthHandler.playMidiFile(Platform.GetGameSharedPath.Append('sounds').Append('toccata.mid').ToUTF8());
                updateFluidSynthFromIni;
                fluidSynthHandler.applyTuningFromIni();
             end
@@ -258,7 +259,7 @@ begin
           if SelInteraction = 5 then
           begin
             if not FluidSynthHandler.isPlayingMidiFile() then begin
-               FluidSynthHandler.playMidiFile('a_bit_of_flower.mid');
+               FluidSynthHandler.playMidiFile(Platform.GetGameSharedPath.Append('sounds').Append('a_bit_of_flower.mid').ToUTF8());
                updateFluidSynthFromIni;
                fluidSynthHandler.applyTuningFromIni();
             end
