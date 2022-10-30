@@ -1147,7 +1147,7 @@ begin
   begin
       keyRead:=IniFile.ReadString('MidiPlayTuningKey', availableSoundFontFiles[countSoundFont], IKey[0]);
       keyIndex:=IndexInArray(keyRead,IKey);
-      if keyRead >= 0 then
+      if keyIndex >= 0 then
          BaseKeyForSoundFont[countSoundFont]:=IKey[keyIndex]
       else
          BaseKeyForSoundFont[countSoundFont]:=IKey[0];

@@ -256,7 +256,7 @@ type
       PlayerMidiInputDevice:            array of integer; // Stores the midi input device for each player, -1 if no midi input
       PlayerMidiSynthesizerOn: array of integer; // 0 for off, 1 for on
       MidiSynthesizerGainIndex: integer; // There is a number of presets, these are the indexes
-      MidiSynthesizerGainValue: real; // the synthesizer only has a common gain, there is only one synthesizer
+      MidiSynthesizerGainValue: real; // the synthesizer only has a common gain, there is only one synthesizer for all players
       GainFactorAudioPlayback: real;
       GainFactorAudioPlaybackIndex: integer;
       SoundfontFluidSynth: string;

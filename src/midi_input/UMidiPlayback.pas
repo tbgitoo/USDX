@@ -172,10 +172,12 @@ end;
 
 // For now, use the global singleton for audio synthesis from midi
 procedure InitializeMidiPlayback;
+var theFluidSynthHandler : TFluidsynthHandler;
 begin
-  if fluidSynthHandler=nil then
-     createfluidSynthHandler();
-  DefaultMidiPlayback:=TMidiPlayback.create(fluidSynthHandler);
+  theFluidSynthHandler:=TFluidsynthHandler.Create();
+  theFluidSynthHandler.setGain(Ini.MidiSynthesizerGainValue*Ini.GainFactorAudioPlayback);
+  DefaultMidiPlayback:=TMidiPlayback.create(theFluidSynthHandler);
+
 
 end;
 
@@ -230,12 +232,13 @@ end;
 
 procedure TMidiPlayback.Play;
 begin
+  fluidSynthHandlerInternal.applyTuningFromIni();
   fluidSynthHandlerInternal.startMidiFilePlay();
 end;
 
 procedure TMidiPlayback.Pause;
 begin
-
+    fluidSynthHandlerInternal.pauseMidiFile();
 end;
 
 procedure TMidiPlayback.Stop;
@@ -314,13 +317,20 @@ end;
 
 function TMidiPlayback.GetPosition: real;
 begin
+    result:=fluidSynthHandlerInternal.tickPositionMidiFile();
+    result:=result/midiTicksPerQuarterNote/BPM*60.0;
 
-    Result := 0;
 end;
 
 procedure TMidiPlayback.SetPosition(Time: real);
+var tick_position: real;
+    tick_position_int : longint;
 begin
-
+   tick_position:=Time/60.0;
+   tick_position:=tick_position*BPM;
+   tick_position:=tick_position*midiTicksPerQuarterNote;
+   tick_position_int:=round(tick_position)            ;
+   fluidSynthHandlerInternal.gotoTickPositionMidiFile(tick_position_int);
 end;
 
 procedure TMidiPlayback.SetSyncSource(SyncSource: TSyncSource);
@@ -335,11 +345,12 @@ end;
 
 function TMidiPlayback.Finished: boolean;
 begin
-  result:=true;
+  result:=fluidSynthHandlerInternal.midiFilePlayerDone();
 end;
 
 procedure TMidiPlayback.SetVolume(Volume: single);
 begin
+   fluidSynthHandlerInternal.setGain(Ini.MidiSynthesizerGainValue*Ini.GainFactorAudioPlayback*Volume);
 end;
 
 procedure TMidiPlayback.FadeIn(Time: real; TargetVolume: single);

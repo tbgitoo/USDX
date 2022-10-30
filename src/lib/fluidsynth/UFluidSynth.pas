@@ -194,11 +194,18 @@ type
       procedure playMidiFile(filename: UTF8string);
       procedure stopMidiFile();
       function isPlayingMidiFile(): boolean;
-
+      function tickPositionMidiFile(): integer;
 
       procedure setMidiFile(filename: UTF8string);
 
       procedure startMidiFilePlay();
+
+      procedure gotoTickPositionMidiFile(tick_position: longint);
+
+      function midiFilePlayerDone(): boolean;
+
+      procedure pauseMidiFile();
+
 
 
     end;
@@ -351,6 +358,15 @@ begin
       fluidsynth.fluid_player_stop(fluidsynth.player);
       fluidsynth.delete_fluid_player(fluidsynth.player);
       fluidsynth.player:=nil;
+
+   end;
+   sendNotesOff();
+end;
+
+procedure TFluidSynthHandler.pauseMidiFile();
+begin
+   if not (fluidsynth.player=nil) then begin
+      fluidsynth.fluid_player_stop(fluidsynth.player);
 
    end;
    sendNotesOff();
@@ -572,13 +588,30 @@ end;
   end;
 
 
+  function TFluidSynthHandler.tickPositionMidiFile(): integer;
+  begin
+    result:=0;
+    if not (fluidsynth.player = nil) then
+      result:=fluidsynth.fluid_player_get_current_tick(fluidsynth.player);
+  end;
+
+  procedure TFluidSynthHandler.gotoTickPositionMidiFile(tick_position: longint);
+  begin
+    if not (fluidsynth.player = nil) then
+        fluidsynth.fluid_player_seek(fluidsynth.player,tick_position);
+  end;
 
 
 
-
-
-
-
+  function TFluidSynthHandler.midiFilePlayerDone(): boolean;
+  begin
+     result:=false;
+       if not (fluidsynth.player = nil) then
+       begin
+         if fluidsynth.fluid_player_get_status(fluidsynth.player)=3 then
+          result:=true;
+       end;
+  end;
 
 end.
 
