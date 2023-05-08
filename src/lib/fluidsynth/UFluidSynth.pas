@@ -204,7 +204,12 @@ type
 
       function midiFilePlayerDone(): boolean;
 
+      procedure registerForMidiPlaybackCallback();
+
       procedure pauseMidiFile();
+
+
+      function getMidiMessageFromFluid_midi_event(midiEvent: TFluidSynth.PFluidMidiEvent): longint;
 
 
 
@@ -223,6 +228,9 @@ procedure createfluidSynthHandler();
 // in program startup.
 
 
+function callback_midiPlaybackEvent(data: TFluidsynthHandler; event : TFluidsynth.PFluidMidiEvent): longint;
+
+
 
 
 implementation
@@ -238,6 +246,15 @@ begin
       fluidSynthHandler := TFluidsynthHandler.Create();
       //fluidSynthHandler.StartMidi();
    end;
+end;
+
+
+function callback_midiPlaybackEvent(data: TFluidsynthHandler; event : TFluidsynth.PFluidMidiEvent): longint;
+var midiEvent: longint;
+begin
+   midiEvent:=data.getMidiMessageFromFluid_midi_event(event);
+   data.fluidsynth.fluid_synth_handle_midi_event(data.fluidsynth.synth,event);
+   result:=0;
 end;
 
  constructor TFluidSynthHandler.Create;
@@ -348,7 +365,11 @@ end;
 procedure TFluidSynthHandler.startMidiFilePlay();
 begin
   StartAudio();
-  if not (fluidsynth.player=nil) then fluidsynth.fluid_player_play(fluidsynth.player);
+  if not (fluidsynth.player=nil) then begin
+     registerForMidiPlaybackCallback();
+    fluidsynth.fluid_player_play(fluidsynth.player);
+
+  end;
 end;
 
 
@@ -632,6 +653,25 @@ end;
          if fluidsynth.fluid_player_get_status(fluidsynth.player)=3 then
           result:=true;
        end;
+  end;
+
+
+  procedure TFluidSynthHandler.registerForMidiPlaybackCallback();
+  begin
+     if not (fluidsynth.player = nil) then
+       fluidsynth.fluid_player_set_playback_callback(
+            fluidsynth.player, @callback_midiPlaybackEvent, self);
+  end;
+
+
+  function TFluidSynthHandler.getMidiMessageFromFluid_midi_event(midiEvent: TFluidSynth.PFluidMidiEvent): longint;
+  var channel, eventType: integer;
+  begin
+    channel:=fluidsynth.fluid_midi_event_get_channel(midiEvent);  // midi channel, from 0 to 15, 9 is percussion
+    eventType:=fluidsynth.fluid_midi_event_get_type(midiEvent);
+
+    ConsoleWriteln(IntToStr(eventType));
+    result:=0;
   end;
 
 end.

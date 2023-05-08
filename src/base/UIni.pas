@@ -212,6 +212,7 @@ type
       LyricsStyle:    integer;
       LyricsEffect:   integer;
       NoteLines:      integer;
+      AdvanceDrawNotes:integer;
 
       // Themes
       Theme:          integer;
@@ -478,6 +479,8 @@ const
 
   INoteLines:     array[0..1] of UTF8String = ('Off', 'On');
 
+  IAdvanceDrawNotes:   array[0..1] of UTF8String = ('Off', 'On');
+
   // for lyric colors
   ILine:             array[0..2] of UTF8String = ('Sing', 'Actual', 'Next');
   IAttribute:        array[0..1] of UTF8String = ('Fill', 'Outline');
@@ -606,6 +609,7 @@ var
   ILyricsStyleTranslated:      array[0..2] of UTF8String = ('Regular', 'Bold', 'Outline');
   ILyricsEffectTranslated:     array[0..4] of UTF8String = ('Simple', 'Zoom', 'Slide', 'Ball', 'Shift');
   INoteLinesTranslated:        array[0..1] of UTF8String = ('Off', 'On');
+  IAdvanceDrawNotesTranslated: array[0..1] of UTF8String = ('Off', 'On');
   IColorTranslated:            array[0..8] of UTF8String = ('Blue', 'Green', 'Pink', 'Red', 'Violet', 'Orange', 'Yellow', 'Brown', 'Black');
   IPlayerColorTranslated:      array[0..15] of UTF8String = ('Blue', 'Red', 'Green', 'Yellow', 'Orange', 'Pink',  'Violet', 'Brown', 'Gray', 'Dark Blue', 'Sky', 'Cyan', 'Flame', 'Orchid', 'Harlequin', 'Lime');
 
@@ -815,6 +819,10 @@ begin
 
   INoteLinesTranslated[0]             := ULanguage.Language.Translate('OPTION_VALUE_OFF');
   INoteLinesTranslated[1]             := ULanguage.Language.Translate('OPTION_VALUE_ON');
+
+  IAdvanceDrawNotesTranslated[0]      := ULanguage.Language.Translate('OPTION_VALUE_OFF');
+  IAdvanceDrawNotesTranslated[1]      := ULanguage.Language.Translate('OPTION_VALUE_ON');
+
 
   for I := 0 to 255 do
   begin
@@ -1875,6 +1883,11 @@ begin
 
   // NoteLines
   NoteLines := ReadArrayIndex(INoteLines, IniFile, 'Lyrics', 'NoteLines', 1);
+
+  // AdvanceDrawNotes: Show the notes to be sung in advance or only up to real time?
+  AdvanceDrawNotes := ReadArrayIndex(INoteLines, IniFile, 'Lyrics', 'DrawNotesBeforeSing', 1);
+
+
 
   // DefaultEncoding
   DefaultEncoding := ParseEncoding(IniFile.ReadString('Lyrics', 'Encoding', ''), encAuto);
