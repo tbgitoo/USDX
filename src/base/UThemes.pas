@@ -897,6 +897,7 @@ type
     SelectLyricsEffect: TThemeSelectSlide;
 //    SelectSolmization:  TThemeSelectSlide;
     SelectNoteLines:    TThemeSelectSlide;
+    AdvanceDrawNotes:    TThemeSelectSlide;
     ButtonExit:         TThemeButton;
     UpperX, UpperW, UpperY, UpperH,
     LowerX, LowerW, LowerY, LowerH  : integer;
@@ -2439,6 +2440,7 @@ begin
       ThemeLoadSelectSlide(OptionsLyrics.SelectLyricsEffect, 'OptionsLyricsSelectLyricsEffect');
       //ThemeLoadSelectSlide(OptionsLyrics.SelectSolmization,  'OptionsLyricsSelectSolmization');
       ThemeLoadSelectSlide(OptionsLyrics.SelectNoteLines,    'OptionsLyricsSelectNoteLines');
+      ThemeLoadSelectSlide(OptionsLyrics.AdvanceDrawNotes,    'OptionsLyricsSelectAdvanceDrawNotes');
 
       OptionsLyrics.UpperX := ThemeIni.ReadInteger('OptionsLyricsUpperBar', 'X', 0);
       OptionsLyrics.UpperW := ThemeIni.ReadInteger('OptionsLyricsUpperBar', 'W', 0);

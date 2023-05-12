@@ -897,6 +897,7 @@ type
     SelectLyricsEffect: TThemeSelectSlide;
 //    SelectSolmization:  TThemeSelectSlide;
     SelectNoteLines:    TThemeSelectSlide;
+    AdvanceDrawNotes:    TThemeSelectSlide;
     ButtonExit:         TThemeButton;
     UpperX, UpperW, UpperY, UpperH,
     LowerX, LowerW, LowerY, LowerH  : integer;
@@ -975,7 +976,7 @@ type
   end;
 
   TThemeOptionsSoundfont = class(TThemeBasic)
-    Description: array[0..2] of UTF8String;
+    Description: array[0..1] of UTF8String;
     ButtonPath:         TThemeButton; // Not really an active button, just to hightlight the path
     ButtonToccata:      TThemeButton;
     ButtonFlowerABit:   TThemeButton;

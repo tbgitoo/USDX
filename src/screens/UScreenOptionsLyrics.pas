@@ -100,7 +100,7 @@ begin
       end;
       SDLK_RETURN:
         begin
-          if SelInteraction = 4 then
+          if SelInteraction = 5 then
           begin
             Ini.Save;
             AudioPlayback.PlaySound(SoundLib.Back);
@@ -113,7 +113,7 @@ begin
         InteractPrev;
       SDLK_RIGHT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 3) then
+          if (SelInteraction >= 0) and (SelInteraction <= 4) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractInc;
@@ -121,7 +121,7 @@ begin
         end;
       SDLK_LEFT:
         begin
-          if (SelInteraction >= 0) and (SelInteraction <= 3) then
+          if (SelInteraction >= 0) and (SelInteraction <= 4) then
           begin
             AudioPlayback.PlaySound(SoundLib.Option);
             InteractDec;
@@ -152,6 +152,10 @@ begin
   Theme.OptionsLyrics.SelectNoteLines.showArrows := true;
   Theme.OptionsLyrics.SelectNoteLines.oneItemOnly := true;
   AddSelectSlide(Theme.OptionsLyrics.SelectNoteLines, Ini.NoteLines, INoteLinesTranslated);
+
+  Theme.OptionsLyrics.AdvanceDrawNotes.showArrows := true;
+  Theme.OptionsLyrics.AdvanceDrawNotes.oneItemOnly := true;
+  AddSelectSlide(Theme.OptionsLyrics.AdvanceDrawNotes, Ini.AdvanceDrawNotes, IAdvanceDrawNotesTranslated);
 
   AddButton(Theme.OptionsLyrics.ButtonExit);
   if (Length(Button[0].Text)=0) then

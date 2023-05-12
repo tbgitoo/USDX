@@ -1885,7 +1885,7 @@ begin
   NoteLines := ReadArrayIndex(INoteLines, IniFile, 'Lyrics', 'NoteLines', 1);
 
   // AdvanceDrawNotes: Show the notes to be sung in advance or only up to real time?
-  AdvanceDrawNotes := ReadArrayIndex(INoteLines, IniFile, 'Lyrics', 'DrawNotesBeforeSing', 1);
+  AdvanceDrawNotes := ReadArrayIndex(IAdvanceDrawNotes, IniFile, 'Lyrics', 'DrawNotesBeforeSing', 1);
 
 
 
@@ -2271,6 +2271,9 @@ begin
 
     // NoteLines
     IniFile.WriteString('Lyrics', 'NoteLines', INoteLines[NoteLines]);
+
+    // Drawing notes in advance of singing
+    IniFile.WriteString('Lyrics', 'DrawNotesBeforeSing', IAdvanceDrawNotes[AdvanceDrawNotes]);
 
     //Encoding default
     IniFile.WriteString('Lyrics', 'Encoding', EncodingName(DefaultEncoding));
