@@ -482,7 +482,7 @@ const
 
   INoteLines:     array[0..1] of UTF8String = ('Off', 'On');
 
-  IAdvanceDrawNotes:   array[0..1] of UTF8String = ('Off', 'On');
+  IAdvanceDrawNotes:   array[0..2] of UTF8String = ('Off', 'On', 'End');
 
   // for lyric colors
   ILine:             array[0..2] of UTF8String = ('Sing', 'Actual', 'Next');
@@ -613,7 +613,7 @@ var
   ILyricsStyleTranslated:      array[0..2] of UTF8String = ('Regular', 'Bold', 'Outline');
   ILyricsEffectTranslated:     array[0..4] of UTF8String = ('Simple', 'Zoom', 'Slide', 'Ball', 'Shift');
   INoteLinesTranslated:        array[0..1] of UTF8String = ('Off', 'On');
-  IAdvanceDrawNotesTranslated: array[0..1] of UTF8String = ('Off', 'On');
+  IAdvanceDrawNotesTranslated: array[0..2] of UTF8String = ('Off', 'On', 'End');
   IColorTranslated:            array[0..8] of UTF8String = ('Blue', 'Green', 'Pink', 'Red', 'Violet', 'Orange', 'Yellow', 'Brown', 'Black');
   IPlayerColorTranslated:      array[0..15] of UTF8String = ('Blue', 'Red', 'Green', 'Yellow', 'Orange', 'Pink',  'Violet', 'Brown', 'Gray', 'Dark Blue', 'Sky', 'Cyan', 'Flame', 'Orchid', 'Harlequin', 'Lime');
 
@@ -2286,8 +2286,7 @@ begin
     IniFile.WriteString('Lyrics', 'NoteLines', INoteLines[NoteLines]);
 
     // Drawing notes in advance of singing
-    IniFile.WriteString('Lyrics', 'DrawNotesBeforeSing', INoteLines[NoteLines]);
-    AdvanceDrawNotes := ReadArrayIndex(INoteLines, IniFile, 'Lyrics', 'DrawNotesBeforeSing', 1);
+    IniFile.WriteString('Lyrics', 'DrawNotesBeforeSing', IAdvanceDrawNotes[AdvanceDrawNotes]);
 
     //Encoding default
     IniFile.WriteString('Lyrics', 'Encoding', EncodingName(DefaultEncoding));
