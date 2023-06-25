@@ -482,7 +482,9 @@ const
 
   INoteLines:     array[0..1] of UTF8String = ('Off', 'On');
 
-  IAdvanceDrawNotes:   array[0..2] of UTF8String = ('Off', 'On', 'End');
+  IAdvanceDrawNotes:   array[0..3] of UTF8String = ('Off', 'On', 'End', 'Hide');
+    // Off means entirely off, On means on, End means that the target notes are only drawn for comparison during the last beat
+    // an Hide means that also the sung notes are hidden until the end
 
   // for lyric colors
   ILine:             array[0..2] of UTF8String = ('Sing', 'Actual', 'Next');
@@ -613,7 +615,7 @@ var
   ILyricsStyleTranslated:      array[0..2] of UTF8String = ('Regular', 'Bold', 'Outline');
   ILyricsEffectTranslated:     array[0..4] of UTF8String = ('Simple', 'Zoom', 'Slide', 'Ball', 'Shift');
   INoteLinesTranslated:        array[0..1] of UTF8String = ('Off', 'On');
-  IAdvanceDrawNotesTranslated: array[0..2] of UTF8String = ('Off', 'On', 'End');
+  IAdvanceDrawNotesTranslated: array[0..3] of UTF8String = ('Off', 'On', 'End','Hide');
   IColorTranslated:            array[0..8] of UTF8String = ('Blue', 'Green', 'Pink', 'Red', 'Violet', 'Orange', 'Yellow', 'Brown', 'Black');
   IPlayerColorTranslated:      array[0..15] of UTF8String = ('Blue', 'Red', 'Green', 'Yellow', 'Orange', 'Pink',  'Violet', 'Brown', 'Gray', 'Dark Blue', 'Sky', 'Cyan', 'Flame', 'Orchid', 'Harlequin', 'Lime');
 
@@ -829,6 +831,8 @@ begin
 
   IAdvanceDrawNotesTranslated[0]      := ULanguage.Language.Translate('OPTION_VALUE_OFF');
   IAdvanceDrawNotesTranslated[1]      := ULanguage.Language.Translate('OPTION_VALUE_ON');
+  IAdvanceDrawNotesTranslated[2]      := ULanguage.Language.Translate('OPTION_VALUE_AT_END');
+
 
 
   for I := 0 to 255 do
