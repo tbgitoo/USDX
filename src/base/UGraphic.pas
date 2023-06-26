@@ -275,7 +275,7 @@ var
     Tex_Score_NoteBarLevel_Lightest : array [1..UIni.IMaxPlayerCount] of TTexture;
     Tex_Score_NoteBarRound_Lightest : array [1..UIni.IMaxPlayerCount] of TTexture;
 
-    Tex_Score_Ratings               : array [0..7] of TTexture;  //stores all possible rating result images
+    Tex_Score_Ratings               : array [0..9] of TTexture;  //stores all possible rating result images
 
   // arrows for SelectSlide
     Tex_SelectS_ArrowL:  TTexture;
@@ -472,7 +472,7 @@ begin
     Log.LogStatus('Loading Textures - C', 'LoadTextures');
 
     //## rating pictures that show a picture according to your rate ##
-    for P := 0 to 7 do begin
+    for P := 0 to 9 do begin
       Tex_Score_Ratings[P] := Texture.LoadTexture(Skin.GetTextureFileName('Rating_'+IntToStr(P)), TEXTURE_TYPE_TRANSPARENT, 0);
   end;
 

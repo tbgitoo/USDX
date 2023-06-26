@@ -254,6 +254,7 @@ uses
 
   UBeatNote             in 'beatNote\UBeatNote.pas',
   UBeatNoteTimer        in 'beatNote\UBeatNoteTimer.pas',
+  UExtraScore           in 'beatNote\UExtraScore.pas',
 
   //------------------------------
   //Includes -Keyboard Playing

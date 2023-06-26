@@ -1445,40 +1445,50 @@ begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_TONE_DEAF');
          Rating := 0;
        end;
-     2010..4009:
+     2010..3999:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_AMATEUR');
          Rating := 1;
        end;
-     4010..5009:
+     4000..4999:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_WANNABE');
          Rating := 2;
        end;
-     5010..6009:
+     5000..5999:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_HOPEFUL');
          Rating := 3;
        end;
-     6010..7509:
+     6000..7499:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_RISING_STAR');
          Rating := 4;
        end;
-     7510..8509:
+     7500..8499:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_LEAD_SINGER');
          Rating := 5;
        end;
-     8510..9009:
+     8500..8999:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_SUPERSTAR');
          Rating := 6;
        end;
-     9010..10000:
+     9000..10000:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_ULTRASTAR');
          Rating := 7;
+       end;
+     10001..10999:
+       begin
+         Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_VAPOR');
+         Rating := 8;
+       end;
+     11000..13010:
+       begin
+         Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_LADYBUG');
+         Rating := 9;
        end;
     else
       Rating := 0; // Cheata :P

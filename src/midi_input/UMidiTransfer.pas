@@ -201,6 +201,7 @@ begin
     for count := low(callback_array) to high(callback_array) do begin
       f:=callback_array[count];
       f(dynamic_event_array,callback_data_array[count]);
+      //ConsoleWriteLn(IntToStr(count));
     end;
   end;
 

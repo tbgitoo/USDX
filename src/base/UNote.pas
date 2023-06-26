@@ -163,7 +163,8 @@ uses
   UPlaylist,
   USkins,
   USongs,
-  UThemes;
+  UThemes,
+  UExtraScore;
 
 function GetTimeForBeats(BPM, Beats: real): real;
 begin
@@ -637,6 +638,10 @@ begin
                 // CurNotePoints is the amount of points that is meassured
                 // for a hit of the note per full beat
                 CurNotePoints := (MaxSongPoints / Tracks[CP].ScoreValue) * ScoreFactor[CurrentLineFragment.NoteType];
+
+                CurNotePoints := CurNotePoints*ExtraScoreFactor();
+
+
 
                 case CurrentLineFragment.NoteType of
                   ntNormal:    CurrentPlayer.Score       := CurrentPlayer.Score       + CurNotePoints;

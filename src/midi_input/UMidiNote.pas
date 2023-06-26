@@ -81,7 +81,8 @@ procedure prepareScoresForMidi;
 implementation
 
 uses
-  UNote,UFluidSynth,Math;
+  UNote,UFluidSynth,Math,
+  UExtraScore;
 
 procedure createMidiNoteHandler();
 begin
@@ -360,7 +361,7 @@ begin
   for countCurrentKeysPlayed:=Low(KeysCurrentlyPlayed) to High(KeysCurrentlyPlayed) do
   begin
     if noteHit(TonesAvailable, KeysCurrentlyPlayed[countCurrentKeysPlayed]) then
-       Player[CP].Score       := Player[CP].Score       + CurNotePoints
+       Player[CP].Score       := Player[CP].Score       + CurNotePoints*ExtraScoreFactor()
     else
        begin
        Player[CP].Score       := Player[CP].Score       - penaltyWronglyPlayed*CurNotePoints;
