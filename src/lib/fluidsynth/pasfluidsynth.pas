@@ -13,6 +13,12 @@ unit pasfluidsynth;
 
 interface
 
+uses
+  {$ifdef LOAD_PA_ON_RUNTIME}
+  dynlibs,
+  {$endif}
+  cTypes;
+
 // Pascal translation of FluidSynth headers by Kirinn Bunnylin / MoonCore.
 //   https://gitlab.com/bunnylin/pasfluidsynth
 // This header port comes under the ZLib license, so it is safe to use the unit
@@ -75,9 +81,7 @@ interface
 {$PACKRECORDS C}
 {$ENDIF}
 
-{$IFNDEF FPC}
-TLibHandle = HModule;
-{$ENDIF}
+
 
 type TFluidSynth = class
         protected
