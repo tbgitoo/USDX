@@ -554,7 +554,7 @@ type TFluidSynth = class
 	new_fluid_synth : function(settings : PFluidSettings) : PFluidSynth;
 
 	private
-	lib : TLibHandle;
+	lib : PtrInt;
 	function _IsLoaded : boolean;
 
 	public
