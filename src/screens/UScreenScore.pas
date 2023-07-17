@@ -1480,12 +1480,12 @@ begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_ULTRASTAR');
          Rating := 7;
        end;
-     10001..10999:
+     10001..11499:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_VAPOR');
          Rating := 8;
        end;
-     11000..13010:
+     11500..13010:
        begin
          Text[TextScore[ThemeIndex]].Text := Language.Translate('SING_SCORE_LADYBUG');
          Rating := 9;

@@ -75,6 +75,10 @@ interface
 {$PACKRECORDS C}
 {$ENDIF}
 
+{$IFNDEF FPC}
+TLibHandle = HModule;
+{$ENDIF}
+
 type TFluidSynth = class
         protected
         procedure _GetFunc(dest : pointer; const funcname : ansistring); inline; // Get the pointer to a given fluidsynth function
