@@ -269,7 +269,16 @@ end;
    // fluidsynth AND analyse them.
    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
    fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',Ini.MidiSynthesizerGainValue);
+   {$IFDEF unix}
+   {$IFDEF Darwin}
+    {$ELSE}
+    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'audio.driver','alsa');
+   ConsoleWriteLn('Unix - using alsa for fluidsynth audio driver (UFluidSynth.pas)');
+  {$ENDIF}
+
+  {$ENDIF}
    // Create the actual synthesizer instance, the TFluidSynth is already a wrapper in pasfluidsynth
+
    fluidsynth.synth := fluidsynth.new_fluid_synth(fluidsynth.settings);
 
 
