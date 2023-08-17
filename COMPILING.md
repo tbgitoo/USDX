@@ -86,3 +86,18 @@ The CI does this for you, but if you need to do it manually:
   * Copy the DLLs from `game` to `installer/dependencies/dll`
   * `C:\...\makensis "installer/UltraStar Deluxe.nsi"` (this will take a while)
   * The .exe will be placed in `installer/dist`
+  
+  
+  # Android cross compilation
+Android cross compilation needs:
+- The crosscompiler. The crosscompiler can be built from the free pascal sources at https://gitlab.com/freepascal.org/fpc/source.git, following the instructions at https://wiki.freepascal.org/Android. Depending on the platform, this needs the presence of a number of libraries. An example make command on MacOSX (12.6.6) is
+  `make clean crossall crossinstall OS_TARGET=android CPU_TARGET=arm COMPILER_LIBRARYDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib FPCMAKEGCCLIBDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib INSTALL_PREFIX=~/FPC/pp`
+- Building the cross-compiler can be a bit tricky. On MacOSX (12.6.6), there can be minor issues in the make file and some sources of the fpc source for crosscompilation. 
+* In the makefile add somewhere arround line 500, add
+`ifdef COMPILER_LIBRARYDIR
+override OPT+=$(addprefix -Fl,$(COMPILER_LIBRARYDIR))
+endif`
+* There also seems to be an error in compiler/options.pas, replace line 886 by
+`Assign(xmloutput,Copy(More,2,Length(More)));`
+
+- The Android NDK. In fact the Android 
