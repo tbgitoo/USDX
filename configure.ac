@@ -25,7 +25,8 @@ AC_SUBST(PACKAGE_WEBSITE)
 PACKAGE_IRC="#usdx at freenode.net"
 AC_SUBST(PACKAGE_IRC)
 
-AC_CONFIG_MACRO_DIR([dists/autogen/m4])
+
+AC_CONFIG_MACRO_DIRS([dists/autogen/m4 dists/android/m4])
 # Specify a source-file so autoconf can check if the source-dir exists
 AC_CONFIG_SRCDIR(src/ultrastardx.dpr)
 
@@ -109,6 +110,12 @@ AC_ARG_WITH([opencv-cxx-api],
 AC_ARG_WITH([cfg-dummy2], [
 Development options:])
 
+# add android
+AC_ARG_WITH([android],
+    [AS_HELP_STRING([--with-android],
+      [do android cross compilation @<:@default=no@:>@])],
+    [android_cross="yes"], [android_cross="no"])
+
 # add DEPRECATED global and local options
 AC_ARG_ENABLE(global, [AS_HELP_STRING([--enable-global], [(DEPRECATED, DO NOT USE]))])
 AC_ARG_ENABLE(local, [AS_HELP_STRING([--enable-local], [(DEPRECATED, DO NOT USE]))])
@@ -159,7 +166,11 @@ AC_CANONICAL_HOST
 
 # find and test the freepascal compiler
 # sets PFLAGS, FPC_VERSION, FPC_DEBUG, etc.
-AC_PROG_FPC
+if [[ $android_cross =="yes"]]; then
+  AC_PROG_PPCROSSARM
+else
+  AC_PROG_FPC
+fi
 
 if [[ "$FPC_VERSION_MAJOR" -lt 3 ]]; then
    AC_MSG_ERROR([

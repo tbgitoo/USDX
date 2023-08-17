@@ -49,7 +49,7 @@
 #
 # See "fpc -i" for a list of supported platforms and processors
 
-AC_DEFUN([AC_PROG_FPC], [
+AC_DEFUN([AC_PROG_PPCROSSARM], [
 
 ##
 # User PFLAGS
@@ -192,7 +192,7 @@ FPC_ANDROID_FLAGS="-T${FPC_PLATFORM} -Fu${FPC_UNIT_PATH}:${ANDROID_NDK_LIB}"
 # Check if FPC works and can compile a program
 AC_CACHE_CHECK([whether the Free Pascal Compiler works], ac_cv_prog_ppc_works,
 [
-    AC_PROG_FPC_CHECK([ac_cv_prog_ppc_works], [$FPC_ANDROID_FLAGS], [$SIMPLE_PROGRAM])
+    AC_PROG_PPCROSSARM_CHECK([ac_cv_prog_ppc_works], [$FPC_ANDROID_FLAGS], [$SIMPLE_PROGRAM])
 ])
 if test x$ac_cv_prog_ppc_works = xno; then
     AC_MSG_ERROR([installation or configuration problem: Cannot create executables.])
@@ -201,7 +201,7 @@ fi
 # Check if FPC can link with standard libraries
 AC_CACHE_CHECK([whether the Free Pascal Compiler can link], ac_cv_prog_ppc_links,
 [
-    AC_PROG_FPC_CHECK([ac_cv_prog_ppc_links], [$FPC_ANDROID_FLAGS],
+    AC_PROG_PPCROSSARM_CHECK([ac_cv_prog_ppc_links], [$FPC_ANDROID_FLAGS],
         [program foo; uses cthreads, cwstring;   begin writeln; end.]
     )
 ])
@@ -217,7 +217,7 @@ fi
 
 AC_CACHE_CHECK([whether FPC supports -k"-z noexecstack"], ac_cv_prog_ppc_noexecstack,
 [
-    AC_PROG_FPC_CHECK([ac_cv_prog_ppc_noexecstack], [$FPC_ANDROID_FLAGS -k"-z noexecstack"], [$SIMPLE_PROGRAM])
+    AC_PROG_PPCROSSARM_CHECK([ac_cv_prog_ppc_noexecstack], [$FPC_ANDROID_FLAGS -k"-z noexecstack"], [$SIMPLE_PROGRAM])
 ])
 if test x$enable_noexecstack = xyes; then
     if test x$ac_cv_prog_ppc_noexecstack = xyes; then
@@ -227,7 +227,7 @@ fi
 
 AC_CACHE_CHECK([whether FPC supports -k"--copy-dt-needed-entries"], ac_cv_prog_ppc_copy_dt_needed_entries,
 [
-    AC_PROG_FPC_CHECK([ac_cv_prog_ppc_copy_dt_needed_entries], [$FPC_ANDROID_FLAGS -k"--copy-dt-needed-entries"], [$SIMPLE_PROGRAM])
+    AC_PROG_PPCROSSARM_CHECK([ac_cv_prog_ppc_copy_dt_needed_entries], [$FPC_ANDROID_FLAGS -k"--copy-dt-needed-entries"], [$SIMPLE_PROGRAM])
 ])
 
 # The new i386 ELF ABI wants the first argument on the stack to be aligned to 16 bytes.
@@ -275,7 +275,7 @@ AC_SUBST(PFLAGS_RELEASE)
 
 # SYNOPSIS
 # 
-#   AC_PROG_FPC_CHECK(RESULT, FPC_FLAGS, CODE)
+#   AC_PROG_PPCROSSARM_CHECK(RESULT, FPC_FLAGS, CODE)
 #
 # DESCRIPTION
 #
@@ -288,7 +288,7 @@ AC_SUBST(PFLAGS_RELEASE)
 #     FPC_FLAGS: Flags passed to FPC
 #     CODE:      
 
-AC_DEFUN([AC_PROG_FPC_CHECK],
+AC_DEFUN([AC_PROG_PPCROSSARM_CHECK],
 [
     # create test file
     rm -f conftest*
@@ -310,94 +310,4 @@ AC_DEFUN([AC_PROG_FPC_CHECK],
     rm -f conftest*
 ])
 
-# SYNOPSIS
-#
-#   AC_PROG_FPC_I386_STACK_ALIGNMENT(RESULT, FPC_FLAGS)
-#
-# DESCRIPTION
-#
-#   Tries to determine the stack alignment for calling
-#   cdecl functions. Test works only on x86-32.
-#   The result is stored in [$RESULT]
-#
-#   Parameters:
-#     RESULT:    Name of result variable
-#     FPC_FLAGS: Flags passed to FPC
 
-AC_DEFUN([AC_PROG_FPC_I386_STACK_ALIGNMENT],
-[
-    rm -f conftest*
-    cat > conftest.pp <<EOF
-[program StackAlignment;
-
-function xn() : cardinal; cdecl; external name 'func';
-function xa(a : integer) : cardinal; cdecl; external name 'func';
-function xb(a : integer; b : integer) : cardinal; cdecl; external name 'func';
-function xc(a : integer; b : integer; c : integer) : cardinal; cdecl; external name 'func';
-
-var depth : integer;
-
-function func(a : integer) : cardinal; cdecl; assembler; [alias:'func'];
-asm
-  lea a, %eax
-end;
-
-function nx() : cardinal;
-var
-  v : cardinal;
-begin
-  v := xn() or xa(1) or xb(2, 2) or xc(3, 3, 3);
-  depth := depth + 1;
-  if depth < 4 then
-    v := v or nx();
-  depth := depth - 1;
-  nx := v
-end;
-
-function ax(a: integer) : cardinal;
-var
-  v : cardinal;
-begin
-  v := xn() or xa(a) or xb(a, 2) or xc(a, 3 ,3);
-  depth := depth + 1;
-  if depth < 4 then
-    v := v or ax(a + 1);
-  depth := depth - 1;
-  ax := v
-end;
-
-function bx(a : integer; b : integer) : cardinal;
-var
-  v : cardinal;
-begin
-  v := xn() or xa(a) or xb(a, b) or xc(a, b, 3);
-  depth := depth + 1;
-  if depth < 4 then
-    v := v or bx(a + 1, b + 2);
-  depth := depth - 1;
-  bx := v
-end;
-
-function cx(a : integer; b : integer; c : integer) : cardinal;
-var
-  v : cardinal;
-begin
-  v := xn() or xa(a) or xb(a, b) or xc(a, b, c);
-  depth := depth + 1;
-  if depth < 4 then
-    v := v or cx(a + 1, b + 2, c + 3);
-  depth := depth - 1;
-  cx := v
-end;
-
-var
-  v : cardinal;
-begin
-  v := nx() or ax(1) or bx(2, 2) or cx(3, 3, 3);
-  writeln(v - (v and (v - 1)))
-end.]
-EOF
-    ${PPC} [$2] conftest.pp >> config.log 2>&1
-    [$1]=`./conftest`
-    rm -f conftest*
-])

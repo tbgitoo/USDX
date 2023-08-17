@@ -100,4 +100,10 @@ endif`
 * There also seems to be an error in compiler/options.pas, replace line 886 by
 `Assign(xmloutput,Copy(More,2,Length(More)));`
 
-- The Android NDK. In fact the Android 
+- The Android NDK. In fact the Android NDK is already needed for making the fpc cross compiler. For compatibility reasons, the highest suitable release seems to be 19C (the old versions are available at https://github.com/android/ndk/wiki/Unsupported-Downloads)
+
+- Environment variables are also needed. For example, something like this in .bash_profile (depends where you put your variables)
+`#For FPC crosscompilation
+export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-arm/usr/lib:~/FPC/pp/lib/fpc/3.3.1
+export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
+`
