@@ -297,7 +297,7 @@ AC_DEFUN([AC_PROG_PPCROSSARM_CHECK],
     # compile test file
     ${PPC} [$2] conftest.pp >> config.log 2>&1
 
-    echo "${PPC} [$2] conftest.pp >> config.log 2>&1"
+    
 
     # check if test file was compiled
     if test -f conftest || test -f conftest.exe; then

@@ -166,7 +166,8 @@ AC_CANONICAL_HOST
 
 # find and test the freepascal compiler
 # sets PFLAGS, FPC_VERSION, FPC_DEBUG, etc.
-if [[ $android_cross =="yes"]]; then
+if [[ $android_cross=yes ]]; then
+  AC_PROG_ANDROID_NDK
   AC_PROG_PPCROSSARM
 else
   AC_PROG_FPC
