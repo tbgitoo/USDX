@@ -6,7 +6,7 @@
 {* Libraries *}
 
 {$IF Defined(IncludeConstants)}
-  lua_lib_name = 'lua';
+  lua_lib_name = 'lua5.4';
   LUA_VERSION_INT     = 5004002;
   LUA_VERSION_RELEASE = '2';
   LUA_VERSION_MINOR   = '4';
@@ -90,7 +90,7 @@
 {$IFEND}
 
 {$UNDEF HavePortmixer}
-{$DEFINE UsePortMidi}
+{$UNDEF UsePortMidi}
 {$IF Defined(UsePortMidi)}
   {$DEFINE UseMIDIPort}
 {$IFEND}

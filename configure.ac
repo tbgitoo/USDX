@@ -182,8 +182,14 @@ if [[ "$FPC_VERSION_MAJOR" -lt 3 ]]; then
 fi
 
 # find and test the C compiler (for C-libs and wrappers)
-AC_PROG_CC
+if [[ $android_cross=yes ]]; then
+  AC_PROG_ANDROID_CC
+else
+  AC_PROG_CC
+fi
+
 AC_LANG([C])
+
 
 AC_PROG_RANLIB
 
@@ -210,6 +216,12 @@ fi
 # -----------------------------------------
 
 # find sdl2
+#if [[ $android_cross=yes ]]; then
+#  PKG_HAVE_ANDROID([sdl2], [sdl2], yes)
+#else
+#  PKG_HAVE([sdl2], [sdl2], yes)
+#fi
+
 PKG_HAVE([sdl2], [sdl2], yes)
 
 # find SDL2_image

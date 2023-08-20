@@ -104,6 +104,15 @@ endif`
 
 - Environment variables are also needed. For example, something like this in .bash_profile (depends where you put your variables)
 `#For FPC crosscompilation
-export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-arm/usr/lib:~/FPC/pp/lib/fpc/3.3.1
+export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-arm/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
 export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
+export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/x86_64-linux-android/bin/ranlib
+
+
+
+
+See https://lists.gnu.org/archive/html/autoconf/2013-10/msg00004.html for some discussion
+
+
+./configure --host=x86_64-darwin --build=arm
 `
