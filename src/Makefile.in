@@ -262,3 +262,11 @@ clean_obj: clean_bin
 .PHONY: clean_bin
 clean_bin:
 	$(RM) "$(USDX_BIN)"
+
+
+FPC_ANDROID_FLAGS := @FPC_ANDROID_FLAGS@
+
+.PHONY: android
+android:
+	@echo "Compiling sources for Android"
+	$(PPC) $(FPC_ANDROID_FLAGS) $(strip $(PFLAGS_ALL)) -o$@ $(USDX_PROJ)

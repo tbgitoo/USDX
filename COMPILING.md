@@ -145,8 +145,13 @@ https://blog.spreendigital.de/2020/05/30/how-to-compile-lua-5-4-0-for-android-as
 ffmpeg
 https://github.com/Javernaut/ffmpeg-android-maker
 
+portaudio
+https://github.com/Gundersanne/portaudio_opensles
+mkdir -p build && cd build
+cmake     -DANDROID_PLATFORM=android-21     -DANDROID_ABI=armeabi-v7a     -DCMAKE_BUILD_TYPE=Debug     -DCMAKE_TOOLCHAIN_FILE=/Users/thomasbraschler/Library/Android/sdk/ndk/25.2.9519653/build/cmake/android.toolchain.cmake ..
+make
 
-
+https://github.com/ev1313/Pascal-SDL-2-Headers/blob/master/sdlsyswm.inc
 
 #USDX
 

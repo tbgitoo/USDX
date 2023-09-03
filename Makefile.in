@@ -498,3 +498,9 @@ clean-macosx-app:
 clean-macosx-dmg:
 	$(RM) UltraStarDeluxe.dmg 
 	$(RM) UltraStarDeluxe.sparseimage
+
+
+.PHONY: android
+android:
+	@echo "Building Android usdx.so"
+	$(MAKE) -C $(USDX_SRC_DIR) $@

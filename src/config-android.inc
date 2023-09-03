@@ -85,7 +85,7 @@
 {$DEFINE HavePortaudio}
 {$IF Defined(HavePortaudio) and Defined(IncludeConstants)}
   PORTAUDIO_VERSION_MAJOR   = 19;
-  PORTAUDIO_VERSION_MINOR   = 0;
+  PORTAUDIO_VERSION_MINOR   = 8;
   PORTAUDIO_VERSION_RELEASE = 0;
 {$IFEND}
 

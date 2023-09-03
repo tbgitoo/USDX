@@ -11,6 +11,7 @@
 #   pkg_config_utils.m4   (PKG_VALUE, PKG_VERSION, PKG_HAVE)
 #
 
+
 # Require autoconf >= 2.61
 AC_PREREQ(2.61)
 
@@ -24,6 +25,8 @@ AC_SUBST(PACKAGE_WEBSITE)
 # specify the IRC-channel here
 PACKAGE_IRC="#usdx at freenode.net"
 AC_SUBST(PACKAGE_IRC)
+
+
 
 
 AC_CONFIG_MACRO_DIRS([dists/autogen/m4 dists/android/m4])
@@ -57,6 +60,8 @@ CMAKE_FIND_BINARY
 # -----------------------------------------
 # macro declarations
 # -----------------------------------------
+
+
 
 # AC_SUBST_DEFINE(DEFINE_SUFFIX, IS_DEFINED)
 # used to enable/disable pascal defines
@@ -168,6 +173,8 @@ AC_SUBST(USE_OSX_PACKAGING_LIBDIR, $USE_OSX_PACKAGING_LIBDIR)
 AC_CANONICAL_HOST
 
 
+
+
 echo "Android cross-compiling: $android_cross"
 
 # find and test the freepascal compiler
@@ -218,6 +225,8 @@ fi
 if test x$FPC_PLATFORM = xdarwin; then
    AC_MACOSX_VERSION
 fi
+
+
 
 # -----------------------------------------
 # check for libraries
@@ -460,18 +469,23 @@ elif test $libavutil_VERSION_INT -eq 50043000; then
 elif test $libavutil_VERSION_INT -le 50024000 -a $libavutil_VERSION_INT -ge 49000001; then
     FFMPEG_VERSION="0"
 else
-echo "Fix FFMPEG version"    
-#AC_MSG_ERROR([
 
-#Unsupported ffmpeg version, most recent version supported is 5.0.
-#])
+AC_MSG_ERROR([
+
+Unsupported ffmpeg version, most recent version supported is 5.0.
+])
 fi
 AX_EXTRACT_VERSION(FFMPEG, $FFMPEG_VERSION)
 AC_SUBST(FFMPEG_VERSION)
 AC_MSG_RESULT(@<:@$FFMPEG_VERSION@:>@)
 
 AC_MSG_NOTICE([Checking for C++ compiler])
-AC_PROG_CXX
+if [[ "$android_cross" = "yes" ]]; then
+	AC_PROG_ANDROID_CXX
+else
+  	AC_PROG_CXX
+fi
+
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([if C++ toolchain works])
 cxx_works=no
@@ -558,6 +572,9 @@ if [[ "$with_opencv_cxx_api" = yes ]] ; then
 else
 	opencv_USE_CWRAPPER=no
 fi
+
+
+
 AC_SUBST_DEFINE(USE_OPENCV_CWRAPPER, $opencv_USE_CWRAPPER)
 AC_SUBST(USE_OPENCV_CWRAPPER, $opencv_USE_CWRAPPER)
 AC_SUBST_DEFINE(OPENCV_CORE_STANDALONE, $opencv_core_standalone)
@@ -574,8 +591,19 @@ if [[ "$use_cxx" = yes ]] ; then
 fi
 
 # find portaudio
-PKG_HAVE([portaudio], [portaudio-2.0], no)
-PKG_VERSION([portaudio], [portaudio-2.0])
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_HAVE([portaudio], [portaudio-2.0], no)
+else
+  	PKG_HAVE([portaudio], [portaudio-2.0], no)
+fi
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_VERSION([portaudio], [portaudio-2.0])
+else
+	PKG_VERSION([portaudio], [portaudio-2.0])
+fi
+
+
+
 AC_SUBST_DEFINE(HAVE_PORTAUDIO, $portaudio_HAVE)
 
 # find portmixer
@@ -606,6 +634,7 @@ if [[ x$enable_portmidi != xno ]] ; then
 else
 	portmidi_HAVE=no
 fi
+
 AC_SUBST_DEFINE(HAVE_PORTMIDI, $portmidi_HAVE)
 AC_SUBST_DEFINE(HAVE_PORTTIME, $porttime_HAVE)
 AC_SUBST(porttime_LIB_NAME)
@@ -618,9 +647,13 @@ fi
 AC_SUBST(LDFLAGS)
 AC_SUBST(LIBS)
 
+
+
 # -----------------------------------------
 # create output files
 # -----------------------------------------
+
+AC_SUBST(FPC_ANDROID_FLAGS)
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([src/Makefile])
@@ -631,7 +664,12 @@ fi
 if [[ x$opencv_USE_CWRAPPER = xyes ]]; then
     AC_CONFIG_FILES([src/lib/openCV3/Makefile])
 fi
+
+
 AC_OUTPUT
+
+
+
 
 # -----------------------------------------
 # show results
@@ -663,5 +701,7 @@ if test x$FPC_PLATFORM = xdarwin; then
 !!! Selected packaging: $USE_OSX_PACKAGING with libdir $USE_OSX_PACKAGING_LIBDIR
                    ])
 fi
+
+
 
 
