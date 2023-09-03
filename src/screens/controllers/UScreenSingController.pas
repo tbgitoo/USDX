@@ -82,6 +82,7 @@ type
 
     procedure SongError();
   public
+    CheckPlayerConfigOnNextSong: boolean;
     eSongLoaded: THookableEvent; //< event is called after lyrics of a song are loaded on OnShow
     Paused:     boolean; //pause Mod
     NumEmptySentences: array [0..1] of integer;
@@ -681,6 +682,7 @@ begin
   ScreenSing := self;
   screenSingViewRef := TScreenSingView.Create();
 
+  CheckPlayerConfigOnNextSong := true;
 
   // for now: default to letterbox but preserve aspect between songs
   BackgroundAspectCorrection := acoLetterBox;
@@ -748,11 +750,13 @@ begin
   Text[screenSingViewRef.SongNameText].Visible := false;
 
   BadPlayer := AudioInputProcessor.CheckPlayersConfig(PlayersPlay);
-  if (BadPlayer <> 0) then
+  if (BadPlayer <> 0) and CheckPlayerConfigOnNextSong then
   begin
     ScreenPopupError.ShowPopup(
         Format(Language.Translate('ERROR_PLAYER_NO_DEVICE_ASSIGNMENT'),
         [BadPlayer]));
+    // do not show the warning again, unless something sets this to true again
+    CheckPlayerConfigOnNextSong := false;
   end;
 
   if (CurrentSong.isDuet) then
@@ -1331,6 +1335,10 @@ end;
 
 procedure TScreenSingController.OnHide;
 begin
+  // close video files
+  fVideoClip := nil;
+  fCurrentVideo := nil;
+
   // background texture
   if Tex_Background.TexNum > 0 then
   begin
@@ -1563,10 +1571,6 @@ begin
 
   LyricsState.Stop();
   LyricsState.SetSyncSource(nil);
-
-  // close video files
-  fVideoClip := nil;
-  fCurrentVideo := nil;
 
   // kill all stars and effects
   GoldenRec.KillAll;

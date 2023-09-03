@@ -175,6 +175,8 @@ type
       MaxFramerateGet: byte;
       Screens:        integer;
       Split:          integer;
+      PositionX:      integer;
+      PositionY:      integer;
       Resolution:     integer;             // Resolution for windowed mode
       ResolutionFullscreen:     integer;   // Resolution for real fullscreen (changing Video mode)
       Depth:          integer;
@@ -1590,6 +1592,12 @@ begin
   // FullScreen
   FullScreen := ReadArrayIndex(IFullScreen, IniFile, 'Graphics', 'FullScreen', IGNORE_INDEX, 'Borderless');
 
+  // PositionX
+  PositionX := StrToInt(IniFile.ReadString('Graphics', 'PositionX', '0'));
+
+  // PositionY
+  PositionY := StrToInt(IniFile.ReadString('Graphics', 'PositionY', '0'));
+
   // standard fallback resolutions
   SetLength(IResolution, 27);
   IResolution[0] := '640x480'; // VGA
@@ -2213,6 +2221,10 @@ begin
     // Resolution
     IniFile.WriteString('Graphics', 'Resolution', GetResolution);
     IniFile.WriteString('Graphics', 'ResolutionFullscreen', GetResolutionFullscreen);
+
+    // Position
+    IniFile.WriteString('Graphics', 'PositionX', IntToStr(PositionX));
+    IniFile.WriteString('Graphics', 'PositionY', IntToStr(PositionY));
 
     // Depth
     IniFile.WriteString('Graphics', 'Depth', IDepth[Depth]);

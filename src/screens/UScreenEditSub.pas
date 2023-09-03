@@ -498,14 +498,14 @@ begin
   if (PressedDown) then  // Key Down
   begin
     // check normal keys
-    case PressedKey of
-      SDLK_Q:
+    case UCS4UpperCase(CharCode) of
+      Ord('Q'):
         begin
           Result := false;
           Exit;
         end;
       {
-      SDLK_S:
+      Ord('S'):
         begin
           if SDL_ModState = KMOD_LSHIFT then
           begin
@@ -537,7 +537,7 @@ begin
 
         end;
       }
-      SDLK_S:
+      Ord('S'):
         begin
           // handle medley tags first
           if CurrentSong.isDuet then
@@ -609,7 +609,7 @@ begin
         end;
 
       // set PreviewStart tag
-      SDLK_I:
+      Ord('I'):
         begin
           CopyToUndo;
           if SDL_ModState and KMOD_SHIFT <> 0 then
@@ -700,7 +700,7 @@ begin
         end;
 
       // set Medley tags
-      SDLK_A:
+      Ord('A'):
         begin
           CopyToUndo;
           if CurrentSong.Relative then
@@ -799,7 +799,7 @@ begin
         end;
 
       // jump to Medley tags
-      SDLK_J:
+      Ord('J'):
         begin
           if CurrentSong.Relative then
           begin
@@ -895,7 +895,7 @@ begin
           Exit;
         end;
 
-      SDLK_R:   //reload
+      Ord('R'):   //reload
         begin
           AudioPlayback.Stop;
           {$IFDEF UseMIDIPort}
@@ -907,7 +907,7 @@ begin
           Text[TextInfo].Text := Language.Translate('EDIT_INFO_SONG_RELOADED');
         end;
 
-      SDLK_D:
+      Ord('D'):
         begin
           // Divide lengths by 2
           if (SDL_ModState = KMOD_LSHIFT) then
@@ -936,7 +936,7 @@ begin
           end;
         end;
 
-      SDLK_M:
+      Ord('M'):
         begin
           // Multiply lengths by 2
           if (SDL_ModState = KMOD_LSHIFT) then
@@ -949,7 +949,7 @@ begin
           end;
         end;
 
-      SDLK_C:
+      Ord('C'):
         begin
           // Capitalize letter at the beginning of line
           if SDL_ModState = 0 then
@@ -979,7 +979,7 @@ begin
           Exit;
         end;
 
-      SDLK_V:
+      Ord('V'):
         begin
           if (SDL_ModState = 0) or (SDL_ModState = KMOD_LALT) then // play current line/remainder of song with video
           begin
@@ -1048,7 +1048,7 @@ begin
           ShowInteractiveBackground;
         end;
 
-      SDLK_T:
+      Ord('T'):
         begin
           // Fixes timings between sentences
           CopyToUndo;
@@ -1057,7 +1057,7 @@ begin
           Exit;
         end;
 
-      SDLK_P:
+      Ord('P'):
         begin
           if SDL_ModState = 0 then
           begin
@@ -1119,7 +1119,7 @@ begin
         end;
 
       // Golden Note
-      SDLK_G:
+      Ord('G'):
         begin
           CopyToUndo;
           if (Tracks[CurrentTrack].Lines[Tracks[CurrentTrack].CurrentLine].Notes[CurrentNote[CurrentTrack]].NoteType = ntGolden) then
@@ -1142,7 +1142,7 @@ begin
         end;
 
       // Freestyle Note
-      SDLK_F:
+      Ord('F'):
         begin
           CopyToUndo;
           if (Tracks[CurrentTrack].Lines[Tracks[CurrentTrack].CurrentLine].Notes[CurrentNote[CurrentTrack]].NoteType = ntFreestyle) then
@@ -1169,7 +1169,7 @@ begin
         end;
 
       // undo
-      SDLK_Z:
+      Ord('Z'):
         begin
           if SDL_ModState = KMOD_LCTRL then
           begin
