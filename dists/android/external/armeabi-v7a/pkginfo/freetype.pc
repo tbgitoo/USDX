@@ -1,0 +1,15 @@
+# freetype pkg-config source file
+
+prefix=dists/android/external/armeabi-v7a
+exec_prefix=dists/android/external/armeabi-v7a
+libdir=dists/android/external/armeabi-v7a
+includedir=dists/android/external/armeabi-v7a
+
+Name: freetype
+Description: A free, high-quality, and portable font engine.
+Version: 2.4.4
+Requires: 
+Requires.private: zlib, libpng
+Libs: -Ldists/android/external/armeabi-v7a/lib -lfreetype
+Libs.private: -lbz2
+Cflags: -Idists/android/external/armeabi-v7a/include/freetype

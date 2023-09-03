@@ -7,11 +7,11 @@
 
 {$IF Defined(IncludeConstants)}
   lua_lib_name = 'lua5.4';
-  LUA_VERSION_INT     = 5004002;
-  LUA_VERSION_RELEASE = '2';
+  LUA_VERSION_INT     = 5004006;
+  LUA_VERSION_RELEASE = '6';
   LUA_VERSION_MINOR   = '4';
   LUA_VERSION_MAJOR   = '5';
-  LUA_VERSION         = '5.4.2';
+  LUA_VERSION         = '5.4.6';
   LUA_INTEGER_BITS    = 64;
 {$IFEND}
 
@@ -19,8 +19,8 @@
 {$IF Defined(HaveFFmpeg)}
   {$MACRO ON}
   {$IFNDEF FFMPEG_DIR}
-    {$IF (0 > 0) or (5 > 0)}
-      {$DEFINE FFMPEG_DIR := 'ffmpeg-5.0'}
+    {$IF (0 > 0) or (6 > 0)}
+      {$DEFINE FFMPEG_DIR := 'ffmpeg-6.0'}
       {$DEFINE FF_API_OLD_DECODE_AUDIO}
     {$ELSE}
       {$DEFINE FFMPEG_DIR := 'ffmpeg'}
@@ -28,25 +28,25 @@
     {$IFEND}
   {$ENDIF}
   {$IF Defined(IncludeConstants)}
-    FFMPEG_VERSION_INT = 5000000;
+    FFMPEG_VERSION_INT = 6000000;
 
   av__codec = 'libavcodec';
-  LIBAVCODEC_VERSION_MAJOR   = 59;
-  LIBAVCODEC_VERSION_MINOR   = 37;
+  LIBAVCODEC_VERSION_MAJOR   = 60;
+  LIBAVCODEC_VERSION_MINOR   = 3;
   LIBAVCODEC_VERSION_RELEASE = 100;
 
   av__format = 'libavformat';
-  LIBAVFORMAT_VERSION_MAJOR   = 59;
-  LIBAVFORMAT_VERSION_MINOR   = 27;
+  LIBAVFORMAT_VERSION_MAJOR   = 60;
+  LIBAVFORMAT_VERSION_MINOR   = 3;
   LIBAVFORMAT_VERSION_RELEASE = 100;
 
   av__util = 'libavutil';
-  LIBAVUTIL_VERSION_MAJOR   = 57;
-  LIBAVUTIL_VERSION_MINOR   = 28;
+  LIBAVUTIL_VERSION_MAJOR   = 58;
+  LIBAVUTIL_VERSION_MINOR   = 2;
   LIBAVUTIL_VERSION_RELEASE = 100;
   {$IFEND}
 
-  {$IF (5 < 4)}
+  {$IF (6 < 4)}
     {$DEFINE UseFFmpegResample}
   {$IFEND}
 
@@ -55,8 +55,8 @@
 {$DEFINE HaveSWScale}
 {$IF Defined(HaveSWScale) and Defined(IncludeConstants)}
   sw__scale = 'libswscale';
-  LIBSWSCALE_VERSION_MAJOR   = 6;
-  LIBSWSCALE_VERSION_MINOR   = 7;
+  LIBSWSCALE_VERSION_MAJOR   = 7;
+  LIBSWSCALE_VERSION_MINOR   = 1;
   LIBSWSCALE_VERSION_RELEASE = 100;
 {$IFEND}
 
@@ -65,7 +65,7 @@
 {$IF Defined(HaveSWResample) and Defined(IncludeConstants)}
   sw__resample = 'libswresample';
   LIBSWRESAMPLE_VERSION_MAJOR   = 4;
-  LIBSWRESAMPLE_VERSION_MINOR   = 7;
+  LIBSWRESAMPLE_VERSION_MINOR   = 10;
   LIBSWRESAMPLE_VERSION_RELEASE = 100;
 {$IFEND}
 

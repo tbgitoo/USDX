@@ -14,7 +14,7 @@
 #   PKG_VALUE(VARIABLE_PREFIX, POSTFIX, COMMAND, MODULE, HELP-STRING)
 #
 # DESCRIPTION
-#
+#PKG_CHECK_EXISTS
 #   Calls pkg-config with a given command and stores the result.
 #   If the variable was already defined by the user or the package
 #   is not present on the system ([$VARIABLE_PREFIX]_HAVE <> yes) 

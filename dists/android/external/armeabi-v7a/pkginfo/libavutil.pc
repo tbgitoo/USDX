@@ -1,0 +1,14 @@
+prefix=dists/android/external/armeabi-v7a
+exec_prefix=dists/android/external/armeabi-v7a
+libdir=dists/android/external/armeabi-v7a
+includedir=dists/android/external/armeabi-v7a/include/ffmpeg
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 58.2.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil 
+Libs.private: -pthread -lm -latomic
+Cflags: -I${includedir}

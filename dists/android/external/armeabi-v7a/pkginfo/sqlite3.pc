@@ -1,0 +1,12 @@
+# sdl pkg-config source file
+
+prefix=dists/android/external/armeabi-v7a
+exec_prefix=dists/android/external/armeabi-v7a
+libdir=dists/android/external/armeabi-v7a
+includedir=dists/android/external/armeabi-v7a
+
+Name: sqlite3
+Description: Database
+Version: 3160100
+Libs: -Ldists/android/external/armeabi-v7a/lib
+Cflags: 

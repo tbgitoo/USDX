@@ -1,0 +1,13 @@
+# sdl image pkg-config source file
+
+prefix=dists/android/external/armeabi-v7a
+exec_prefix=dists/android/external/armeabi-v7a
+libdir=dists/android/external/armeabi-v7a
+includedir=dists/android/external/armeabi-v7a
+
+Name: sdl2_image
+Description: This is a simple library to load images of various formats as SDL surfaces.
+It can load BMP, GIF, JPEG, LBM, PCX, PNG, PNM (PPM/PGM/PBM), QOI, TGA, XCF, XPM, and simple SVG format images.
+Version: SDL_image-2.0
+Libs: -Ldists/android/external/armeabi-v7a/lib
+Cflags: 

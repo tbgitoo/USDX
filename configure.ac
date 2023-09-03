@@ -116,6 +116,8 @@ AC_ARG_WITH([android],
       [do android cross compilation @<:@default=no@:>@])],
     [android_cross="yes"], [android_cross="no"])
 
+
+
 # add DEPRECATED global and local options
 AC_ARG_ENABLE(global, [AS_HELP_STRING([--enable-global], [(DEPRECATED, DO NOT USE]))])
 AC_ARG_ENABLE(local, [AS_HELP_STRING([--enable-local], [(DEPRECATED, DO NOT USE]))])
@@ -162,12 +164,18 @@ AC_SUBST(USE_OSX_PACKAGING_LIBDIR, $USE_OSX_PACKAGING_LIBDIR)
 # check for compilers
 # -----------------------------------------
 
+
 AC_CANONICAL_HOST
+
+
+echo "Android cross-compiling: $android_cross"
 
 # find and test the freepascal compiler
 # sets PFLAGS, FPC_VERSION, FPC_DEBUG, etc.
-if [[ $android_cross=yes ]]; then
+if [[ "$android_cross" = "yes" ]]; then
+  echo "Checking Android NDK"
   AC_PROG_ANDROID_NDK
+  echo "Checking cross-compiler"
   AC_PROG_PPCROSSARM
 else
   AC_PROG_FPC
@@ -182,7 +190,7 @@ if [[ "$FPC_VERSION_MAJOR" -lt 3 ]]; then
 fi
 
 # find and test the C compiler (for C-libs and wrappers)
-if [[ $android_cross=yes ]]; then
+if [[ "$android_cross" = "yes" ]]; then
   AC_PROG_ANDROID_CC
 else
   AC_PROG_CC
@@ -216,22 +224,38 @@ fi
 # -----------------------------------------
 
 # find sdl2
-#if [[ $android_cross=yes ]]; then
-#  PKG_HAVE_ANDROID([sdl2], [sdl2], yes)
-#else
-#  PKG_HAVE([sdl2], [sdl2], yes)
-#fi
+if [[ "$android_cross" = "yes" ]]; then
+  ANDROID_PKG_HAVE([sdl2], [sdl2], yes)
+else
+  PKG_HAVE([sdl2], [sdl2], yes)
+fi
 
-PKG_HAVE([sdl2], [sdl2], yes)
+
 
 # find SDL2_image
-PKG_HAVE([sdl2_image], [SDL2_image], yes)
-
+if [[ "$android_cross" = "yes" ]]; then
+  ANDROID_PKG_HAVE([sdl2_image], [sdl2_image], yes)
+else
+  PKG_HAVE([sdl2_image], [SDL2_image], yes)
+fi
 # find freetype
-PKG_HAVE([freetype], [freetype2], yes)
+if [[ "$android_cross" = "yes" ]]; then
+  ANDROID_PKG_HAVE([freetype], [freetype], yes)
+else
+  PKG_HAVE([freetype], [freetype2], yes)
+fi
+
+
 
 # find sqlite3
-PKG_HAVE([sqlite3], [sqlite3], yes)
+
+if [[ "$android_cross" = "yes" ]]; then
+  ANDROID_PKG_HAVE([sqlite3], [sqlite3], yes)
+else
+  PKG_HAVE([sqlite3], [sqlite3], yes)
+fi
+
+
 
 # find lua 5.3, 5.2 or 5.11
 # (K)Ubuntu uses lua5.2.pc and lua5.1.pc, 
@@ -240,21 +264,38 @@ PKG_HAVE([sqlite3], [sqlite3], yes)
 # to make it work alongside the 5.2 version.
 
 for i in 5.4 5.3 5.2 5.1 ; do
-    PKG_HAVE([lua], [lua$i], check)
+    if [[ "$android_cross" = "yes" ]]; then
+  	ANDROID_PKG_HAVE([lua], [lua$i], yes)
+    else
+  	PKG_HAVE([lua], [lua$i], check)
+    fi
     if [[ x$lua_HAVE = xyes ]]; then
         lua_LIB_NAME="lua$i"
-        PKG_VERSION([lua], [lua$i])
+	if [[ "$android_cross" = "yes" ]]; then
+  	     ANDROID_PKG_VERSION([lua], [lua$i])
+    	else
+  	    PKG_VERSION([lua], [lua$i])
+    	fi   
         break
     fi
 done
 
 if [[ x$lua_HAVE != xyes ]]; then
-    PKG_HAVE([lua], [lua >= 5.1], yes)
+    if [[ "$android_cross" = "yes" ]]; then
+  	ANDROID_PKG_HAVE([lua], [lua >= 5.1], yes)
+    else
+  	PKG_HAVE([lua], [lua >= 5.1], check)
+    fi
     lua_LIB_NAME="lua"
     PKG_VERSION([lua], [lua])
 fi
+
 AC_MSG_CHECKING([size of lua_Integer])
-PKG_VALUE([lua],[CFLAGS],[cflags],[$lua_LIB_NAME],[C compiler flags for Lua])
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_VALUE([lua],[CFLAGS],[cflags],[$lua_LIB_NAME],[C compiler flags for Lua])
+else
+  	PKG_VALUE([lua],[CFLAGS],[cflags],[$lua_LIB_NAME],[C compiler flags for Lua])
+fi
 old_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS $lua_CFLAGS"
 AC_COMPUTE_INT([LUA_INTEGER_BITS],[(long)sizeof(lua_Integer)*8],[#include <lua.h>])
@@ -280,7 +321,14 @@ AC_SUBST(lua_LIB_NAME)
 #   A check for version >=52.0.0 will return version 0d.51.1.2 
 #   although it is lower because pkg-config is confused by the 0d.
 # Use [mylib]_VERSION_INT for version-checking instead
-PKG_HAVE([libavcodec], [libavcodec], check)
+
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_HAVE([libavcodec], [libavcodec], check)
+else
+  	PKG_HAVE([libavcodec], [libavcodec], check)
+fi
+
+
 # The following finds libavcodec.pc in its new location on Mac OS X.
 # It only takes the last from the list, assuming that this is the latest 
 # version.
@@ -295,14 +343,37 @@ if [[ x$libavcodec_HAVE = xno -a x$FPC_PLATFORM = xdarwin ]]; then
     export PKG_CONFIG_PATH
     PKG_HAVE([libavcodec], [libavcodec], yes)
 fi
+if [[ "$android_cross" = "yes" ]]; then
+ANDROID_PKG_VERSION([libavcodec], [libavcodec])
+else
 PKG_VERSION([libavcodec], [libavcodec])
+fi
 AC_CHECK_LIB([avcodec], [avcodec_decode_audio], [HAVE_AVCODEC_DECODE_AUDIO="yes"])
 AC_CHECK_LIB([avcodec], [avcodec_decode_audio2], [HAVE_AVCODEC_DECODE_AUDIO2="yes"])
 AC_CHECK_LIB([avcodec], [img_convert], [HAVE_IMG_CONVERT="yes"])
-PKG_HAVE([libavformat], [libavformat], yes)
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_HAVE([libavformat], [libavformat], yes)
+else
+  	PKG_HAVE([libavformat], [libavformat], yes)
+fi
+if [[ "$android_cross" = "yes" ]]; then
+ANDROID_PKG_VERSION([libavformat], [libavformat])
+else
 PKG_VERSION([libavformat], [libavformat])
-PKG_HAVE([libavutil], [libavutil], yes)
+fi
+
+
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_HAVE([libavutil], [libavutil], yes)
+else
+  	PKG_HAVE([libavutil], [libavutil], yes)
+fi
+if [[ "$android_cross" = "yes" ]]; then
+ANDROID_PKG_VERSION([libavutil], [libavutil])
+else
 PKG_VERSION([libavutil], [libavutil])
+fi
+
 if [[ x$libavcodec_HAVE = xyes -a x$libavformat_HAVE = xyes -a x$libavutil_HAVE = xyes ]]; then
     ffmpeg_HAVE=yes
 else
@@ -311,12 +382,30 @@ fi
 AC_SUBST_DEFINE(HAVE_FFMPEG, $ffmpeg_HAVE)
 
 # find FFMpeg's swscale lib (just if FFMpeg is compiled in GPL mode)
-PKG_HAVE([libswscale], [libswscale], no)
-PKG_VERSION([libswscale], [libswscale])
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_HAVE([libswscale], [libswscale], yes)
+else
+  	PKG_HAVE([libswscale], [libswscale], yes)
+fi
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_VERSION([libswscale], [libswscale])
+else
+	PKG_VERSION([libswscale], [libswscale])
+fi
+
 AC_SUBST_DEFINE(HAVE_SWSCALE, $libswscale_HAVE)
 
-PKG_HAVE([libswresample], [libswresample], no)
-PKG_VERSION([libswresample], [libswresample])
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_HAVE([libswresample], [libswresample], yes)
+else
+  	PKG_HAVE([libswresample], [libswresample], yes)
+fi
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_VERSION([libswresample], [libswresample])
+else
+	PKG_VERSION([libswresample], [libswresample])
+fi
+
 AC_SUBST_DEFINE(HAVE_SWRESAMPLE, $libswresample_HAVE)
 
 # map avutil library version to ffmpeg version
@@ -371,10 +460,11 @@ elif test $libavutil_VERSION_INT -eq 50043000; then
 elif test $libavutil_VERSION_INT -le 50024000 -a $libavutil_VERSION_INT -ge 49000001; then
     FFMPEG_VERSION="0"
 else
-    AC_MSG_ERROR([
+echo "Fix FFMPEG version"    
+#AC_MSG_ERROR([
 
-Unsupported ffmpeg version, most recent version supported is 5.0.
-])
+#Unsupported ffmpeg version, most recent version supported is 5.0.
+#])
 fi
 AX_EXTRACT_VERSION(FFMPEG, $FFMPEG_VERSION)
 AC_SUBST(FFMPEG_VERSION)

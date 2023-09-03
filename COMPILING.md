@@ -108,11 +108,48 @@ export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/arm-linux-androideabi-
 export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
 export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/x86_64-linux-android/bin/ranlib
 
-
-
-
 See https://lists.gnu.org/archive/html/autoconf/2013-10/msg00004.html for some discussion
 
 
-./configure --host=x86_64-darwin --build=arm
+SDL2: If you want to compile these, use the ndk compilers. For a starting example of how to do that, see  https://github.com/AlexanderAgd/SDL2-Android/
+
+For compilation, it is also advantageous to set appropriate environment variables. For example:
+
+Set the following in your your .bash profile
+PATH=$PATH:~/Library/Android/sdk/ndk/25.2.9519653
+PATH=$PATH:~/Library/Android/sdk/tools
+export ANDROID_NDK_HOME=~/Library/Android/sdk/ndk/25.2.9519653
+
+If you want to use the script at https://github.com/AlexanderAgd/SDL2-Android/, the command would be something like
+
+./build_SDL2.sh  --api=21 --arch=armeabi-v7a 
+
+or similar depending on what the architecture and version
+
+Freetype: 
+
+git clone https://github.com/castle-engine/android-freetype/
+
+Edit the make file to copy the libfreetype.so library for the armeabi-v7a architecture to the correct pace at dists/android/external/armeabi-v7a
+
+make build
+
+Sqlite3
+
+https://github.com/stockrt/sqlite3-android
+
+lua
+https://www.lua.org/ftp/lua-5.4.6.tar.gz
+https://blog.spreendigital.de/2020/05/30/how-to-compile-lua-5-4-0-for-android-as-a-dynamic-library-using-android-studio-4/
+
+ffmpeg
+https://github.com/Javernaut/ffmpeg-android-maker
+
+
+
+
+#USDX
+
+autoconf -f
+./configure --host=x86_64-darwin --build=arm --with-android
 `

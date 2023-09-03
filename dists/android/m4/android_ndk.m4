@@ -11,7 +11,9 @@
 #   Sets:
 #     ANDROID_NDK_ROOT  
 #     ANDROID_NDK_LIB: usr/lib directory in the android ndk with necessary binaries
-#     ANDROID_NDK_LEVEL: 21    
+#     ANDROID_NDK_LEVEL: 21 
+#     ANDROID_ARCH
+#     ANDROID_ARCH_VERSION
 
 #
 #     Note: 
@@ -59,6 +61,10 @@ ANDROID_NDK_LEVEL=21
 ANDROID_NDK_LIB=${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NDK_LEVEL}/arch-arm/usr/lib
 
 echo $ANDROID_NDK_LIB
+
+
+ANDROID_ARCH=arm
+ANDROID_ARCH_VERSION=v7a
 
 
 ])

@@ -1,0 +1,14 @@
+prefix=dists/android/external/armeabi-v7a
+exec_prefix=dists/android/external/armeabi-v7a
+libdir=dists/android/external/armeabi-v7a
+includedir=dists/android/external/armeabi-v7a/include/ffmpeg
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 60.3.100
+Requires: 
+Requires.private: libavcodec , libswresample , libavutil 
+Conflicts:
+Libs: -L${libdir}  -lavformat 
+Libs.private: -lm -latomic -lz
+Cflags: -I${includedir}

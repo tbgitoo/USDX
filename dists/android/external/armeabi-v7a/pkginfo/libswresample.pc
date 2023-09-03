@@ -1,0 +1,14 @@
+prefix=dists/android/external/armeabi-v7a
+exec_prefix=dists/android/external/armeabi-v7a
+libdir=dists/android/external/armeabi-v7a
+includedir=dists/android/external/armeabi-v7a/include/ffmpeg
+
+Name: libswresample
+Description: FFmpeg audio resampling library
+Version: 4.10.100
+Requires: 
+Requires.private: libavutil
+Conflicts:
+Libs: -L${libdir}  -lswresample 
+Libs.private: -lm -latomic
+Cflags: -I${includedir}
