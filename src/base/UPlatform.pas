@@ -66,6 +66,8 @@ uses
   UPlatformWindows,
   {$ELSEIF Defined(DARWIN)}
   UPlatformMacOSX,
+  {$ELSEIF Defined(ANDROID)}
+  UPlatformAndroid,
   {$ELSEIF Defined(UNIX)}
   UPlatformLinux,
   {$IFEND}

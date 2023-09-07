@@ -11,7 +11,7 @@
 #   Sets:
 #     ANDROID_NDK_ROOT  
 #     ANDROID_NDK_LIB: usr/lib directory in the android ndk with necessary binaries
-#     ANDROID_NDK_LEVEL: 21 
+#     ANDROID_NDK_LEVEL: 29 
 #     ANDROID_ARCH
 #     ANDROID_ARCH_VERSION
 
@@ -56,7 +56,7 @@ if test -z "$ANDROID_NDK_ROOT"; then
    AC_MSG_ERROR([Android NDK kit not found])
 fi
 
-ANDROID_NDK_LEVEL=21
+ANDROID_NDK_LEVEL=29
 
 ANDROID_NDK_LIB=${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NDK_LEVEL}/arch-arm/usr/lib
 

@@ -122,21 +122,30 @@ export ANDROID_NDK_HOME=~/Library/Android/sdk/ndk/25.2.9519653
 
 If you want to use the script at https://github.com/AlexanderAgd/SDL2-Android/, the command would be something like
 
-./build_SDL2.sh  --api=21 --arch=armeabi-v7a 
+./build_SDL2.sh  --api=29 --arch=armeabi-v7a 
 
-or similar depending on what the architecture and version
+or similar depending on what the architecture and version. Android API version of at least 29 is generally required to have access to midi via Amidi.h, so we compile everything at API version of at least 29
+
+Of the libraries produced, we use the shard object libraries libSDL2.so and libSDL2_image.so, as well as the static archive libraries libcpufeatures.a, libjpeg.a, and libpng.a. These are produced in the liball folder, and should be copied over to dist/external/armeabi-v7a for the .so files, and libcpufeatures.a, libjpeg.a and libpng.a to dist/external/armeabi-v7a/lib
 
 Freetype: 
 
 git clone https://github.com/castle-engine/android-freetype/
 
-Edit the make file to copy the libfreetype.so library for the armeabi-v7a architecture to the correct pace at dists/android/external/armeabi-v7a
+Edit the make file to copy the libfreetype.so library for the armeabi-v7a architecture to the correct pace at dists/android/external/armeabi-v7a, i.e. add something of the type 
+	cp -f Android/libs/armeabi-v7a/libfreetype.so \
+	  path/to/USDX/dists/android/external/armeabi-v7a/libfreetype.so
 
 make build
 
 Sqlite3
 
 https://github.com/stockrt/sqlite3-android
+
+cd /whereever/you/have/sqlite3-android
+make
+
+This defaults to the lowest compatible Android level, which is typically 19, this should be OK
 
 lua
 https://www.lua.org/ftp/lua-5.4.6.tar.gz
@@ -151,10 +160,59 @@ mkdir -p build && cd build
 cmake     -DANDROID_PLATFORM=android-21     -DANDROID_ABI=armeabi-v7a     -DCMAKE_BUILD_TYPE=Debug     -DCMAKE_TOOLCHAIN_FILE=/Users/thomasbraschler/Library/Android/sdk/ndk/25.2.9519653/build/cmake/android.toolchain.cmake ..
 make
 
+Add Android to sdlsyswm.inc
 https://github.com/ev1313/Pascal-SDL-2-Headers/blob/master/sdlsyswm.inc
+
+
+
+https://github.com/liudasheng/alsa-lib-android/
+autoconf -f
+export CC=~/Library/Android/sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/bin/armv7a-linux-androideabi21-clang
+./configure --host=arm \
+ --disable-resmgr \
+ --enable-aload \
+ --enable-mixer \
+ --enable-pcm \
+ --disable-rawmidi \
+ --enable-hwdep \
+ --disable-seq \
+ --disable-alisp \
+ --disable-old-symbols \
+ --disable-python \
+ --with-plugindir=/system/usr/lib/alsa-lib \
+ --with-versioned=no \
+ --with-debug=no \
+ --with-tmpdir=/tmp \
+ --with-softfloat=yes \
+ --with-libdl=yes \
+ --with-pthread=yes \
+ --with-librt=no \
+ --with-alsa-devdir=/dev/snd \
+ --with-aload-devdir=/dev \
+ --with-pcm-plugins="plug null empty hooks asym extplug ioplug" \
+ --with-ctl-plugins="ext" \
+ --enable-shared=yes --enable-static=no
+ make
+
+I encountered minor issues during cross-compilation: 
+
+=> in include/global.h there was duplication of definition of timeval and timespec, this can be prevented by extending the defined conditions:
+// something like #if !defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE) &&!defined( __ANDROID_API__ ), that is added the !defined(__ANDROID_API__)
+
+=> in src/pcm/pcm_direct.h, a simular duplication for union semun
+!defined(__ANDROID_API__)
+
+
+
+https://github.com/schollz/portmidi-1/
+
+https://android.googlesource.com/platform/frameworks/base/+/f347c95/media/native/midi/amidi.cpp
+
+https://github.com/android/ndk-samples/tree/main/native-midi/app/src/main/cpp
 
 #USDX
 
 autoconf -f
 ./configure --host=x86_64-darwin --build=arm --with-android
+make android
 `

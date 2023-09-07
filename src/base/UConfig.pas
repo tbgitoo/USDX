@@ -114,6 +114,8 @@ const
     {$I ../config-freebsd.inc}
   {$ELSEIF Defined(Darwin)}
     {$I ../config-darwin.inc}
+  {$ELSEIF Defined(Android)}
+    {$I ../config-android.inc}
   {$ELSE}
     {$MESSAGE Fatal 'Unknown OS'}
   {$IFEND}

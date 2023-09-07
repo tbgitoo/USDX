@@ -288,6 +288,8 @@ uses
   UPlatformWindows  in 'base\UPlatformWindows.pas',
 {$ELSEIF Defined(DARWIN)}
   UPlatformMacOSX   in 'base\UPlatformMacOSX.pas',
+{$ELSEIF Defined(ANDROID)}
+UPlatformAndroid   in 'base\UPlatformAndroid.pas',
 {$ELSEIF Defined(UNIX)}
   UPlatformLinux    in 'base\UPlatformLinux.pas',
 {$IFEND}

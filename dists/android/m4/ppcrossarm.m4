@@ -172,7 +172,7 @@ FPC_PREFIX=`which ppcrossarm | sed -e "s/\/lib\/fpc\/${FPC_VERSION}\/ppcrossarm/
 
 
 FPC_BASE_PATH="${FPC_PREFIX}/lib/fpc/${FPC_VERSION}"
-FPC_UNIT_PATH="${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl"
+FPC_UNIT_PATH="${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl:${FPC_BASE_PATH}/units/${FPC_TARGET}/fcl-base:${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl-objpas:${FPC_BASE_PATH}/units/${FPC_TARGET}/pasjpeg"
 
 
 AC_SUBST(FPC_PREFIX)
@@ -185,7 +185,7 @@ AC_SUBST(FPC_UNIT_PATH)
 
 SIMPLE_PROGRAM="program foo; begin writeln; end."
 
-FPC_ANDROID_FLAGS="-T${FPC_PLATFORM} -Fu${FPC_UNIT_PATH}:${ANDROID_NDK_LIB}"
+FPC_ANDROID_FLAGS="-T${FPC_PLATFORM} -Fu${FPC_UNIT_PATH}:${ANDROID_NDK_LIB} -Fl${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/${ANDROID_NDK_LEVEL}"
 
 
 
