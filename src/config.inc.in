@@ -89,6 +89,7 @@
   PORTAUDIO_VERSION_RELEASE = @portaudio_VERSION_RELEASE@;
 {$IFEND}
 
+{$@DEFINE_HAVE_AMIDI@ HaveAMidi}
 {$@DEFINE_HAVE_PORTMIXER@ HavePortmixer}
 {$@DEFINE_HAVE_PORTMIDI@ UsePortMidi}
 {$IF Defined(UsePortMidi)}

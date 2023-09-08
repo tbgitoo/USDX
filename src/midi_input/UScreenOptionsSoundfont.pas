@@ -44,7 +44,11 @@ uses
   sdl2,
   UMidiInputStream,
   UMenuText,
+  {$IFDEF UsePortMidi}
   PortMidi,
+  {$ELSE}
+  Amidi,
+  {$ENDIF}
   UFluidSynth,
   UMidiTransfer;
 

@@ -172,7 +172,7 @@ FPC_PREFIX=`which ppcrossarm | sed -e "s/\/lib\/fpc\/${FPC_VERSION}\/ppcrossarm/
 
 
 FPC_BASE_PATH="${FPC_PREFIX}/lib/fpc/${FPC_VERSION}"
-FPC_UNIT_PATH="${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl:${FPC_BASE_PATH}/units/${FPC_TARGET}/fcl-base:${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl-objpas:${FPC_BASE_PATH}/units/${FPC_TARGET}/pasjpeg"
+FPC_UNIT_PATH="${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl:${FPC_BASE_PATH}/units/${FPC_TARGET}/fcl-base:${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl-objpas:${FPC_BASE_PATH}/units/${FPC_TARGET}/pasjpeg:${FPC_BASE_PATH}/units/${FPC_TARGET}/hash"
 
 
 AC_SUBST(FPC_PREFIX)

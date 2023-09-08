@@ -37,7 +37,13 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Classes, PortMidi, sysutils,CTypes, UCommon, UTextEncoding;
+  Classes,
+  {$IFDEF UsePortMidi}
+  PortMidi,
+  {$ELSE}
+  Amidi,
+  {$ENDIF}
+  sysutils,CTypes, UCommon, UTextEncoding;
 
 
 

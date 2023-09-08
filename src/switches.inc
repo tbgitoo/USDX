@@ -70,6 +70,10 @@
   {$ELSEIF Defined(Linux)}
     {$I config-linux.inc}
   {$IFEND}
+  
+ {$IF Defined(ANDROID)}
+ {$I config-android.inc}
+ {$IFEND}
 
   // use "configure --enable-debug", "make debug" or
   // the command-line parameter "-debug" instead of defining DEBUG directly

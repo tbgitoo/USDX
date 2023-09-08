@@ -35,7 +35,8 @@ interface
 
 uses
   UPath,
-  UCommon;
+  UCommon,
+  SysUtils;
 
 type
   TSkinTexture = record
@@ -80,7 +81,6 @@ implementation
 uses
   IniFiles,
   Classes,
-  SysUtils,
   Math,
   UIni,
   ULog,

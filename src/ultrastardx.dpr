@@ -85,8 +85,13 @@ uses
   portmixer              in 'lib\portmixer\portmixer.pas',
   {$ENDIF}
   {$IFDEF UsePortMidi}
-  portmidi               in 'lib\portmidi\portmidi.pp',
+  {$IFNDEF HaveAMidi}
+  portmidi               in 'lib\portmidi\portmidi.pp', 
   {$ENDIF}
+  {$ENDIF}
+  {$IFDEF HaveAMidi}
+  amidi               in 'lib\amidi\amidi.pp',
+  {$ENDIF} 
   {$IFDEF UsePortTime}
   porttime               in 'lib\portmidi\porttime.pp',
   {$ENDIF}
@@ -148,6 +153,10 @@ uses
         MidiOut       in 'lib\portmidi\MidiOut.pas',
       {$ENDIF}
     {$ENDIF}
+  {$ELSE}
+     {$IFDEF HaveAMidi}
+  	MidiFile          in 'lib\midi\MidiFile.pas',
+     {$ENDIF} 
   {$ENDIF}
 
   {$IFDEF MSWINDOWS}

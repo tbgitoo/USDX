@@ -635,6 +635,14 @@ else
 	portmidi_HAVE=no
 fi
 
+amidi_HAVE=no
+if [[ "$android_cross" = "yes" ]]; then
+AC_CHECK_LIB([AMidi], [AMidiDevice_fromJava], [
+        amidi_HAVE=yes
+        ])
+fi
+
+AC_SUBST_DEFINE(HAVE_AMIDI, $amidi_HAVE)
 AC_SUBST_DEFINE(HAVE_PORTMIDI, $portmidi_HAVE)
 AC_SUBST_DEFINE(HAVE_PORTTIME, $porttime_HAVE)
 AC_SUBST(porttime_LIB_NAME)
