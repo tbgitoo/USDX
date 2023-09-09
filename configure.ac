@@ -296,7 +296,9 @@ if [[ x$lua_HAVE != xyes ]]; then
   	PKG_HAVE([lua], [lua >= 5.1], check)
     fi
     lua_LIB_NAME="lua"
+    if [[ "$android_cross" != "yes" ]]; then
     PKG_VERSION([lua], [lua])
+    fi
 fi
 
 AC_MSG_CHECKING([size of lua_Integer])
@@ -311,6 +313,7 @@ AC_COMPUTE_INT([LUA_INTEGER_BITS],[(long)sizeof(lua_Integer)*8],[#include <lua.h
 CFLAGS="$old_CFLAGS"
 AC_SUBST(LUA_INTEGER_BITS)
 AC_MSG_RESULT([$LUA_INTEGER_BITS bits])
+
 lua_lib_candidates=
 for i in $lua_LIBS ; do
 	case "$i" in

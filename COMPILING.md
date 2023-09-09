@@ -126,7 +126,7 @@ If you want to use the script at https://github.com/AlexanderAgd/SDL2-Android/, 
 
 or similar depending on what the architecture and version. Android API version of at least 29 is generally required to have access to midi via Amidi.h, so we compile everything at API version of at least 29
 
-Of the libraries produced, we use the shard object libraries libSDL2.so and libSDL2_image.so, as well as the static archive libraries libcpufeatures.a, libjpeg.a, and libpng.a. These are produced in the liball folder, and should be copied over to dist/external/armeabi-v7a for the .so files, and libcpufeatures.a, libjpeg.a and libpng.a to dist/external/armeabi-v7a/lib
+Of the libraries produced, we use the shard object libraries libSDL2.so and libSDL2_image.so, as well as the static archive libraries libcpufeatures.a, libjpeg.a, and libpng.a. These are produced in the liball folder, and should be copied over to dists/android/external/armeabi-v7a for the .so files, and libcpufeatures.a, libjpeg.a and libpng.a to dists/android/external/armeabi-v7a/lib
 
 Freetype: 
 
@@ -138,6 +138,8 @@ Edit the make file to copy the libfreetype.so library for the armeabi-v7a archit
 
 make build
 
+Copy over the libfreetype.so generated to dists/android/external/armeabi-v7a
+
 Sqlite3
 
 https://github.com/stockrt/sqlite3-android
@@ -145,11 +147,16 @@ https://github.com/stockrt/sqlite3-android
 cd /whereever/you/have/sqlite3-android
 make
 
+Copy over the libsqlite3.so to dists/android/external/armeabi-v7a 
+
 This defaults to the lowest compatible Android level, which is typically 19, this should be OK
 
 lua
 https://www.lua.org/ftp/lua-5.4.6.tar.gz
 https://blog.spreendigital.de/2020/05/30/how-to-compile-lua-5-4-0-for-android-as-a-dynamic-library-using-android-studio-4/
+
+Copy over the libsqlite3.so to dists/android/external/armeabi-v7a
+Also, rename to only the major version , i.e. 5.4, during configuration, the minor version is truncated
 
 ffmpeg
 https://github.com/Javernaut/ffmpeg-android-maker
