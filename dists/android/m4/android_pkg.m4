@@ -7,10 +7,10 @@ AC_DEFUN([ANDROID_PKG_HAVE],
         have_lib="yes"
     elif test x"$with_[$1]" != xno; then
         # check if package exists
-        PKG_CHECK_EXISTS([dists/android/external/${ANDROID_ARCH}eabi-${ANDROID_ARCH_VERSION}/pkginfo/$2.pc], [
+        PKG_CHECK_EXISTS([dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc], [
             have_lib="yes"
-            [$1][_LIBS]=`$PKG_CONFIG --libs --silence-errors "dists/android/external/${ANDROID_ARCH}eabi-${ANDROID_ARCH_VERSION}/pkginfo/$2.pc"`
-            [$1][_LIBDIRS]=`$PKG_CONFIG --libs-only-L --silence-errors "dists/android/external/${ANDROID_ARCH}eabi-${ANDROID_ARCH_VERSION}/pkginfo/$2.pc"`
+            [$1][_LIBS]=`$PKG_CONFIG --libs --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc"`
+            [$1][_LIBDIRS]=`$PKG_CONFIG --libs-only-L --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc"`
             [$1][_LIBDIRS]=`AX_TRIM($[$1][_LIBDIRS])`
             # add library directories to LIBS (ignore *_LIBS for now)
 	    if test -n "$[$1][_LIBDIRS]"; then
@@ -56,7 +56,7 @@ AC_DEFUN([ANDROID_PKG_VERSION],
 [
     if test x$[$1][_HAVE] = xyes; then
         AC_MSG_CHECKING([version of $1])
-        PKG_VALUE([$1], [VERSION], [modversion], [dists/android/external/${ANDROID_ARCH}eabi-${ANDROID_ARCH_VERSION}/pkginfo/$2.pc], [version of $1])   
+        PKG_VALUE([$1], [VERSION], [modversion], [dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc], [version of $1])   
         AC_MSG_RESULT(@<:@$[$1][_VERSION]@:>@)
     else
         [$1][_VERSION]="0.0.0"
@@ -99,9 +99,9 @@ AC_DEFUN([ANDROID_PKG_VALUE],
         # if not, get it from pkg-config
         if test x$[$1][_HAVE] = xyes; then
             PKG_CHECK_EXISTS([dists/android/external/${ANDROID_ARCH}eabi-${ANDROID_ARCH_VERSION}/pkginfo/$4.pc],
-                [[$1]_[$2]=`$PKG_CONFIG --[$3] --silence-errors "dists/android/external/${ANDROID_ARCH}eabi-${ANDROID_ARCH_VERSION}/pkginfo/$4.pc"`],
+                [[$1]_[$2]=`$PKG_CONFIG --[$3] --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$4.pc"`],
                 [# print error message and quit
-                 err_msg=`$PKG_CONFIG --errors-to-stdout --print-errors "dists/android/external/${ANDROID_ARCH}eabi-${ANDROID_ARCH_VERSION}/pkginfo/$4.pc"`
+                 err_msg=`$PKG_CONFIG --errors-to-stdout --print-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$4.pc"`
                  AC_MSG_ERROR(
 [
 

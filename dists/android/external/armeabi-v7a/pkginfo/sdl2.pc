@@ -1,12 +1,12 @@
 # sdl pkg-config source file
 
 prefix=dists/android/external/armeabi-v7a
-exec_prefix=dists/android/external/armeabi-v7a
-libdir=dists/android/external/armeabi-v7a
-includedir=dists/android/external/armeabi-v7a
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=dists/android/external/include
 
 Name: sdl2
 Description: Simple DirectMedia Layer is a cross-platform multimedia library designed to provide low level access to audio, keyboard, mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.
 Version: SDL2-2.28.2
-Libs: -Ldists/android/external/armeabi-v7a/lib
+Libs: -L${prefix}
 Cflags: 

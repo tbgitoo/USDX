@@ -1,0 +1,12 @@
+# sdl pkg-config source file
+
+prefix=dists/android/external/arm64-v8a
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=dists/android/external/include
+
+Name: sdl2
+Description: Simple DirectMedia Layer is a cross-platform multimedia library designed to provide low level access to audio, keyboard, mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.
+Version: SDL2-2.28.2
+Libs: -L${prefix}
+Cflags: 

@@ -1,7 +1,7 @@
 prefix=dists/android/external/armeabi-v7a
 exec_prefix=${prefix}
 libdir=${prefix}
-includedir=${prefix}/include
+includedir=dists/android/external/include
 
 Name: PortAudio
 Description: Portable audio I/O

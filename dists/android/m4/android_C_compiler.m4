@@ -18,14 +18,25 @@
 
 AC_DEFUN([AC_PROG_ANDROID_CC], [
 
-##
-# User PFLAGS
-##
 
-AC_PROG_CC([$ANDROID_ARCH$ANDROID_ARCH_VERSION-linux-androideabi$ANDROID_NDK_LEVEL-clang])
+
+if [[ "$ANDROID_ARCH" = "aarch64" ]]; then
+	AC_PROG_CC([${ANDROID_ARCH}-linux-android$ANDROID_NDK_LEVEL-clang])
+fi
+if [[ "$ANDROID_ARCH" = "arm" ]]; then
+	AC_PROG_CC([$ANDROID_ARCH$ANDROID_ARCH_VERSION-linux-androideabi$ANDROID_NDK_LEVEL-clang])
+fi
+if [[ "$ANDROID_ARCH" = "x86" ]]; then
+	AC_PROG_CC([i686-linux-android$ANDROID_NDK_LEVEL-clang])
+fi
+if [[ "$ANDROID_ARCH" = "x86_64" ]]; then
+	AC_PROG_CC([x86_64-linux-android$ANDROID_NDK_LEVEL-clang])
+fi
 
 
 ])
+
+
 
 AC_DEFUN([AC_PROG_ANDROID_CXX], [
 
@@ -33,7 +44,18 @@ AC_DEFUN([AC_PROG_ANDROID_CXX], [
 # User PFLAGS
 ##
 
-AC_PROG_CXX([$ANDROID_ARCH$ANDROID_ARCH_VERSION-linux-androideabi$ANDROID_NDK_LEVEL-clang++])
+if [[ "$ANDROID_ARCH" = "aarch64" ]]; then
+	AC_PROG_CC([${ANDROID_ARCH}-linux-android$ANDROID_NDK_LEVEL-clang++])
+fi
+if [[ "$ANDROID_ARCH" = "arm" ]]; then
+	AC_PROG_CC([$ANDROID_ARCH$ANDROID_ARCH_VERSION-linux-androideabi$ANDROID_NDK_LEVEL-clang++])
+fi
+if [[ "$ANDROID_ARCH" = "x86" ]]; then
+	AC_PROG_CC([i686-linux-android$ANDROID_NDK_LEVEL-clang++])
+fi
+if [[ "$ANDROID_ARCH" = "x86_64" ]]; then
+	AC_PROG_CC([x86_64-linux-android$ANDROID_NDK_LEVEL-clang++])
+fi
 
 
 ])

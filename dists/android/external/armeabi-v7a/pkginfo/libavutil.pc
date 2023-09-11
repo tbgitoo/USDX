@@ -1,7 +1,7 @@
 prefix=dists/android/external/armeabi-v7a
-exec_prefix=dists/android/external/armeabi-v7a
-libdir=dists/android/external/armeabi-v7a
-includedir=dists/android/external/armeabi-v7a/include/ffmpeg
+exec_prefix=${prefix}
+libdir=${prefix}
+includedir=dists/android/external/include/ffmpeg
 
 Name: libavutil
 Description: FFmpeg utility library

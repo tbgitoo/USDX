@@ -1,0 +1,13 @@
+prefix=dists/android/external/x86
+exec_prefix=${prefix}
+libdir=${prefix}
+includedir=dists/android/external/include
+
+Name: PortAudio
+Description: Portable audio I/O
+Version: 19.8
+
+Libs: -L${libdir} -lportaudio
+Libs.private:  -lm -lpthread
+Cflags: -I${includedir}  -pthread
+Requires.private: 

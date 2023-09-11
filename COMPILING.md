@@ -123,10 +123,17 @@ export ANDROID_NDK_HOME=~/Library/Android/sdk/ndk/25.2.9519653
 If you want to use the script at https://github.com/AlexanderAgd/SDL2-Android/, the command would be something like
 
 ./build_SDL2.sh  --api=29 --arch=armeabi-v7a 
+./build_SDL2.sh  --api=29 --arch=arm64-v8a
+./build_SDL2.sh  --api=29 --arch=x86
+./build_SDL2.sh  --api=29 --arch=x86_64
+ 
+
 
 or similar depending on what the architecture and version. Android API version of at least 29 is generally required to have access to midi via Amidi.h, so we compile everything at API version of at least 29
 
 Of the libraries produced, we use the shard object libraries libSDL2.so and libSDL2_image.so, as well as the static archive libraries libcpufeatures.a, libjpeg.a, and libpng.a. These are produced in the liball folder, and should be copied over to dists/android/external/armeabi-v7a for the .so files, and libcpufeatures.a, libjpeg.a and libpng.a to dists/android/external/armeabi-v7a/lib
+
+Similarly, for the other architectures, copy into the respective architecture folders
 
 Freetype: 
 

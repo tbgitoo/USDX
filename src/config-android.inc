@@ -12,7 +12,7 @@
   LUA_VERSION_MINOR   = '4';
   LUA_VERSION_MAJOR   = '5';
   LUA_VERSION         = '5.4.6';
-  LUA_INTEGER_BITS    = 64;
+  LUA_INTEGER_BITS    = ;
 {$IFEND}
 
 {$DEFINE HaveFFmpeg}
