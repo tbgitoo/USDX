@@ -226,6 +226,7 @@ https://github.com/android/ndk-samples/tree/main/native-midi/app/src/main/cpp
 
 #USDX
 
+./autogen.sh
 autoconf -f
 ./configure --host=x86_64-darwin --build=arm --with-android
 make android
