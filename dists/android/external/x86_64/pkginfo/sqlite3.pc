@@ -3,7 +3,7 @@
 prefix=dists/android/external/x86_64
 exec_prefix=${prefix}
 libdir=${prefix}/lib
-includedir=dists/android/external/include
+includedir=dists/android/external/include/sqlite3
 
 Name: sqlite3
 Description: Database

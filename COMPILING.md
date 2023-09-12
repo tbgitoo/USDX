@@ -145,7 +145,9 @@ Edit the make file to copy the libfreetype.so library for the armeabi-v7a archit
 
 make build
 
-Copy over the libfreetype.so generated to dists/android/external/armeabi-v7a
+Copy over the libfreetype.so generated to dists/android/external/armeabi-v7a and likewise the other architectures
+
+Copy over the files in the android-freetype/include folder to dists/android/external/include/freetype (i.e. there will be among others a freetype folder nested within dists/android/external/include/freetype) 
 
 Sqlite3
 
@@ -156,23 +158,55 @@ make
 
 Copy over the libsqlite3.so to dists/android/external/armeabi-v7a 
 
-This defaults to the lowest compatible Android level, which is typically 19, this should be OK
+To sqlite3-android/jni/Application.mk, add
+APP_PLATFORM := 29
+
+to ensure appropriate API level
+
+To make the other architectures, edit sqlite3-android/jni/Application.mk, change the 
+APP_ABI := armeabi-v7a
+line to 
+APP_ABI := arm64-v8a
+APP_ABI := x86
+APP_ABI := x86_64
+
+You can run one after each other
+
+Also copy over the header files sqlite3.h and sqlite3ext.h located in sqlite3-android/build to dists/android/external/include/sqlite3 
+
 
 lua
 https://www.lua.org/ftp/lua-5.4.6.tar.gz
 https://blog.spreendigital.de/2020/05/30/how-to-compile-lua-5-4-0-for-android-as-a-dynamic-library-using-android-studio-4/
 
-Copy over the libsqlite3.so to dists/android/external/armeabi-v7a
+Copy over the liblua5.4.6.so to dists/android/external/armeabi-v7a (and analogously the other architectures)
 Also, rename to only the major version , i.e. 5.4, during configuration, the minor version is truncated
 
 ffmpeg
 https://github.com/Javernaut/ffmpeg-android-maker
 
+run script ffmpeg-android-maker.sh 
+
+copy over all the library files generated in ffmpeg-android-maker/output/lib into the corresponding architectures folders in dists/android/external
+
+copy over all the header files (in their folders) in ffmpeg-android-maker/output/include to dists/android/external/include/ffmpeg
+
+ 
+
 portaudio
 https://github.com/Gundersanne/portaudio_opensles
 mkdir -p build && cd build
-cmake     -DANDROID_PLATFORM=android-21     -DANDROID_ABI=armeabi-v7a     -DCMAKE_BUILD_TYPE=Debug     -DCMAKE_TOOLCHAIN_FILE=/Users/thomasbraschler/Library/Android/sdk/ndk/25.2.9519653/build/cmake/android.toolchain.cmake ..
+cmake     -DANDROID_PLATFORM=android-29     -DANDROID_ABI=armeabi-v7a     -DCMAKE_BUILD_TYPE=Debug     -DCMAKE_TOOLCHAIN_FILE=~/Library/Android/sdk/ndk/25.2.9519653/build/cmake/android.toolchain.cmake ..
 make
+
+delete the build folder and start over
+mkdir -p build && cd build
+cmake     -DANDROID_PLATFORM=android-29     -DANDROID_ABI=arm64-v8a     -DCMAKE_BUILD_TYPE=Debug     -DCMAKE_TOOLCHAIN_FILE=~/Library/Android/sdk/ndk/25.2.9519653/build/cmake/android.toolchain.cmake ..
+make
+
+
+
+Copy over the libportaudio.so file generated in build to the corresponding architecture
 
 Add Android to sdlsyswm.inc
 https://github.com/ev1313/Pascal-SDL-2-Headers/blob/master/sdlsyswm.inc

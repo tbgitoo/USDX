@@ -98,7 +98,7 @@ AC_DEFUN([ANDROID_PKG_VALUE],
     if test -z "$[$1]_[$2]"; then
         # if not, get it from pkg-config
         if test x$[$1][_HAVE] = xyes; then
-            PKG_CHECK_EXISTS([dists/android/external/${ANDROID_ARCH}eabi-${ANDROID_ARCH_VERSION}/pkginfo/$4.pc],
+            PKG_CHECK_EXISTS([dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$4.pc],
                 [[$1]_[$2]=`$PKG_CONFIG --[$3] --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$4.pc"`],
                 [# print error message and quit
                  err_msg=`$PKG_CONFIG --errors-to-stdout --print-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$4.pc"`
