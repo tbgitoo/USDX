@@ -204,59 +204,11 @@ mkdir -p build && cd build
 cmake     -DANDROID_PLATFORM=android-29     -DANDROID_ABI=arm64-v8a     -DCMAKE_BUILD_TYPE=Debug     -DCMAKE_TOOLCHAIN_FILE=~/Library/Android/sdk/ndk/25.2.9519653/build/cmake/android.toolchain.cmake ..
 make
 
-
-
 Copy over the libportaudio.so file generated in build to the corresponding architecture
 
-Add Android to sdlsyswm.inc
-https://github.com/ev1313/Pascal-SDL-2-Headers/blob/master/sdlsyswm.inc
 
 
 
-https://github.com/liudasheng/alsa-lib-android/
-autoconf -f
-export CC=~/Library/Android/sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/bin/armv7a-linux-androideabi21-clang
-./configure --host=arm \
- --disable-resmgr \
- --enable-aload \
- --enable-mixer \
- --enable-pcm \
- --disable-rawmidi \
- --enable-hwdep \
- --disable-seq \
- --disable-alisp \
- --disable-old-symbols \
- --disable-python \
- --with-plugindir=/system/usr/lib/alsa-lib \
- --with-versioned=no \
- --with-debug=no \
- --with-tmpdir=/tmp \
- --with-softfloat=yes \
- --with-libdl=yes \
- --with-pthread=yes \
- --with-librt=no \
- --with-alsa-devdir=/dev/snd \
- --with-aload-devdir=/dev \
- --with-pcm-plugins="plug null empty hooks asym extplug ioplug" \
- --with-ctl-plugins="ext" \
- --enable-shared=yes --enable-static=no
- make
-
-I encountered minor issues during cross-compilation: 
-
-=> in include/global.h there was duplication of definition of timeval and timespec, this can be prevented by extending the defined conditions:
-// something like #if !defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE) &&!defined( __ANDROID_API__ ), that is added the !defined(__ANDROID_API__)
-
-=> in src/pcm/pcm_direct.h, a simular duplication for union semun
-!defined(__ANDROID_API__)
-
-
-
-https://github.com/schollz/portmidi-1/
-
-https://android.googlesource.com/platform/frameworks/base/+/f347c95/media/native/midi/amidi.cpp
-
-https://github.com/android/ndk-samples/tree/main/native-midi/app/src/main/cpp
 
 #USDX
 

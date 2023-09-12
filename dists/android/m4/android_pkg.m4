@@ -9,7 +9,7 @@ AC_DEFUN([ANDROID_PKG_HAVE],
         # check if package exists
         PKG_CHECK_EXISTS([dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc], [
             have_lib="yes"
-            [$1][_LIBS]=`$PKG_CONFIG --libs --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc"`
+            [$1][_LIBS]=`$PKG_CONFIG --libs --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc"` 
             [$1][_LIBDIRS]=`$PKG_CONFIG --libs-only-L --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc"`
             [$1][_LIBDIRS]=`AX_TRIM($[$1][_LIBDIRS])`
             # add library directories to LIBS (ignore *_LIBS for now)
