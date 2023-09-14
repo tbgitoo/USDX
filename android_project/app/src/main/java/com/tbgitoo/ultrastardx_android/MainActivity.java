@@ -1,17 +1,17 @@
-package com.tbgitoo.USDX;
+package com.tbgitoo.ultrastardx_android;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.tbgitoo.USDX.databinding.ActivityMainBinding;
+import com.tbgitoo.ultrastardx_android.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Used to load the 'USDX' library on application startup.
+    // Used to load the 'ultrastardx_android' library on application startup.
     static {
-        System.loadLibrary("USDX");
+        System.loadLibrary("ultrastardx_android");
     }
 
     private ActivityMainBinding binding;
@@ -25,12 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Example of a call to a native method
         TextView tv = binding.sampleText;
-        tv.setText(stringFromJNI());
+        tv.setText(String.format("%f",numberFromJNI()));
     }
 
     /**
-     * A native method that is implemented by the 'USDX' native library,
+     * A native method that is implemented by the 'ultrastardx_android' native library,
      * which is packaged with this application.
      */
-    public native String stringFromJNI();
+    public native float numberFromJNI();
 }

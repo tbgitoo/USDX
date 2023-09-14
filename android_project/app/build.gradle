@@ -3,16 +3,15 @@ plugins {
 }
 
 android {
-    namespace 'com.tbgitoo.USDX'
+    namespace 'com.tbgitoo.ultrastardx_android'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.tbgitoo.USDX"
+        applicationId "com.tbgitoo.ultrastardx_android"
         minSdk 29
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -30,7 +29,9 @@ android {
         cmake {
             path file('src/main/cpp/CMakeLists.txt')
             version '3.22.1'
+
         }
+
     }
     buildFeatures {
         viewBinding true

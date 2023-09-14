@@ -91,7 +91,15 @@ The CI does this for you, but if you need to do it manually:
   # Android cross compilation
 Android cross compilation needs:
 - The crosscompiler. The crosscompiler can be built from the free pascal sources at https://gitlab.com/freepascal.org/fpc/source.git, following the instructions at https://wiki.freepascal.org/Android. Depending on the platform, this needs the presence of a number of libraries. An example make command on MacOSX (12.6.6) is
+  For arm-v7a
   `make clean crossall crossinstall OS_TARGET=android CPU_TARGET=arm COMPILER_LIBRARYDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib FPCMAKEGCCLIBDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib INSTALL_PREFIX=~/FPC/pp`
+  - For x86
+  `make crossall crossinstall OS_TARGET=android CPU_TARGET=i386 COMPILER_LIBRARYDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib FPCMAKEGCCLIBDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib INSTALL_PREFIX=~/FPC/pp`
+  - For arm64
+    `make crossall crossinstall OS_TARGET=android CPU_TARGET=aarch64 COMPILER_LIBRARYDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib FPCMAKEGCCLIBDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib INSTALL_PREFIX=~/FPC/pp`
+   - For x86_64
+    `make crossall crossinstall OS_TARGET=android CPU_TARGET=x86_64 COMPILER_LIBRARYDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib FPCMAKEGCCLIBDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib INSTALL_PREFIX=~/FPC/pp`
+    
 - Building the cross-compiler can be a bit tricky. On MacOSX (12.6.6), there can be minor issues in the make file and some sources of the fpc source for crosscompilation. 
 * In the makefile add somewhere arround line 500, add
 `ifdef COMPILER_LIBRARYDIR
@@ -103,10 +111,27 @@ endif`
 - The Android NDK. In fact the Android NDK is already needed for making the fpc cross compiler. For compatibility reasons, the highest suitable release seems to be 19C (the old versions are available at https://github.com/android/ndk/wiki/Unsupported-Downloads)
 
 - Environment variables are also needed. For example, something like this in .bash_profile (depends where you put your variables)
-`#For FPC crosscompilation
+`#For FPC crosscompilation armeabi-v7a
 export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-arm/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
 export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
-export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/x86_64-linux-android/bin/ranlib
+export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/arm-linux-androideabi/bin/ranlib
+
+`#For FPC crosscompilation x86
+export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/x86-4.9/prebuilt/darwin-x86_64/i686-linux-android/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-x86/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
+export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
+export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/i686-linux-android/bin/ranlib
+
+
+`#For FPC crosscompilation aarch64=arm64-v8a
+export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/aarch64-linux-android/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-arm64/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
+export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
+export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/aarch64-linux-android/bin/ranlib
+
+`#For FPC crosscompilation x86_64
+export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/x86_64-4.9/prebuilt/darwin-x86_64/x86_64-linux-android/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-x86_64/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
+export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
+export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64x86_64-linux-android/bin/ranlib
+
 
 See https://lists.gnu.org/archive/html/autoconf/2013-10/msg00004.html for some discussion
 
@@ -217,3 +242,11 @@ autoconf -f
 ./configure --host=x86_64-darwin --build=arm --with-android
 make android
 `
+
+
+And for the other architectures, that's
+./configure --host=x86_64-darwin --build=aarch64 --with-android
+./configure --host=x86_64-darwin --build=x86 --with-android
+./configure --host=x86_64-darwin --build=x86_64 --with-android
+
+

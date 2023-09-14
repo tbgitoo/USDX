@@ -1,10 +1,11 @@
 #include <jni.h>
-#include <string>
+#include <usdx.h>
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_tbgitoo_USDX_MainActivity_stringFromJNI(
+
+extern "C" JNIEXPORT jfloat JNICALL
+Java_com_tbgitoo_ultrastardx_1android_MainActivity_numberFromJNI(
         JNIEnv* env,
         jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
+
+    return fuunc4C();
 }

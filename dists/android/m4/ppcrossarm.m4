@@ -117,6 +117,17 @@ AC_ARG_ENABLE(noexecstack,
 
 PPC_CHECK_PROGS="ppcrossarm"
 
+# sets PFLAGS, FPC_VERSION, FPC_DEBUG, etc.
+if [[ "$ANDROID_ARCH" = "aarch64" ]]; then
+  PPC_CHECK_PROGS="ppcrossa64"
+fi
+if [[ "$ANDROID_ARCH" = "x86" ]]; then
+  PPC_CHECK_PROGS="ppcross386"
+fi
+if [[ "$ANDROID_ARCH" = "x86_64" ]]; then
+  PPC_CHECK_PROGS="ppcrossx64"
+fi
+
 if test -z "$PPC_PATH"; then
     PPC_PATH=$PATH
     AC_CHECK_PROGS(PPC, $PPC_CHECK_PROGS)
@@ -172,7 +183,8 @@ FPC_PREFIX=`which ppcrossarm | sed -e "s/\/lib\/fpc\/${FPC_VERSION}\/ppcrossarm/
 
 
 FPC_BASE_PATH="${FPC_PREFIX}/lib/fpc/${FPC_VERSION}"
-FPC_UNIT_PATH="${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl:${FPC_BASE_PATH}/units/${FPC_TARGET}/fcl-base:${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl-objpas:${FPC_BASE_PATH}/units/${FPC_TARGET}/pasjpeg:${FPC_BASE_PATH}/units/${FPC_TARGET}/hash:../dists/android/external/${FPC_PROCESSOR}eabi-${ANDROID_ARCH_VERSION}"
+FPC_UNIT_PATH="${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl:${FPC_BASE_PATH}/units/${FPC_TARGET}/fcl-base:${FPC_BASE_PATH}/units/${FPC_TARGET}/rtl-objpas:${FPC_BASE_PATH}/units/${FPC_TARGET}/pasjpeg:${FPC_BASE_PATH}/units/${FPC_TARGET}/hash:${FPC_BASE_PATH}/units/${FPC_TARGET}/jni:../dists/android/external/${ANDROID_SUBFOLDER}"
+
 
 
 AC_SUBST(FPC_PREFIX)
@@ -183,11 +195,32 @@ AC_SUBST(FPC_UNIT_PATH)
 # Compiler checks
 ###
 
+SYSROOT_FOLDER_NAME="arm-linux-androideabi"
+
+
+
+echo $ANDROID_ARCH
+
+# sets PFLAGS, FPC_VERSION, FPC_DEBUG, etc.
+if [[ "$ANDROID_ARCH" = "aarch64" ]]; then
+  SYSROOT_FOLDER_NAME="aarch64-linux-android"
+fi
+if [[ "$ANDROID_ARCH" = "x86" ]]; then
+  SYSROOT_FOLDER_NAME="i686-linux-android"
+fi
+if [[ "$ANDROID_ARCH" = "x86_64" ]]; then
+  SYSROOT_FOLDER_NAME="x86_64-linux-android"
+fi
+
+AC_SUBST(SYSROOT_FOLDER_NAME)
+
 SIMPLE_PROGRAM="program foo; begin writeln; end."
 
-FPC_ANDROID_FLAGS="-T${FPC_PLATFORM} -Fu${FPC_UNIT_PATH}:${ANDROID_NDK_LIB} -Fl${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/${ANDROID_NDK_LEVEL} -k--verbose"
+FPC_ANDROID_FLAGS="-T${FPC_PLATFORM} -Fu${FPC_UNIT_PATH}:${ANDROID_NDK_LIB} -Fl${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/${SYSROOT_FOLDER_NAME}/${ANDROID_NDK_LEVEL} -FL${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/darwin-x86_64/bin/ld -Xe -k--verbose"
 
 
+
+#/Users/thomasbraschler/Library/Android/sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/darwin-x86_64/bin/ld
 
 # Check if FPC works and can compile a program
 AC_CACHE_CHECK([whether the Free Pascal Compiler works], ac_cv_prog_ppc_works,

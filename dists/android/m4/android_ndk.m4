@@ -70,7 +70,7 @@ AC_ARG_WITH(androidlevel,
   [ANDROID_NDK_LEVEL=$withval], [])
 
 
-ANDROID_NDK_LIB=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${host}/sysroot/usr/lib
+ANDROID_NDK_LIB=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${host-os}-${host-cpu}/sysroot/usr/lib
 
 
 
@@ -85,13 +85,31 @@ if [[ "$build" = "armv8a-unknown-none" ]]; then
   ANDROID_SUBFOLDER="arm64-v8a"
 fi
 
+if [[ "$build" = "aarch64-none-linux-android29" ]]; then
+  ANDROID_ARCH="aarch64"
+  ANDROID_ARCH_VERSION=v8a
+  ANDROID_SUBFOLDER="arm64-v8a"
+fi
+
 if [[ "$build" = "aarch64-unknown-none" ]]; then
   ANDROID_ARCH="aarch64"
   ANDROID_ARCH_VERSION=v8a
   ANDROID_SUBFOLDER="arm64-v8a"
 fi
 
+if [[ "$build" = "aarch64" ]]; then
+  ANDROID_ARCH="aarch64"
+  ANDROID_ARCH_VERSION=v8a
+  ANDROID_SUBFOLDER="arm64-v8a"
+fi
+
 if [[ "$build" = "x86-unknown-none" ]]; then
+  ANDROID_ARCH=x86
+  ANDROID_ARCH_VERSION=NONE
+  ANDROID_SUBFOLDER="x86"
+fi
+
+if [[ "$build" = "x86" ]]; then
   ANDROID_ARCH=x86
   ANDROID_ARCH_VERSION=NONE
   ANDROID_SUBFOLDER="x86"
@@ -104,6 +122,15 @@ if [[ "$build" = "x86_64-pc-none" ]]; then
   ANDROID_ARCH_VERSION=NONE
   ANDROID_SUBFOLDER="x86_64"
 fi
+
+if [[ "$build" = "x86_64" ]]; then
+  ANDROID_ARCH=x86_64
+  ANDROID_ARCH_VERSION=NONE
+  ANDROID_SUBFOLDER="x86_64"
+fi
+
+
+AC_SUBST(ANDROID_SUBFOLDER)
 
 
 

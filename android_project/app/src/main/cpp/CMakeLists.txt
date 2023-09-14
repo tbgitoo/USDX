@@ -7,42 +7,27 @@ cmake_minimum_required(VERSION 3.22.1)
 
 # Declares and names the project.
 
-project("USDX")
+project("ultrastardx_android")
 
-# Creates and names a library, sets it as either STATIC
-# or SHARED, and provides the relative paths to its source code.
-# You can define multiple libraries, and CMake builds them for you.
-# Gradle automatically packages shared libraries with your APK.
+include_directories(${CMAKE_SOURCE_DIR}/libusdx/include)
 
-add_library( # Sets the name of the library.
-        USDX
+add_library (usdx SHARED IMPORTED)
 
-        # Sets the library as a shared library.
-        SHARED
+set_target_properties (usdx
 
-        # Provides a relative path to your source file(s).
-        native-lib.cpp)
+        PROPERTIES IMPORTED_LOCATION
 
-# Searches for a specified prebuilt library and stores the path as a
-# variable. Because CMake includes system libraries in the search path by
-# default, you only need to specify the name of the public NDK library
-# you want to add. CMake verifies that the library exists before
-# completing its build.
+        ${CMAKE_SOURCE_DIR}/libusdx/${CMAKE_ANDROID_ARCH_ABI}/libusdx.so)
 
-find_library( # Sets the name of the path variable.
-        log-lib
 
-        # Specifies the name of the NDK library that
-        # you want CMake to locate.
-        log)
+# android logging
 
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
+find_library (log-lib log)
 
-target_link_libraries( # Specifies the target library.
-        USDX
 
-        # Links the target library to the log library
-        # included in the NDK.
-        ${log-lib})
+
+# nodejsmobiledemo library
+
+add_library (ultrastardx_android SHARED native-lib.cpp)
+
+target_link_libraries (ultrastardx_android usdx ${log-lib})

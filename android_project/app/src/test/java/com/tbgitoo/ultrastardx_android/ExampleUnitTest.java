@@ -1,4 +1,4 @@
-package com.tbgitoo.USDX;
+package com.tbgitoo.ultrastardx_android;
 
 import org.junit.Test;
 

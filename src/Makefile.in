@@ -265,8 +265,12 @@ clean_bin:
 
 
 FPC_ANDROID_FLAGS := @FPC_ANDROID_FLAGS@
+ANDROID_SUBFOLDER ?= @ANDROID_SUBFOLDER@
 
 .PHONY: android
 android:
 	@echo "Compiling sources for Android"
-	$(PPC) $(FPC_ANDROID_FLAGS) $(strip $(PFLAGS_ALL)) -o$@ $(USDX_PROJ)
+	MKDIR -p "../build/$(ANDROID_SUBFOLDER)"
+	MKDIR -p "$(PCUNIT_DIR)"
+	$(PPC) $(FPC_ANDROID_FLAGS) $(strip $(PFLAGS_ALL)) libusdx.pas -o../build/$(ANDROID_SUBFOLDER)/libusdx.so
+

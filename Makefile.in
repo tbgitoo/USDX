@@ -502,5 +502,5 @@ clean-macosx-dmg:
 
 .PHONY: android
 android:
-	@echo "Building Android usdx.so"
+	@echo "Building Android libusdx.so"
 	$(MAKE) -C $(USDX_SRC_DIR) $@
