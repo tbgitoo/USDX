@@ -17,7 +17,7 @@ set_target_properties (usdx
 
         PROPERTIES IMPORTED_LOCATION
 
-        ${CMAKE_SOURCE_DIR}/libusdx/${CMAKE_ANDROID_ARCH_ABI}/libusdx.so)
+        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libusdx.so)
 
 
 # android logging
@@ -31,3 +31,6 @@ find_library (log-lib log)
 add_library (ultrastardx_android SHARED native-lib.cpp)
 
 target_link_libraries (ultrastardx_android usdx ${log-lib})
+
+
+

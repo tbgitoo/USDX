@@ -8,7 +8,7 @@ begin
 end;
 
 exports
-  func4C name 'fuunc4C';
+  func4C name 'func4C';
 
 begin
 

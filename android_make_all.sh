@@ -14,5 +14,5 @@ echo "Compile for x86 architecture"
 make android
 
 echo "Compile for x86_64 architecture"
-./configure --host=x86_64-darwin --build=x86 --with-android
+./configure --host=x86_64-darwin --build=x86_64 --with-android
 make android

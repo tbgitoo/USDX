@@ -7,5 +7,5 @@ Java_com_tbgitoo_ultrastardx_1android_MainActivity_numberFromJNI(
         JNIEnv* env,
         jobject /* this */) {
 
-    return fuunc4C();
+    return func4C()+1;
 }
