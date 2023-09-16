@@ -9,3 +9,5 @@ Java_com_tbgitoo_ultrastardx_1android_MainActivity_numberFromJNI(
 
     return func4C()+1;
 }
+
+
