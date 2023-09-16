@@ -504,5 +504,23 @@ clean-macosx-dmg:
 android:
 	@echo "Building Android libusdx.so"
 	$(MAKE) -C $(USDX_SRC_DIR) $@
-	MKDIR -p android_project/app/src/main/raw
-	cp -r  $(top_srcdir)
+
+
+.PHONY: android-install
+android-install:
+	@echo "Installing binary files and game into android_project"
+	MKDIR -p $(top_srcdir)/android_project/app/src/main/res/raw
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/avatars.zip $(top_srcdir)/game/avatars 
+	cp  $(top_srcdir)/game/config.ini $(top_srcdir)/android_project/app/src/main/res/raw/
+	cp -r build/arm64-v8a android_project/app/libs/
+	cp -r build/armeabi-v7a android_project/app/libs/
+	cp -r build/x86 android_project/app/libs/
+	cp -r build/x86_64 android_project/app/libs/
+	cp src/libusdx/include/usdx.h android_project/app/src/main/cpp/libusdx/include/usdx.h
+	cp -r dists/android/external/arm64-v8a android_project/app/libs/
+	cp -r dists/android/external/armeabi-v7a android_project/app/libs/
+	cp -r dists/android/external/x86 android_project/app/libs/
+	cp -r dists/android/external/x86_64 android_project/app/libs/
+	cp -r dists/android/external/licenses android_project/app/libs/
+	cp -r dists/android/external/include android_project/app/libs/
+

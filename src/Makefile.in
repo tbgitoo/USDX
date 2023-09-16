@@ -273,8 +273,5 @@ android:
 	MKDIR -p "../build/$(ANDROID_SUBFOLDER)"
 	MKDIR -p "$(PCUNIT_DIR)"
 	$(PPC) $(FPC_ANDROID_FLAGS) $(strip $(PFLAGS_ALL)) libusdx.pas -o../build/$(ANDROID_SUBFOLDER)/libusdx.so
-	cp -r ../build/$(ANDROID_SUBFOLDER) ../android_project/app/libs/
-	cp libusdx/include/usdx.h ../android_project/app/src/main/cpp/libusdx/include/usdx.h
-	cp -r ../dists/android/external/$(ANDROID_SUBFOLDER) ../android_project/app/libs/
-	cp -r ../dists/android/external/include ../android_project/app/libs/ 
+	 
 

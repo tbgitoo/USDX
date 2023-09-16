@@ -60,8 +60,7 @@ uses
   SysUtils,
   ULog;
 
-const
-  {$I paths.inc}
+
 
 procedure TPlatformLinux.Init;
 begin
@@ -104,14 +103,7 @@ end;
 
 function TPlatformLinux.GetGameSharedPath: IPath;
 begin
-  if UseLocalDirs then
-    Result := GetExecutionDir()
-  else
-  begin
-    Result := Path(INSTALL_DATADIR, pdAppend);
-    if not Result.IsAbsolute then
-      Result := GetExecutionDir.Append(Result);
-  end;
+  Result := GetExecutionDir();
 end;
 
 function TPlatformLinux.GetGameUserPath: IPath;

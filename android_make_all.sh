@@ -16,3 +16,7 @@ make android
 echo "Compile for x86_64 architecture"
 ./configure --host=x86_64-darwin --build=x86_64 --with-android
 make android
+
+
+echo "Copy compiled files and ressources into android_project"
+make android-install
