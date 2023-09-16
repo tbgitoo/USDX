@@ -504,3 +504,5 @@ clean-macosx-dmg:
 android:
 	@echo "Building Android libusdx.so"
 	$(MAKE) -C $(USDX_SRC_DIR) $@
+	MKDIR -p android_project/app/src/main/raw
+	cp -r  $(top_srcdir)
