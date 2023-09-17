@@ -13,6 +13,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -50,6 +51,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Keep;
+
 import java.util.Hashtable;
 import java.util.Locale;
 
@@ -59,11 +62,16 @@ import java.util.Locale;
 */
 public class SDLActivity extends Activity implements View.OnSystemUiVisibilityChangeListener {
     private static final String TAG = "SDL";
-    private static final int SDL_MAJOR_VERSION = 3;
-    private static final int SDL_MINOR_VERSION = 0;
-    private static final int SDL_MICRO_VERSION = 0;
+    private static final int SDL_MAJOR_VERSION = 2;
+    private static final int SDL_MINOR_VERSION = 28;
+    private static final int SDL_MICRO_VERSION = 2;
 
+    @Keep
+    public static DisplayMetrics getDisplayDPI()
+    {
+        return Resources.getSystem().getDisplayMetrics();
 
+    }
 
 
 /*
@@ -406,9 +414,9 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         /* Control activity re-creation */
         /* Robustness: check that the native code is run for the first time.
          * (Maybe Activity was reset, but not the native code.) */
-        {
-            int run_count = SDLActivity.nativeCheckSDLThreadCounter(); /* get and increment a native counter */
-            if (run_count != 0) {
+        //{
+        //    int run_count = SDLActivity.nativeCheckSDLThreadCounter(); /* get and increment a native counter */
+        /*    if (run_count != 0) {
                 boolean allow_recreate = SDLActivity.nativeAllowRecreateActivity();
                 if (allow_recreate) {
                     Log.v(TAG, "activity re-created // run_count: " + run_count);
@@ -418,7 +426,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                     return;
                 }
             }
-        }
+        }*/
 
         // Set up JNI
         SDL.setupJNI();
@@ -441,9 +449,9 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         mLayout.addView(mSurface);
 
         // Get our current screen orientation and pass it down.
-        SDLActivity.nativeSetNaturalOrientation(SDLActivity.getNaturalOrientation());
+        //SDLActivity.nativeSetNaturalOrientation(SDLActivity.getNaturalOrientation());
         mCurrentRotation = SDLActivity.getCurrentRotation();
-        SDLActivity.onNativeRotationChanged(mCurrentRotation);
+        //SDLActivity.onNativeRotationChanged(mCurrentRotation);
 
         try {
             if (Build.VERSION.SDK_INT < 24 /* Android 7.0 (N) */) {
@@ -456,10 +464,10 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
         switch (getContext().getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
         case Configuration.UI_MODE_NIGHT_NO:
-            SDLActivity.onNativeDarkModeChanged(false);
+            //SDLActivity.onNativeDarkModeChanged(false);
             break;
         case Configuration.UI_MODE_NIGHT_YES:
-            SDLActivity.onNativeDarkModeChanged(true);
+            //SDLActivity.onNativeDarkModeChanged(true);
             break;
         }
 
@@ -645,10 +653,10 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
         switch (newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK) {
         case Configuration.UI_MODE_NIGHT_NO:
-            SDLActivity.onNativeDarkModeChanged(false);
+            //SDLActivity.onNativeDarkModeChanged(false);
             break;
         case Configuration.UI_MODE_NIGHT_YES:
-            SDLActivity.onNativeDarkModeChanged(true);
+            //SDLActivity.onNativeDarkModeChanged(true);
             break;
         }
     }
@@ -1005,14 +1013,16 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     public static native String nativeGetHint(String name);
     public static native boolean nativeGetHintBoolean(String name, boolean default_value);
     public static native void nativeSetenv(String name, String value);
-    public static native void nativeSetNaturalOrientation(int orientation);
-    public static native void onNativeRotationChanged(int rotation);
+    //public static native void nativeSetNaturalOrientation(int orientation);
+    //public static native void onNativeRotationChanged(int rotation);
+
     public static native void nativeAddTouch(int touchId, String name);
     public static native void nativePermissionResult(int requestCode, boolean result);
     public static native void onNativeLocaleChanged();
-    public static native void onNativeDarkModeChanged(boolean enabled);
+    //public static native void onNativeDarkModeChanged(boolean enabled);
     public static native boolean nativeAllowRecreateActivity();
-    public static native int nativeCheckSDLThreadCounter();
+
+    //public static native int nativeCheckSDLThreadCounter();
 
     public static native void onNativeOrientationChanged(int orientation);
 
@@ -2191,5 +2201,8 @@ class SDLClipboardHandler implements
     public void onPrimaryClipChanged() {
         SDLActivity.onNativeClipboardChanged();
     }
+
+
+
 }
 

@@ -18,4 +18,11 @@ interface HIDDevice
     public void setFrozen(boolean frozen);
     public void close();
     public void shutdown();
+
+    // From https://github.com/revery-ui/esy-sdl2/blob/master/android-project/app/src/main/java/org/libsdl/app/HIDDevice.java
+    public int sendOutputReport(byte[] report);
+
+    public int sendFeatureReport(byte[] report);
+
+    boolean getFeatureReport(byte[] report);
 }

@@ -121,6 +121,58 @@ public class HIDDeviceManager {
         }
     }
 
+    // From https://github.com/revery-ui/esy-sdl2/
+    public int sendOutputReport(int deviceID, byte[] report) {
+        try {
+            //Log.v(TAG, "sendOutputReport deviceID=" + deviceID + " length=" + report.length);
+            HIDDevice device;
+            device = getDevice(deviceID);
+            if (device == null) {
+                HIDDeviceDisconnected(deviceID);
+                return -1;
+            }
+
+            return device.sendOutputReport(report);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception: " + Log.getStackTraceString(e));
+        }
+        return -1;
+    }
+
+    public int sendFeatureReport(int deviceID, byte[] report) {
+        try {
+            //Log.v(TAG, "sendFeatureReport deviceID=" + deviceID + " length=" + report.length);
+            HIDDevice device;
+            device = getDevice(deviceID);
+            if (device == null) {
+                HIDDeviceDisconnected(deviceID);
+                return -1;
+            }
+
+            return device.sendFeatureReport(report);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception: " + Log.getStackTraceString(e));
+        }
+        return -1;
+    }
+
+    public boolean getFeatureReport(int deviceID, byte[] report) {
+        try {
+            //Log.v(TAG, "getFeatureReport deviceID=" + deviceID);
+            HIDDevice device;
+            device = getDevice(deviceID);
+            if (device == null) {
+                HIDDeviceDisconnected(deviceID);
+                return false;
+            }
+
+            return device.getFeatureReport(report);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception: " + Log.getStackTraceString(e));
+        }
+        return false;
+    }
+
     public Context getContext() {
         return mContext;
     }
@@ -664,4 +716,6 @@ public class HIDDeviceManager {
 
     native void HIDDeviceInputReport(int deviceID, byte[] report);
     native void HIDDeviceReportResponse(int deviceID, byte[] report);
+
+    native void HIDDeviceFeatureReport(int deviceID, byte[] report);
 }

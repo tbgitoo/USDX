@@ -2,12 +2,18 @@
 #include <usdx.h>
 
 
+
 extern "C" JNIEXPORT jfloat JNICALL
 Java_com_tbgitoo_ultrastardx_1android_MainActivity_numberFromJNI(
         JNIEnv* env,
         jobject /* this */) {
 
     return func4C()+1;
+}
+
+extern "C" int SDL_main(int argc, char *argv[])
+{
+   return 0;
 }
 
 

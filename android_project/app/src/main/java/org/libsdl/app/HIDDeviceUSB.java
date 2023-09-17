@@ -21,6 +21,94 @@ class HIDDeviceUSB implements HIDDevice {
     protected boolean mRunning;
     protected boolean mFrozen;
 
+    // From https://github.com/revery-ui/esy-sdl2/blob/master/android-project/app/src/main/java/org/libsdl/app/HIDDeviceUSB.java
+    @Override
+    public int sendOutputReport(byte[] report) {
+        int r = mConnection.bulkTransfer(mOutputEndpoint, report, report.length, 1000);
+        if (r != report.length) {
+            Log.w(TAG, "sendOutputReport() returned " + r + " on device " + getDeviceName());
+        }
+        return r;
+    }
+
+    @Override
+    public int sendFeatureReport(byte[] report) {
+        int res = -1;
+        int offset = 0;
+        int length = report.length;
+        boolean skipped_report_id = false;
+        byte report_number = report[0];
+
+        if (report_number == 0x0) {
+            ++offset;
+            --length;
+            skipped_report_id = true;
+        }
+
+        res = mConnection.controlTransfer(
+                UsbConstants.USB_TYPE_CLASS | 0x01 /*RECIPIENT_INTERFACE*/ | UsbConstants.USB_DIR_OUT,
+                0x09/*HID set_report*/,
+                (3/*HID feature*/ << 8) | report_number,
+                mInterface,
+                report, offset, length,
+                1000/*timeout millis*/);
+
+        if (res < 0) {
+            Log.w(TAG, "sendFeatureReport() returned " + res + " on device " + getDeviceName());
+            return -1;
+        }
+
+        if (skipped_report_id) {
+            ++length;
+        }
+        return length;
+    }
+
+    @Override
+    public boolean getFeatureReport(byte[] report) {
+        int res = -1;
+        int offset = 0;
+        int length = report.length;
+        boolean skipped_report_id = false;
+        byte report_number = report[0];
+
+        if (report_number == 0x0) {
+            /* Offset the return buffer by 1, so that the report ID
+               will remain in byte 0. */
+            ++offset;
+            --length;
+            skipped_report_id = true;
+        }
+
+        res = mConnection.controlTransfer(
+                UsbConstants.USB_TYPE_CLASS | 0x01 /*RECIPIENT_INTERFACE*/ | UsbConstants.USB_DIR_IN,
+                0x01/*HID get_report*/,
+                (3/*HID feature*/ << 8) | report_number,
+                mInterface,
+                report, offset, length,
+                1000/*timeout millis*/);
+
+        if (res < 0) {
+            Log.w(TAG, "getFeatureReport() returned " + res + " on device " + getDeviceName());
+            return false;
+        }
+
+        if (skipped_report_id) {
+            ++res;
+            ++length;
+        }
+
+        byte[] data;
+        if (res == length) {
+            data = report;
+        } else {
+            data = Arrays.copyOfRange(report, 0, res);
+        }
+        mManager.HIDDeviceFeatureReport(mDeviceId, data);
+
+        return true;
+    }
+
     public HIDDeviceUSB(HIDDeviceManager manager, UsbDevice usbDevice, int interface_index) {
         mManager = manager;
         mDevice = usbDevice;

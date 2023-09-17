@@ -1,8 +1,11 @@
 package org.libsdl.app;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
 
-import java.lang.Class;
+import androidx.annotation.Keep;
+
 import java.lang.reflect.Method;
 
 /**
@@ -42,6 +45,8 @@ public class SDL {
         if (libraryName == null) {
             throw new NullPointerException("No library name provided.");
         }
+
+
 
         try {
             // Let's see if we have ReLinker available in the project.  This is necessary for 
@@ -83,4 +88,5 @@ public class SDL {
     }
 
     protected static Context mContext;
+
 }

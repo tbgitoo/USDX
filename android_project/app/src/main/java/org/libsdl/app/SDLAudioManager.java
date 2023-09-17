@@ -1,5 +1,7 @@
 package org.libsdl.app;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.content.Context;
 import android.media.AudioDeviceCallback;
 import android.media.AudioDeviceInfo;
@@ -10,6 +12,8 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.Keep;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -489,6 +493,33 @@ public class SDLAudioManager {
         } catch (Exception e) {
             Log.v(TAG, "modify thread properties failed " + e.toString());
         }
+    }
+    @Keep
+    public static int[] getAudioOutputDevices()
+    {
+        AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        int[] retArray=new int[audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).length];
+        int count=0;
+        for (AudioDeviceInfo deviceInfo : audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
+            retArray[count]=deviceInfo.getId();
+            count++;
+        }
+        return retArray;
+
+    }
+
+    @Keep
+    public static int[] getAudioInputDevices()
+    {
+        AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+        int[] retArray=new int[audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).length];
+        int count=0;
+        for (AudioDeviceInfo deviceInfo : audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)) {
+            retArray[count]=deviceInfo.getId();
+            count++;
+        }
+        return retArray;
+
     }
 
     public static native int nativeSetupJNI();

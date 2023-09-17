@@ -13,7 +13,7 @@ public class MainActivity extends SDLActivity {
 
     // Used to load the 'ultrastardx_android' library on application startup.
     static {
-        System.loadLibrary("ultrastardx_android");
+        System.loadLibrary("main");
     }
 
 

@@ -83,12 +83,12 @@ find_library (log-lib log)
 
 
 
-# nodejsmobiledemo library
+# compilation of the main loop library for sdl
 
-add_library (ultrastardx_android SHARED native-lib.cpp)
+add_library (main SHARED main.cpp)
 
 target_link_libraries (
-        ultrastardx_android
+        main
         usdx
         ${log-lib}
         sqlite3

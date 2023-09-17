@@ -641,5 +641,53 @@ class HIDDeviceBLESteamController extends BluetoothGattCallback implements HIDDe
         mOperations.clear();
     }
 
+    // From https://github.com/revery-ui/esy-sdl2/blob/master/android-project/app/src/main/java/org/libsdl/app/HIDDeviceBLESteamController.java
+    @Override
+    public int sendOutputReport(byte[] report) {
+        if (!isRegistered()) {
+            Log.e(TAG, "Attempted sendOutputReport before Steam Controller is registered!");
+            if (mIsConnected) {
+                probeService(this);
+            }
+            return -1;
+        }
+
+        //Log.v(TAG, "sendFeatureReport " + HexDump.dumpHexString(report));
+        writeCharacteristic(reportCharacteristic, report);
+        return report.length;
+    }
+
+    @Override
+    public int sendFeatureReport(byte[] report) {
+        if (!isRegistered()) {
+            Log.e(TAG, "Attempted sendFeatureReport before Steam Controller is registered!");
+            if (mIsConnected) {
+                probeService(this);
+            }
+            return -1;
+        }
+
+        // We need to skip the first byte, as that doesn't go over the air
+        byte[] actual_report = Arrays.copyOfRange(report, 1, report.length - 1);
+        //Log.v(TAG, "sendFeatureReport " + HexDump.dumpHexString(actual_report));
+        writeCharacteristic(reportCharacteristic, actual_report);
+        return report.length;
+    }
+
+    @Override
+    public boolean getFeatureReport(byte[] report) {
+        if (!isRegistered()) {
+            Log.e(TAG, "Attempted getFeatureReport before Steam Controller is registered!");
+            if (mIsConnected) {
+                probeService(this);
+            }
+            return false;
+        }
+
+        //Log.v(TAG, "getFeatureReport");
+        readCharacteristic(reportCharacteristic);
+        return true;
+    }
+
 }
 
