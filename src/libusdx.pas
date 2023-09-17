@@ -425,10 +425,57 @@ begin
 end;
 
 
+procedure Main2;
+var
+  WindowTitle: string;
+  BadPlayer: integer;
+begin
+
+    SetMultiByteConversionCodePage(CP_UTF8);
+    WindowTitle := USDXVersionStr;
+
+    Platform.Init;
+
+
+    Log.Title := WindowTitle;
+    Log.FileOutputEnabled := true;
+
+    // Commandline Parameter Parser
+    Params := TCMDParams.Create;
+
+    // fix floating-point exceptions (FPE)
+    DisableFloatingPointExceptions();
+    // fix the locale for string-to-float parsing in C-libs
+    SetDefaultNumericLocale();
+
+    // setup separators for parsing
+    // Note: ThousandSeparator must be set because of a bug in TIniFile.ReadFloat
+    DefaultFormatSettings.ThousandSeparator := ',';
+    DefaultFormatSettings.DecimalSeparator := '.';
+
+    // initialize SDL
+    // without SDL_INIT_TIMER SDL_GetTicks() might return strange values
+    SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, '1');
+    SDL_Init(SDL_INIT_VIDEO or SDL_INIT_TIMER);
+    //SDL_EnableUnicode(1);  //not necessary in SDL2 any more
+
+
+    // create luacore first so other classes can register their events
+    LuaCore := TLuaCore.Create;
+
+
+    USTime := TTime.Create;
+    VideoBGTimer := TRelativeTimer.Create;
+
+end;
+
+
 
 
 exports
   func4C name 'func4C';
+
+exports Main2 name 'Main2';
 
 
 

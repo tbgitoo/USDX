@@ -56,6 +56,10 @@ import androidx.annotation.Keep;
 import java.util.Hashtable;
 import java.util.Locale;
 
+import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLContext;
+import javax.microedition.khronos.egl.EGLDisplay;
+
 
 /**
     SDL Activity
@@ -327,7 +331,12 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
     }
 
     protected SDLSurface createSDLSurface(Context context) {
-        return new SDLSurface(context);
+
+        SDLSurface s= new SDLSurface(context);
+
+
+        return(s);
+
     }
 
     // Setup
@@ -1967,6 +1976,12 @@ class SDLMain implements Runnable {
         }
 
         Log.v("SDL", "Running main function " + function + " from library " + library);
+        EGL10 egl = (EGL10) EGLContext.getEGL();
+        EGLDisplay display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
+        boolean ret = egl.eglInitialize(display, null);
+
+        if (!ret)
+            Log.e("SDLMain", "EGL init error: " + egl.eglGetError());
 
         SDLActivity.nativeRunMain(library, function, arguments);
 

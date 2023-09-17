@@ -13,6 +13,8 @@ Java_com_tbgitoo_ultrastardx_1android_MainActivity_numberFromJNI(
 
 extern "C" int SDL_main(int argc, char *argv[])
 {
+    Main2();
+
    return 0;
 }
 
