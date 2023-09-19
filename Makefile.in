@@ -510,7 +510,8 @@ android:
 android-install:
 	@echo "Installing binary files and game into android_project"
 	MKDIR -p $(top_srcdir)/android_project/app/src/main/res/raw
-	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/avatars.zip $(top_srcdir)/game/avatars 
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/avatars.zip $(top_srcdir)/game/avatars
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/covers.zip $(top_srcdir)/game/covers 
 	cp  $(top_srcdir)/game/config.ini $(top_srcdir)/android_project/app/src/main/res/raw/
 	cp -r build/arm64-v8a android_project/app/libs/
 	cp -r build/armeabi-v7a android_project/app/libs/
