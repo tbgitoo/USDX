@@ -128,6 +128,8 @@ initialization
   Platform_singleton := TPlatformWindows.Create;
 {$ELSEIF Defined(DARWIN)}
   Platform_singleton := TPlatformMacOSX.Create;
+{$ELSEIF Defined(ANDROID)}
+  Platform_singleton := TPlatformAndroid.Create;
 {$ELSEIF Defined(UNIX)}
   Platform_singleton := TPlatformLinux.Create;
 {$IFEND}

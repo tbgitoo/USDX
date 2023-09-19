@@ -467,7 +467,11 @@ begin
     USTime := TTime.Create;
     VideoBGTimer := TRelativeTimer.Create;
 
+    InitializePaths;
+
 end;
+
+
 
 
 

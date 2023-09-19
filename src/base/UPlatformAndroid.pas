@@ -38,7 +38,7 @@ uses
   UPath;
 
 type
-  TPlatformLinux = class(TPlatform)
+  TPlatformAndroid = class(TPlatform)
     private
       UseLocalDirs: boolean;
 
@@ -62,7 +62,7 @@ uses
 
 
 
-procedure TPlatformLinux.Init;
+procedure TPlatformAndroid.Init;
 begin
   inherited Init();
   DetectLocalExecution();
@@ -79,18 +79,15 @@ end;
  *
  * Sets UseLocalDirs to true if the game is executed locally, false otherwise.
  *}
-procedure TPlatformLinux.DetectLocalExecution();
+procedure TPlatformAndroid.DetectLocalExecution();
 var
   LocalDir, LanguageDir: IPath;
 begin
-  // we just check if the 'languages' folder exists in the
-  // directory of the executable. If so -> local execution.
-  LocalDir := GetExecutionDir();
-  LanguageDir := LocalDir.Append('languages');
-  UseLocalDirs := LanguageDir.IsDirectory and not LocalDir.IsReadonly;
+
+  UseLocalDirs := False;
 end;
 
-function TPlatformLinux.GetLogPath: IPath;
+function TPlatformAndroid.GetLogPath: IPath;
 begin
   if UseLocalDirs then
     Result := GetExecutionDir()
@@ -101,12 +98,12 @@ begin
   Result.CreateDirectory(true);
 end;
 
-function TPlatformLinux.GetGameSharedPath: IPath;
+function TPlatformAndroid.GetGameSharedPath: IPath;
 begin
   Result := GetExecutionDir();
 end;
 
-function TPlatformLinux.GetGameUserPath: IPath;
+function TPlatformAndroid.GetGameUserPath: IPath;
 begin
   if UseLocalDirs then
     Result := GetExecutionDir()
@@ -117,7 +114,7 @@ end;
 {**
  * Returns the user's home directory terminated by a path delimiter
  *}
-function TPlatformLinux.GetHomeDir(): IPath;
+function TPlatformAndroid.GetHomeDir(): IPath;
 begin
   Result := PATH_NONE;
 

@@ -124,28 +124,44 @@ public class MainActivity extends SDLActivity {
 
 
 
-    private static void extractFile(ZipInputStream is, File output_target)
-            throws IOException {
-        Log.v("extractFile","folder "+output_target.toPath().getParent().toFile());
 
-        FileOutputStream fos = new FileOutputStream(output_target);
-        try {
-            while(is.available() != 0){
-                fos.write(is.read());
-            }
-        } catch (IOException ioex) {
-            fos.close();
-        }
-    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         storageRoot=primaryExternalStorage();
-        //installFileIfNotExists("config.ini", R.raw.config);
-        //installZipIfNotExists("avatars", R.raw.avatars, "game/avatars/");
-
+        installFileIfNotExists("config.ini", R.raw.config);
+        unzipinstallZipIfNotExists("avatars", R.raw.avatars, "game/avatars/");
         unzipinstallZipIfNotExists("covers", R.raw.covers, "game/covers/");
+        unzipinstallZipIfNotExists("fonts", R.raw.covers, "game/fonts/");
+        unzipinstallZipIfNotExists("languages", R.raw.covers, "game/languages/");
+        unzipinstallZipIfNotExists("plugins", R.raw.covers, "game/plugins/");
+        unzipinstallZipIfNotExists("resources", R.raw.covers, "game/resources/");
+        unzipinstallZipIfNotExists("soundfonts", R.raw.covers, "game/soundfonts/");
+        unzipinstallZipIfNotExists("sounds", R.raw.covers, "game/sounds/");
+        unzipinstallZipIfNotExists("themes", R.raw.covers, "game/themes/");
+        unzipinstallZipIfNotExists("visuals", R.raw.covers, "game/visuals/");
+        installFileIfNotExists("license_ffmpeg.txt", R.raw.license_ffmpeg);
+        installFileIfNotExists("license_freetype.txt", R.raw.license_freetype);
+        installFileIfNotExists("license_libdav1d.txt", R.raw.license_libdav1d);
+        installFileIfNotExists("license_libjpeg_turbo.txt", R.raw.license_libjpeg_turbo);
+        installFileIfNotExists("license_lua.txt", R.raw.license_lua);
+        installFileIfNotExists("license_png.txt", R.raw.license_png);
+        installFileIfNotExists("license_portaudio.txt", R.raw.license_portaudio);
+        installFileIfNotExists("license_sdl2.txt", R.raw.license_sdl2);
+        installFileIfNotExists("license_sqlite.txt", R.raw.license_sqlite);
+        installFileIfNotExists("license_tiff.txt", R.raw.license_tiff);
+        installFileIfNotExists("license_webp.txt", R.raw.license_webp);
+        installFileIfNotExists("license_zlib.txt", R.raw.license_zlib);
+
+
+
+
+
+
+
+
+
 
         super.onCreate(savedInstanceState);
 
