@@ -133,14 +133,14 @@ public class MainActivity extends SDLActivity {
         installFileIfNotExists("config.ini", R.raw.config);
         unzipinstallZipIfNotExists("avatars", R.raw.avatars, "game/avatars/");
         unzipinstallZipIfNotExists("covers", R.raw.covers, "game/covers/");
-        unzipinstallZipIfNotExists("fonts", R.raw.covers, "game/fonts/");
-        unzipinstallZipIfNotExists("languages", R.raw.covers, "game/languages/");
-        unzipinstallZipIfNotExists("plugins", R.raw.covers, "game/plugins/");
-        unzipinstallZipIfNotExists("resources", R.raw.covers, "game/resources/");
-        unzipinstallZipIfNotExists("soundfonts", R.raw.covers, "game/soundfonts/");
-        unzipinstallZipIfNotExists("sounds", R.raw.covers, "game/sounds/");
-        unzipinstallZipIfNotExists("themes", R.raw.covers, "game/themes/");
-        unzipinstallZipIfNotExists("visuals", R.raw.covers, "game/visuals/");
+        unzipinstallZipIfNotExists("fonts", R.raw.fonts, "game/fonts/");
+        unzipinstallZipIfNotExists("languages", R.raw.languages, "game/languages/");
+        unzipinstallZipIfNotExists("plugins", R.raw.plugins, "game/plugins/");
+        unzipinstallZipIfNotExists("resources", R.raw.resources, "game/resources/");
+        unzipinstallZipIfNotExists("soundfonts", R.raw.soundfonts, "game/soundfonts/");
+        unzipinstallZipIfNotExists("sounds", R.raw.sounds, "game/sounds/");
+        unzipinstallZipIfNotExists("themes", R.raw.themes, "game/themes/");
+        unzipinstallZipIfNotExists("visuals", R.raw.visuals, "game/visuals/");
         installFileIfNotExists("license_ffmpeg.txt", R.raw.license_ffmpeg);
         installFileIfNotExists("license_freetype.txt", R.raw.license_freetype);
         installFileIfNotExists("license_libdav1d.txt", R.raw.license_libdav1d);
@@ -154,14 +154,7 @@ public class MainActivity extends SDLActivity {
         installFileIfNotExists("license_webp.txt", R.raw.license_webp);
         installFileIfNotExists("license_zlib.txt", R.raw.license_zlib);
 
-
-
-
-
-
-
-
-
+        JniHandler.setStorageRoot(storageRoot.getAbsolutePath());
 
         super.onCreate(savedInstanceState);
 

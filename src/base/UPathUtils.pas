@@ -159,11 +159,14 @@ var
   SharedPath, UserPath: IPath;
 begin
   // Log directory (must be writable)
+
   if (not FindPath(LogPath, Platform.GetLogPath, true)) then
   begin
     Log.FileOutputEnabled := false;
     Log.LogWarn('Log directory "'+ Platform.GetLogPath.ToNative +'" not available', 'InitializePaths');
   end;
+
+
 
   SharedPath := Platform.GetGameSharedPath;
   UserPath := Platform.GetGameUserPath;

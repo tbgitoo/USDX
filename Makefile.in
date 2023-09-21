@@ -518,6 +518,7 @@ android-install:
 	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/resources $(top_srcdir)/game/resources
 	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/soundfonts $(top_srcdir)/game/soundfonts
 	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/sounds $(top_srcdir)/game/sounds
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/themes $(top_srcdir)/game/themes
 	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/visuals $(top_srcdir)/game/visuals
 	cp  $(top_srcdir)/game/config.ini $(top_srcdir)/android_project/app/src/main/res/raw/
 	cp  $(top_srcdir)/game/LICENSE.ffmpeg.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_ffmpeg.txt

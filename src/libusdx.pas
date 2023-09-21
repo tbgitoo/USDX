@@ -34,6 +34,8 @@ uses
   ctypes                 in 'lib\ctypes\ctypes.pas', // FPC compatibility types for C libs
   {$ENDIF}
 
+  jni,   // For communication with Android Java
+
   //------------------------------
   //Includes - 3rd Party Libraries
   //------------------------------
@@ -415,8 +417,10 @@ UPlatformAndroid   in 'base\UPlatformAndroid.pas',
 
 
   UScreenAbout            in 'screens\UScreenAbout.pas',
+  UJniCallback            in 'jni\UJniCallback.pas',
 
   SysUtils;
+
 
 
 function func4C():Real;	 cdecl;
@@ -430,6 +434,8 @@ var
   WindowTitle: string;
   BadPlayer: integer;
 begin
+
+   debug_message_to_android('Starting function Main2 in libusdx');
 
     SetMultiByteConversionCodePage(CP_UTF8);
     WindowTitle := USDXVersionStr;
@@ -469,10 +475,11 @@ begin
 
     InitializePaths;
 
+    Log.SetLogFileLevel(50);
+    Log.LogStatus('Load Language', 'Initialization');
+    Language := TLanguage.Create;
+
 end;
-
-
-
 
 
 
@@ -480,6 +487,8 @@ exports
   func4C name 'func4C';
 
 exports Main2 name 'Main2';
+
+exports JNI_OnLoad name 'JNI_OnLoad';
 
 
 

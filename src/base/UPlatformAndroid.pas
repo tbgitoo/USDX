@@ -42,15 +42,24 @@ type
     private
       UseLocalDirs: boolean;
 
+      AndroidDataRoot: string;
+
+
       procedure DetectLocalExecution();
       function GetHomeDir(): IPath;
     public
+
       procedure Init; override;
       
       function GetLogPath        : IPath; override;
       function GetGameSharedPath : IPath; override;
       function GetGameUserPath   : IPath; override;
+
+      function GetExecutionDir(): IPath; override;
+
   end;
+
+
 
 implementation
 
@@ -58,7 +67,8 @@ uses
   UCommandLine,
   BaseUnix,
   SysUtils,
-  ULog;
+  ULog,
+  UJniCallback;
 
 
 
@@ -66,6 +76,8 @@ procedure TPlatformAndroid.Init;
 begin
   inherited Init();
   DetectLocalExecution();
+  AndroidDataRoot:=storageRoot_fromJava();
+  debug_message_to_android('PlatformAndroid: Android data directory: '+AndroidDataRoot);
 end;
 
 {**
@@ -80,19 +92,13 @@ end;
  * Sets UseLocalDirs to true if the game is executed locally, false otherwise.
  *}
 procedure TPlatformAndroid.DetectLocalExecution();
-var
-  LocalDir, LanguageDir: IPath;
 begin
-
   UseLocalDirs := False;
 end;
 
 function TPlatformAndroid.GetLogPath: IPath;
 begin
-  if UseLocalDirs then
-    Result := GetExecutionDir()
-  else
-    Result := GetGameUserPath().Append('logs', pdAppend);
+   Result := GetGameUserPath().Append('logs', pdAppend);
 
   // create non-existing directories
   Result.CreateDirectory(true);
@@ -105,10 +111,7 @@ end;
 
 function TPlatformAndroid.GetGameUserPath: IPath;
 begin
-  if UseLocalDirs then
     Result := GetExecutionDir()
-  else
-    Result := GetHomeDir().Append('.ultrastardx', pdAppend);
 end;
 
 {**
@@ -116,7 +119,13 @@ end;
  *}
 function TPlatformAndroid.GetHomeDir(): IPath;
 begin
-  Result := PATH_NONE;
+  Result := GetExecutionDir();
+
+end;
+
+function TPlatformAndroid.GetExecutionDir(): IPath;
+begin
+  GetExecutionDir := Path(AndroidDataRoot);
 
 end;
 
