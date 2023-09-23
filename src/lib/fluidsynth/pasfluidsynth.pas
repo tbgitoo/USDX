@@ -17,7 +17,8 @@ uses
   {$ifdef LOAD_PA_ON_RUNTIME}
   dynlibs,
   {$endif}
-  cTypes;
+  cTypes,
+  ULog;
 
 // Pascal translation of FluidSynth headers by Kirinn Bunnylin / MoonCore.
 //   https://gitlab.com/bunnylin/pasfluidsynth
@@ -569,11 +570,16 @@ type TFluidSynth = class
 	destructor Destroy; override;
 end;
 
+
+
 // ------------------------------------------------------------------
 
 implementation
 
 uses dynlibs;
+
+
+
 
 function TFluidSynth._IsLoaded : boolean;
 begin
@@ -586,6 +592,7 @@ begin
 		{$ifdef DEBUG}
 		if pointer(dest^) = NIL then writeln('GET FAIL: ',funcname);
 		{$endif}
+                if pointer(dest^) = NIL then Log.LogStatus('pasfluidsynth: GET FAIL: ',funcname);
 	end;
 
 
@@ -623,6 +630,7 @@ begin
 		end;
 	end;
 	status := 'Loaded ' + libname;
+        Log.LogStatus('pasfluidsynth', status);
 
         _GetFuncs();
 

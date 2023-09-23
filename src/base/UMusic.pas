@@ -852,9 +852,10 @@ begin
 
   // Load in-game sounds
   SoundLib := TSoundLibrary.Create;
-
+  Log.LogStatus('UMusic', 'Init midi');
   // For playing midi files in the same way as mp3 files
   InitializeMidiPlayback;
+  Log.LogStatus('UMusic', 'Init midi done');
 end;
 
 procedure InitializeVideo();

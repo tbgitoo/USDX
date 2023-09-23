@@ -174,7 +174,9 @@ end;
 procedure InitializeMidiPlayback;
 var theFluidSynthHandler : TFluidsynthHandler;
 begin
+  Log.LogStatus('UMidiPlayback', 'Start fluidsynth create');
   theFluidSynthHandler:=TFluidsynthHandler.Create();
+  Log.LogStatus('UMidiPlayback', 'Created Fluidsynthhandler');
   theFluidSynthHandler.setGain(Ini.MidiSynthesizerGainValue*Ini.GainFactorAudioPlayback);
   DefaultMidiPlayback:=TMidiPlayback.create(theFluidSynthHandler);
 

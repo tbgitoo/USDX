@@ -1,0 +1,14 @@
+prefix=dists/android/external/x86
+exec_prefix=${prefix}
+libdir=${prefix}
+includedir=dists/android/external/include/oboe
+
+Name: liboboe
+Description: Oboe is a C++ library that makes it easy to build high-performance audio apps on Android.
+Version: 1.7.0
+Requires: 
+Requires.private:
+Conflicts:
+Libs: -L${libdir}  -loboe 
+Libs.private: -lOpenSLES
+Cflags: -I${includedir}

@@ -1,0 +1,10 @@
+prefix=dists/android/external/arm64-v8a
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=dists/android/external/include/fluidsynth
+
+Name: Oboe
+Description: Oboe library
+Version: 1.7.0
+Libs: -L${libdir} -loboe -landroid -llog
+Cflags: -I${includedir}

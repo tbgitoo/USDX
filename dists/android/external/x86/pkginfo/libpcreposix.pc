@@ -1,0 +1,13 @@
+# Package Information for pkg-config
+
+prefix=dists/android/external/x86
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=dists/android/external/include/fluidsynth
+
+Name: libpcreposix
+Description: PCREPosix - Posix compatible interface to libpcre
+Version: 8.45
+Libs: -L${libdir} -lpcreposix
+Cflags: -I${includedir} 
+Requires.private: libpcre

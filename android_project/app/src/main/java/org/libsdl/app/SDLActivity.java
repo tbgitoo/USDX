@@ -339,28 +339,21 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
     }
 
-    // Setup
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "Device: " + Build.DEVICE);
-        Log.v(TAG, "Model: " + Build.MODEL);
-        Log.v(TAG, "onCreate()");
-        super.onCreate(savedInstanceState);
-
-
+    protected void init()
+    {
         /* Control activity re-creation */
         if (mSDLMainFinished || mActivityCreated) {
-              boolean allow_recreate = SDLActivity.nativeAllowRecreateActivity();
-              if (mSDLMainFinished) {
-                  Log.v(TAG, "SDL main() finished");
-              }
-              if (allow_recreate) {
-                  Log.v(TAG, "activity re-created");
-              } else {
-                  Log.v(TAG, "activity finished");
-                  System.exit(0);
-                  return;
-              }
+            boolean allow_recreate = SDLActivity.nativeAllowRecreateActivity();
+            if (mSDLMainFinished) {
+                Log.v(TAG, "SDL main() finished");
+            }
+            if (allow_recreate) {
+                Log.v(TAG, "activity re-created");
+            } else {
+                Log.v(TAG, "activity finished");
+                System.exit(0);
+                return;
+            }
         }
 
         mActivityCreated = true;
@@ -388,8 +381,8 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
         if (!mBrokenLibraries) {
             String expected_version = String.valueOf(SDL_MAJOR_VERSION) + "." +
-                                      String.valueOf(SDL_MINOR_VERSION) + "." +
-                                      String.valueOf(SDL_MICRO_VERSION);
+                    String.valueOf(SDL_MINOR_VERSION) + "." +
+                    String.valueOf(SDL_MICRO_VERSION);
             String version = nativeGetVersion();
             if (!version.equals(expected_version)) {
                 mBrokenLibraries = true;
@@ -401,22 +394,22 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
             mSingleton = this;
             AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
             dlgAlert.setMessage("An error occurred while trying to start the application. Please try again and/or reinstall."
-                  + System.getProperty("line.separator")
-                  + System.getProperty("line.separator")
-                  + "Error: " + errorMsgBrokenLib);
+                    + System.getProperty("line.separator")
+                    + System.getProperty("line.separator")
+                    + "Error: " + errorMsgBrokenLib);
             dlgAlert.setTitle("SDL Error");
             dlgAlert.setPositiveButton("Exit",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,int id) {
-                        // if this button is clicked, close current activity
-                        SDLActivity.mSingleton.finish();
-                    }
-                });
-           dlgAlert.setCancelable(false);
-           dlgAlert.create().show();
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog,int id) {
+                            // if this button is clicked, close current activity
+                            SDLActivity.mSingleton.finish();
+                        }
+                    });
+            dlgAlert.setCancelable(false);
+            dlgAlert.create().show();
 
-           return;
+            return;
         }
 
 
@@ -472,12 +465,12 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         }
 
         switch (getContext().getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
-        case Configuration.UI_MODE_NIGHT_NO:
-            //SDLActivity.onNativeDarkModeChanged(false);
-            break;
-        case Configuration.UI_MODE_NIGHT_YES:
-            //SDLActivity.onNativeDarkModeChanged(true);
-            break;
+            case Configuration.UI_MODE_NIGHT_NO:
+                //SDLActivity.onNativeDarkModeChanged(false);
+                break;
+            case Configuration.UI_MODE_NIGHT_YES:
+                //SDLActivity.onNativeDarkModeChanged(true);
+                break;
         }
 
         setContentView(mLayout);
@@ -495,6 +488,18 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
                 SDLActivity.onNativeDropFile(filename);
             }
         }
+    }
+
+    // Setup
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG, "Device: " + Build.DEVICE);
+        Log.v(TAG, "Model: " + Build.MODEL);
+        Log.v(TAG, "onCreate()");
+        super.onCreate(savedInstanceState);
+
+
+
     }
 
     protected void pauseNativeThread() {

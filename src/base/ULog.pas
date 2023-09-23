@@ -63,7 +63,7 @@ const
   LOG_LEVEL_NONE         = -1;
 
   // define level that Log(File)Level is initialized with
-  LOG_LEVEL_DEFAULT      = LOG_LEVEL_WARN;
+  LOG_LEVEL_DEFAULT      = LOG_LEVEL_DEBUG;
   LOG_FILE_LEVEL_DEFAULT = LOG_LEVEL_ERROR;
 
   CONSOLE_SCROLLBACK_SIZE = 512;
@@ -151,7 +151,8 @@ uses
   UTime,
   UCommon,
   UCommandLine,
-  UPathUtils;
+  UPathUtils{$IF Defined(ANDROID)},
+  UJniCallback{$IFEND};
 
 (*
  * Write to console if in debug mode (Thread-safe).
@@ -370,6 +371,9 @@ begin
     begin
       DebugWriteLn(LogMsg);
       LogConsole(LogMsg);
+      {$IF Defined(ANDROID)}
+      debug_message_to_android(LogMsg);
+      {$IFEND}
     end;
     
     // write message to log-file

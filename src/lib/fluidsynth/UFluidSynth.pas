@@ -236,7 +236,7 @@ function callback_midiPlaybackEvent(data: TFluidsynthHandler; event : TFluidsynt
 implementation
 
 uses
-  UMidiInputStream, UTextEncoding, UCommon,UPlatform,UIni,UUnicodeUtils;
+  UMidiInputStream, UTextEncoding, UCommon,UPlatform,UIni,UUnicodeUtils,ULog;
 
 // Instantiate the singleton if necessary
 procedure createfluidSynthHandler();
@@ -261,13 +261,25 @@ end;
  begin
    midi_port_name:='fluidsynth_ultrastar_midi_port';
    presentSoundFontID:=-1;
+
    fluidsynth := TFluidSynth.Create();
    fluidsynth.settings := fluidsynth.new_fluid_settings();
+   if(fluidsynth.settings=nil) then Log.LogStatus('UFluidSynth', 'Could not create settings');
    // For just synthesizing, one could also use autoconnect (although it doesn't seem to work
    // with libfluidsynth, only the executable), but anyways, we need to treat the midi messages
    // to get the keys being hit, and so we need to shuffle the midi messages to
    // fluidsynth AND analyse them.
+   Log.LogStatus('UFluidSynth', 'settings created');
+   {$IFDEF ANDROID}
+
+   Log.LogStatus('UFluidSynth', 'Android setting midiport');
    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
+
+   {$ELSE}
+    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
+
+   {$ENDIF}
+   Log.LogStatus('UFluidSynth', 'midi port set');
    fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',Ini.MidiSynthesizerGainValue);
    {$IFDEF unix}
    {$IFDEF Darwin}
@@ -278,9 +290,9 @@ end;
 
   {$ENDIF}
    // Create the actual synthesizer instance, the TFluidSynth is already a wrapper in pasfluidsynth
-
+   Log.LogStatus('UFluidSynth', 'create actual synthesizer');
    fluidsynth.synth := fluidsynth.new_fluid_synth(fluidsynth.settings);
-
+   Log.LogStatus('UFluidSynth', 'synth object created');
 
    fluidsynth.audioDriver:=nil;
    midiDriver:=nil;

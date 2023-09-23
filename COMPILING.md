@@ -218,6 +218,8 @@ copy over all the header files (in their folders) in ffmpeg-android-maker/output
 
  
 
+
+
 portaudio
 https://github.com/Gundersanne/portaudio_opensles
 mkdir -p build && cd build
@@ -232,8 +234,29 @@ make
 Copy over the libportaudio.so file generated in build to the corresponding architecture
 
 
+Oboe: This is the preconized alternative to the portaudio library
+git clone https://github.com/google/oboe/
+
+cd oboe
+
+./build_all_android.sh
+
+then copy over the liboboe.so files from the build forlder to dists/android/external/armeabi-v7a (and analogously the other architectures). Also copy over the oboe folder from the build/include folder to dists/android/external/include (i.e. there should be an oboe folder in the include directory)
 
 
+fluidsynth
+https://github.com/FluidSynth/fluidsynth/releases get the android release and also a windows one for the headers (the include directory)
+
+fluidsynth also depends on libomp, which is available through the ndk kit, for example: sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/lib64/clang/14.0.7/lib/linux/x86_64/libomp.so
+
+fluidsynth also depends on libc++_shared.so, which is available through the ndk kit, for example: sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so
+
+
+
+fluidsynth from source
+git clone https://github.com/VolcanoMobile/fluidsynth-android
+and build_all_android.sh
+copy libfluidsynth.so as well as the include 
 
 #USDX
 

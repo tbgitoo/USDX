@@ -598,15 +598,23 @@ fi
 
 # find portaudio
 if [[ "$android_cross" = "yes" ]]; then
-	ANDROID_PKG_HAVE([portaudio], [portaudio-2.0], no)
+	portaudio_HAVE="no"
 else
   	PKG_HAVE([portaudio], [portaudio-2.0], no)
 fi
 if [[ "$android_cross" = "yes" ]]; then
-	ANDROID_PKG_VERSION([portaudio], [portaudio-2.0])
+	portaudio_HAVE="no"
 else
 	PKG_VERSION([portaudio], [portaudio-2.0])
 fi
+
+
+if [[ "$android_cross" = "yes" ]]; then
+	ANDROID_PKG_HAVE([fluidsynth], [fluidsynth], no)
+else
+  	PKG_HAVE([fluidsynth], [fluidsynth], no)
+fi
+
 
 
 

@@ -2,10 +2,14 @@ package com.tbgitoo.ultrastardx_android;
 
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import org.apache.commons.io.IOUtils;
@@ -26,6 +30,11 @@ import java.util.zip.ZipInputStream;
 
 
 public class MainActivity extends SDLActivity {
+
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+
+    private static final String[] audio_rec_permission_array={Manifest.permission.RECORD_AUDIO};
+    private boolean audioRecordingPermissionGranted = false;
 
     // Used to load the 'ultrastardx_android' library on application startup.
     static {
@@ -129,6 +138,7 @@ public class MainActivity extends SDLActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         storageRoot=primaryExternalStorage();
         installFileIfNotExists("config.ini", R.raw.config);
         unzipinstallZipIfNotExists("avatars", R.raw.avatars, "game/avatars/");
@@ -146,6 +156,7 @@ public class MainActivity extends SDLActivity {
         installFileIfNotExists("license_libdav1d.txt", R.raw.license_libdav1d);
         installFileIfNotExists("license_libjpeg_turbo.txt", R.raw.license_libjpeg_turbo);
         installFileIfNotExists("license_lua.txt", R.raw.license_lua);
+        installFileIfNotExists("license_oboe.txt", R.raw.license_oboe);
         installFileIfNotExists("license_png.txt", R.raw.license_png);
         installFileIfNotExists("license_portaudio.txt", R.raw.license_portaudio);
         installFileIfNotExists("license_sdl2.txt", R.raw.license_sdl2);
@@ -155,10 +166,37 @@ public class MainActivity extends SDLActivity {
         installFileIfNotExists("license_zlib.txt", R.raw.license_zlib);
 
         JniHandler.setStorageRoot(storageRoot.getAbsolutePath());
+        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this, audio_rec_permission_array, REQUEST_RECORD_AUDIO_PERMISSION);
+        } else {
+            init();
+        }
 
-        super.onCreate(savedInstanceState);
+
 
     }
+
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                audioRecordingPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                if(audioRecordingPermissionGranted)
+                {
+                    init();
+                }
+                break;
+        }
+
+        if (!audioRecordingPermissionGranted) {
+            finish();
+        }
+    }
+
     private File primaryExternalStorage() {
         File[] externalStorageVolumes =
                 ContextCompat.getExternalFilesDirs(getApplicationContext(), null);

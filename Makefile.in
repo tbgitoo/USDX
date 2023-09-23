@@ -526,6 +526,7 @@ android-install:
 	cp  $(top_srcdir)/game/LICENSE.libdav1d.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_libdav1d.txt
 	cp  $(top_srcdir)/game/LICENSE.libjpeg-turbo.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_libjpeg_turbo.txt
 	cp  $(top_srcdir)/game/LICENSE.lua.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_lua.txt
+	cp  $(top_srcdir)/dists/android/external/licenses/license_oboe.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_oboe.txt
 	cp  $(top_srcdir)/game/LICENSE.png.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_png.txt
 	cp  $(top_srcdir)/game/LICENSE.portaudio.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_portaudio.txt
 	cp  $(top_srcdir)/game/LICENSE.sdl2.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_sdl2.txt
@@ -544,4 +545,12 @@ android-install:
 	cp -r dists/android/external/x86_64 android_project/app/libs/
 	cp -r dists/android/external/licenses android_project/app/libs/
 	cp -r dists/android/external/include android_project/app/libs/
+
+.PHONY: android-so
+android-so:
+	cp src/libusdx/include/usdx.h android_project/app/src/main/cpp/libusdx/include/usdx.h
+	cp -r build/arm64-v8a android_project/app/libs/
+	cp -r build/armeabi-v7a android_project/app/libs/
+	cp -r build/x86 android_project/app/libs/
+	cp -r build/x86_64 android_project/app/libs/
 

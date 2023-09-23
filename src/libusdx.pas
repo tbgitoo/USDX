@@ -479,6 +479,56 @@ begin
     Log.LogStatus('Load Language', 'Initialization');
     Language := TLanguage.Create;
 
+    // add const values:
+    Language.AddConst('US_VERSION', USDXVersionStr);
+
+    // Skin
+    Log.BenchmarkStart(1);
+    Log.LogStatus('Loading Skin List', 'Initialization');
+    Skin := TSkin.Create;
+
+    Log.LogStatus('Loading Theme List', 'Initialization');
+    Theme := TTheme.Create;
+
+    Log.LogStatus('Website-Manager', 'Initialization');
+    DLLMan := TDLLMan.Create;   // Load WebsiteList
+    Log.LogStatus('DataBase System', 'Initialization');
+    DataBase := TDataBaseSystem.Create;
+
+    if (Params.ScoreFile.IsUnset) then
+      DataBase.Init(Platform.GetGameUserPath.Append('Ultrastar.db'))
+    else
+      DataBase.Init(Params.ScoreFile);
+
+    // Ini + Paths
+    Log.LogStatus('Load Ini', 'Initialization');
+    Ini := TIni.Create;
+    Ini.Load;
+
+    // Help
+    Log.LogStatus('Load Help', 'Initialization');
+    Help := THelp.Create;
+
+    // it is possible that this is the first run, create a .ini file if neccessary
+    Log.LogStatus('Write Ini', 'Initialization');
+    Ini.Save;
+
+    // Theme
+    Theme.LoadTheme(Ini.Theme, Ini.Color);
+
+    // Sound
+    InitializeSound();
+
+    // Lyrics-engine with media reference timer
+    LyricsState := TLyricsState.Create();
+
+    // Graphics
+    Initialize3D(WindowTitle);
+
+    // Playlist Manager
+    Log.LogStatus('Playlist Manager', 'Initialization');
+    PlaylistMan := TPlaylistManager.Create;
+
 end;
 
 
