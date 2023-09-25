@@ -37,7 +37,7 @@
   // you don't get sound at the end of the day
 
 
-unit UFluidSynth;
+unit UFluidSynthAndroid;
 
 interface
 
@@ -52,8 +52,7 @@ uses
   cthreads,
 
   Classes,
-  pasfluidsynth,
-
+  pasfluidsynth_android,
   sysutils;
 
 
@@ -173,8 +172,8 @@ type
 
       public
       fluidsynth : TFluidSynth;
-      midiDriver: TFluidSynth.PFluidMidiDriver;
-      midiRouter: TFluidSynth.PFluidMidiRouter;
+      midiDriver: PFluidMidiDriver;
+      midiRouter: PFluidMidiRouter;
       midi_port_name: PChar;
       midi_port_id: Integer;
       constructor Create;
@@ -212,7 +211,7 @@ type
       procedure pauseMidiFile();
 
 
-      function getMidiMessageFromFluid_midi_event(midiEvent: TFluidSynth.PFluidMidiEvent): longint;
+      function getMidiMessageFromFluid_midi_event(midiEvent: PFluidMidiEvent): longint;
 
 
 
@@ -231,7 +230,7 @@ procedure createfluidSynthHandler();
 // in program startup.
 
 
-function callback_midiPlaybackEvent(data: TFluidsynthHandler; event : TFluidsynth.PFluidMidiEvent): longint;
+function callback_midiPlaybackEvent(data: TFluidsynthHandler; event : PFluidMidiEvent): longint;
 
 
 
@@ -252,7 +251,7 @@ begin
 end;
 
 
-function callback_midiPlaybackEvent(data: TFluidsynthHandler; event : TFluidsynth.PFluidMidiEvent): longint;
+function callback_midiPlaybackEvent(data: TFluidsynthHandler; event : PFluidMidiEvent): longint;
 var midiEvent: longint;
 begin
    midiEvent:=data.getMidiMessageFromFluid_midi_event(event);
@@ -272,16 +271,10 @@ end;
    // with libfluidsynth, only the executable), but anyways, we need to treat the midi messages
    // to get the keys being hit, and so we need to shuffle the midi messages to
    // fluidsynth AND analyse them.
-   Log.LogStatus('UFluidSynth', 'settings created');
-   {$IFDEF ANDROID}
+   Log.LogStatus('UFluidSynthAndroid', 'settings created');
 
-   Log.LogStatus('UFluidSynth', 'Android setting midiport');
    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
 
-   {$ELSE}
-    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
-
-   {$ENDIF}
    Log.LogStatus('UFluidSynth', 'midi port set');
    fluidsynth.fluid_settings_setnum(fluidsynth.settings,'synth.gain',Ini.MidiSynthesizerGainValue);
    {$IFDEF unix}
@@ -455,7 +448,7 @@ begin
      // The midi router takes midi events and feeds them to the synthesizer
   // This is the default way of doing it:
    midiRouter:=fluidsynth.new_fluid_midi_router(fluidsynth.settings,
-   fluidsynth.fluid_synth_handle_midi_event  , fluidsynth.synth);
+   fluidsynth.fluid_synth_handle_midi_event_pointer  , fluidsynth.synth);
 
    // With a custom handle (which should call fluidsynth.fluid_synth_handle_midi_event where
   // appropriate). The handleMidiEvant function needs to have the same signature as
@@ -463,7 +456,7 @@ begin
   //midiRouter:=fluidsynth.new_fluid_midi_router(fluidsynth.settings,
    //@handleMidiEvent  , fluidsynth.synth);
 
-   midiDriver:=fluidsynth.new_fluid_midi_driver(fluidsynth.settings, fluidsynth.fluid_midi_router_handle_midi_event, midiRouter);
+   midiDriver:=fluidsynth.new_fluid_midi_driver(fluidsynth.settings, fluidsynth.fluid_midi_router_handle_midi_event_pointer, midiRouter);
 
    // We need not only the port name, but also the port id in order to write to this port for synthesizing
    midiOutputDevices:=TMidiDeviceList.create(false,true);
@@ -688,7 +681,7 @@ end;
   end;
 
 
-  function TFluidSynthHandler.getMidiMessageFromFluid_midi_event(midiEvent: TFluidSynth.PFluidMidiEvent): longint;
+  function TFluidSynthHandler.getMidiMessageFromFluid_midi_event(midiEvent: PFluidMidiEvent): longint;
   var channel, eventType: integer;
   begin
     channel:=fluidsynth.fluid_midi_event_get_channel(midiEvent);  // midi channel, from 0 to 15, 9 is percussion
