@@ -191,6 +191,8 @@ target_link_libraries (
         opus
         vorbis
         ogg
+        EGL
+        GLESv1_CM
 )
 
 

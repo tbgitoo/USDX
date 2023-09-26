@@ -2467,7 +2467,7 @@ begin
 
   // free expanded data
   SetLength(TexBuffer, 0);
-
+  {$IFNDEF ANDROID}
   // create the display list
   fDisplayList := glGenLists(1);
 
@@ -2475,6 +2475,8 @@ begin
   glNewList(fDisplayList, GL_COMPILE);
     Render(false);
   glEndList();
+
+  {$ENDIF}
 
   // free glyph data (bitmap, etc.)
   FT_Done_Glyph(Glyph);
@@ -2526,11 +2528,18 @@ end;
 procedure TFTGlyph.Render(UseDisplayLists: boolean);
 begin
   // use display-lists if enabled and exit
+
+  {$IFNDEF ANDROID}
+
   if (UseDisplayLists) then
   begin
     glCallList(fDisplayList);
     Exit;
   end;
+
+  {$ENDIF}
+
+
 
   glBindTexture(GL_TEXTURE_2D, fTexture);
   glPushMatrix();

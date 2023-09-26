@@ -165,7 +165,6 @@ var
   SectionName: string;
 begin
   FontIni := TMemIniFile.Create(FontPath.Append('fonts.ini').ToNative);
-
   try
     for FontNameIndex := 0 to FontSections.Count-1 do
     begin
@@ -184,6 +183,7 @@ begin
         if (FONT_STYLES[FontStyleIndex] <> 'Outline') then
         begin
           // normal (non-outlined) font
+
           Fonts[FontNameIndex][FontStyleIndex].Font := TFTScalableFont.Create(
             FontFile,
             FontMaxResolution,

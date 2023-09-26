@@ -378,7 +378,7 @@ uses
 
 procedure LoadFontTextures;
 begin
-  Log.LogStatus('Building Fonts', 'LoadTextures');
+
   BuildFonts;
 end;
 

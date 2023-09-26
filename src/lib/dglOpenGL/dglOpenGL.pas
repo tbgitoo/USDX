@@ -14793,12 +14793,18 @@ const
     OPENGL_LIBNAME = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGL.dylib';
     GLU_LIBNAME = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGLU.dylib';
   {$ELSE}
-    OPENGL_LIBNAME = 'libGL.so.1';
-    GLU_LIBNAME = 'libGLU.so.1';
+   {$IFDEF ANDROID}
+      OPENGL_LIBNAME = 'libGLESv1_CM.so';
+      GLU_LIBNAME = '';
+   {$ELSE}
+     OPENGL_LIBNAME = 'libGL.so.1';
+     GLU_LIBNAME = 'libGLU.so.1';
+   {$ENDIF}
+
   {$ENDIF}
 {$ENDIF}
 
-function InitOpenGL(LibName: String = OPENGL_LIBNAME; GLULibName: String = GLU_LIBNAME): Boolean;
+function InitOpenGL(LibName: String = OPENGL_LIBNAME; GLULibName: String = GLU_LIBNAME ): Boolean;
 
 function dglGetProcAddress(ProcName: PAnsiChar; LibHandle: Pointer = nil {$IFDEF DGL_LINUX}; ForceDLSym: Boolean = False{$ENDIF}): Pointer;
 function dglCheckExtension(Extension: AnsiString): Boolean;
