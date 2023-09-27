@@ -8046,7 +8046,12 @@ type
   TglNormal3s = procedure(nx: GLshort; ny: GLshort; nz: GLshort); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglNormal3sv = procedure(const v: PGLshort); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglNormalPointer = procedure(_type: GLenum; stride: GLsizei; const _pointer: PGLvoid); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+
+  {$IFDEF ANDROID}
+  TglOrthof = procedure(left: GLfloat; right: GLfloat; bottom: GLfloat; top: GLfloat; zNear: GLfloat; zFar: GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  {$ELSE}
   TglOrtho = procedure(left: GLdouble; right: GLdouble; bottom: GLdouble; top: GLdouble; zNear: GLdouble; zFar: GLdouble); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
+  {$ENDIF ANDROID}
   TglPassThrough = procedure(token: GLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglPixelMapfv = procedure(map: GLenum; mapsize: GLsizei; const values: PGLfloat); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
   TglPixelMapuiv = procedure(map: GLenum; mapsize: GLsizei; const values: PGLuint); {$IFDEF DGL_WIN}stdcall; {$ELSE}cdecl; {$ENDIF}
@@ -11555,7 +11560,12 @@ var
   glNormal3s: TglNormal3s;
   glNormal3sv: TglNormal3sv;
   glNormalPointer: TglNormalPointer;
+  {$IFDEF ANDROID}
+  glOrthof: TglOrthof;
+  {$ELSE}
   glOrtho: TglOrtho;
+  {$ENDIF ANDROID}
+
   glPassThrough: TglPassThrough;
   glPixelMapfv: TglPixelMapfv;
   glPixelMapuiv: TglPixelMapuiv;
@@ -15672,7 +15682,11 @@ begin
   glNormal3s := dglGetProcAddress('glNormal3s');
   glNormal3sv := dglGetProcAddress('glNormal3sv');
   glNormalPointer := dglGetProcAddress('glNormalPointer');
+  {$IFDEF ANDROID}
+  glOrthof := dglGetProcAddress('glOrthof');
+  {$ELSE}
   glOrtho := dglGetProcAddress('glOrtho');
+  {$ENDIF}
   glPassThrough := dglGetProcAddress('glPassThrough');
   glPixelMapfv := dglGetProcAddress('glPixelMapfv');
   glPixelMapuiv := dglGetProcAddress('glPixelMapuiv');

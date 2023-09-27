@@ -62,7 +62,8 @@ uses
   USkins,
   SysUtils,
   dglOpenGL,
-  UGraphic;
+  UGraphic,
+  ULog;
 
 constructor TMenuBackgroundTexture.Create(const ThemedSettings: TThemeBackground);
 var
@@ -93,17 +94,16 @@ end;
 
 procedure   TMenuBackgroundTexture.Draw;
 begin
+  Log.logStatus('TMenuBackgroundTexture','Draw');
   If (ScreenAct = 1) then //Clear just once when in dual screen mode
     glClear(GL_DEPTH_BUFFER_BIT);
-    
+
   glColorRGB(Color);
 
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   glBindTexture(GL_TEXTURE_2D, Tex.TexNum);
-
   glBegin(GL_QUADS);
     glTexCoord2f(Tex.TexX1*Tex.TexW, Tex.TexY1*Tex.TexH);
     glVertex2f(0, 0);

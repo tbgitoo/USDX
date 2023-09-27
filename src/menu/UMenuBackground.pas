@@ -55,6 +55,8 @@ type
 
 implementation
 
+
+
 constructor TMenuBackground.Create(const ThemedSettings: TThemeBackground);
 begin
   inherited Create;

@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -16,9 +17,13 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+
+import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGLContext;
+import javax.microedition.khronos.egl.EGLDisplay;
 
 
 /**
@@ -27,7 +32,7 @@ import android.view.WindowManager;
 
     Because of this, that's where we set up the SDL thread
 */
-public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
+public class SDLSurface extends GLSurfaceView implements SurfaceHolder.Callback,
     View.OnKeyListener, View.OnTouchListener, SensorEventListener  {
 
     // Sensors
@@ -43,6 +48,9 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     // Startup
     public SDLSurface(Context context) {
         super(context);
+
+
+
         getHolder().addCallback(this);
 
         setFocusable(true);
@@ -405,4 +413,32 @@ public class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         return false;
     }
+
+
+    private static class ContextFactory implements GLSurfaceView.EGLContextFactory {
+        private static int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
+        public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig) {
+            Log.w("SDLSurface", "creating OpenGL ES 2.0 context");
+            checkEglError("Before eglCreateContext", egl);
+            int[] attrib_list = {EGL_CONTEXT_CLIENT_VERSION, 1, EGL10.EGL_NONE };
+            EGLContext context = egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, attrib_list);
+            checkEglError("After eglCreateContext", egl);
+            return context;
+        }
+
+        public void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context) {
+            egl.eglDestroyContext(display, context);
+        }
+    }
+
+
+    private static void checkEglError(String prompt, EGL10 egl) {
+        int error;
+        while ((error = egl.eglGetError()) != EGL10.EGL_SUCCESS) {
+            Log.e("SDLSurface", String.format("%s: EGL error: 0x%x", prompt, error));
+        }
+    }
 }
+
+
+

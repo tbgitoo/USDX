@@ -154,7 +154,15 @@ set_target_properties (ogg
 
 find_library (log-lib log)
 
+add_library (EGL_ext SHARED IMPORTED)
+set_target_properties (EGL_ext
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libEGL.so)
 
+add_library (GLESv1_ext SHARED IMPORTED)
+set_target_properties (GLESv1_ext
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libGLESv1_CM.so)
 
 # compilation of the main loop library for sdl
 
@@ -191,8 +199,8 @@ target_link_libraries (
         opus
         vorbis
         ogg
-        EGL
-        GLESv1_CM
+        EGL_ext
+        GLESv1_ext
 )
 
 

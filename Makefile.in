@@ -504,6 +504,11 @@ clean-macosx-dmg:
 android:
 	@echo "Building Android libusdx.so"
 	$(MAKE) -C $(USDX_SRC_DIR) $@
+	cp src/libusdx/include/usdx.h android_project/app/src/main/cpp/libusdx/include/usdx.h
+	cp -r build/arm64-v8a android_project/app/libs/
+	cp -r build/armeabi-v7a android_project/app/libs/
+	cp -r build/x86 android_project/app/libs/
+	cp -r build/x86_64 android_project/app/libs/
 
 
 .PHONY: android-install

@@ -491,6 +491,10 @@ begin
   begin
     Log.LogCritical('SDL_Init Failed', 'UGraphic.Initialize3D');
   end;
+  {$IFDEF ANDROID}
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+  {$ENDIF}
   InitializeScreen;
   // load icon image (must be 32x32 for win32)
   Icon := LoadImage(ResourcesPath.Append(WINDOW_ICON));
@@ -519,12 +523,11 @@ begin
   InitializeVideo();
 
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Initializing 3D'));
-  Log.LogStatus('TDisplay.Create', 'UGraphic.Initialize3D');
   Display := TDisplay.Create;
   //Display.SetCursor;
 
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading font textures'));
-  Log.LogStatus('Loading Font Textures', 'UGraphic.Initialize3D');
+
   LoadFontTextures();
 
   // Show the Loading Screen
@@ -578,10 +581,23 @@ end;
 procedure SwapBuffers;
 begin
   SDL_GL_SwapWindow(Screen);
+
   glMatrixMode(GL_PROJECTION);
-    glLoadIdentity;
+  glLoadIdentity;
+
+
+
+    {$IFDEF ANDROID}
+    glOrthof(0, RenderW, RenderH, 0, -1, 100);
+    {$ELSE}
     glOrtho(0, RenderW, RenderH, 0, -1, 100);
+    {$ENDIF}
+
+
+
   glMatrixMode(GL_MODELVIEW);
+
+
 end;
 
 procedure Finalize3D;
@@ -936,10 +952,14 @@ end;
 procedure LoadLoadingScreen;
 begin
   ScreenLoading := TScreenLoading.Create;
+
   ScreenLoading.OnShow;
   Display.CurrentScreen := @ScreenLoading;
+
   SwapBuffers;
+
   ScreenLoading.Draw;
+  Log.logStatus('UGraphic','LoadLoadingScreen Drawing done' );
   Display.Draw;
   SwapBuffers;
 end;

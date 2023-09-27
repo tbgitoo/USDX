@@ -453,12 +453,22 @@ end;
 function ULuaGl_Ortho(L: Plua_State): Integer; cdecl;
 begin
   if  (lua_gettop(L) = 6) then
+    {$IFDEF ANDROID}
+    glOrthof(lual_checkinteger(L,-6),
+            lual_checkinteger(L,-5),
+            lual_checkinteger(L,-4),
+            lual_checkinteger(L,-3),
+            lual_checkinteger(L,-2),
+            lual_checkinteger(L,-1))
+    {$ELSE}
     glOrtho(lual_checkinteger(L,-6),
             lual_checkinteger(L,-5),
             lual_checkinteger(L,-4),
             lual_checkinteger(L,-3),
             lual_checkinteger(L,-2),
             lual_checkinteger(L,-1))
+    {$ENDIF}
+
   else
     luaL_error(L, 'incorrect argument to function ''gl.Ortho''');
   result:=0; // number of results

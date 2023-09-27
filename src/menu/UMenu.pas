@@ -1003,7 +1003,9 @@ end;
 // method to draw our tmenu and all his child buttons
 function TMenu.DrawBG: boolean;
 begin
+
   Background.Draw;
+  Log.logStatus('UMenu','DrawBGDone');
   Result := true;
 end;
 

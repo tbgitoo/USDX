@@ -256,7 +256,9 @@ fluidsynth also depends on libc++_shared.so, which is available through the ndk 
 fluidsynth from source
 git clone https://github.com/VolcanoMobile/fluidsynth-android
 and build_all_android.sh
-copy libfluidsynth.so as well as the include 
+copy libfluidsynth.so as well as the include
+
+ligbles, ligEGL: From ndk (sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/29 and correspondingly)
 
 #USDX
 

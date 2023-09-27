@@ -1611,7 +1611,11 @@ uses
 //-----------
 procedure glColorRGB(Color: TRGB);  overload;
 begin
+  {$IFDEF ANDROID}
+  glColor4f(Color.R, Color.G, Color.B,1.0);
+  {$ELSE}
   glColor3f(Color.R, Color.G, Color.B);
+  {$ENDIF}
 end;
 
 procedure glColorRGB(Color: TRGB; Alpha: real);  overload;
