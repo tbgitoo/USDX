@@ -1005,7 +1005,6 @@ function TMenu.DrawBG: boolean;
 begin
 
   Background.Draw;
-  Log.logStatus('UMenu','DrawBGDone');
   Result := true;
 end;
 
@@ -1013,10 +1012,11 @@ function TMenu.DrawFG: boolean;
 var
   J: integer;
 begin
+  Log.logStatus('UMenu','DrawFG');
   //  Draw all ButtonCollections
   for J := 0 to High(ButtonCollection) do
     ButtonCollection[J].Draw;
-
+  Log.logStatus('UMenu','ButtonCollection drawn');
   // We don't forget about newly implemented static for nice skin ...
   for J := 0 to High(Statics) do
     Statics[J].Draw;

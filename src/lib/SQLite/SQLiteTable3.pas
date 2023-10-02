@@ -251,6 +251,8 @@ function SystemCollate(Userdta: pointer; Buf1Len: integer; Buf1: pointer;
 
 implementation
 
+uses ULog;
+
 procedure DisposePointer(ptr: pointer); cdecl;
 begin
   if assigned(ptr) then
@@ -373,7 +375,11 @@ end;
 
 procedure TSQLiteDatabase.BindData(Stmt: TSQLiteStmt; const Bindings: array of const);
 var
+  {$IFDEF ANDROID}
+  BlobMemStream: TCByteMemory;
+  {$ELSE}
   BlobMemStream: TCustomMemoryStream;
+  {$ENDIF}
   BlobStdStream: TStream;
   DataPtr: Pointer;
   DataSize: integer;
@@ -454,15 +460,33 @@ begin
       end;
       vtObject:
       begin
+        {$IFDEF ANDROID}
+        if (Bindings[I].VObject is TCByteMemory) then
+        begin
+          BlobMemStream := TCByteMemory(Bindings[I].VObject);
+          if (sqlite3_bind_blob(Stmt, I+1, BlobMemStream.Read(),
+              BlobMemStream.getSize(), SQLITE_STATIC) <> SQLITE_OK) then
+          begin
+            Log.logStatus('SQLiteTable3','Could not bind BLOB');
+            RaiseError('Could not bind BLOB', 'BindData');
+          end;
+          Log.logStatus('SQLiteTable3','Bind OK');
+        end
+
+        {$ELSE}
         if (Bindings[I].VObject is TCustomMemoryStream) then
         begin
           BlobMemStream := TCustomMemoryStream(Bindings[I].VObject);
+
           if (sqlite3_bind_blob(Stmt, I+1, @PAnsiChar(BlobMemStream.Memory)[BlobMemStream.Position],
               BlobMemStream.Size-BlobMemStream.Position, SQLITE_STATIC) <> SQLITE_OK) then
           begin
+
             RaiseError('Could not bind BLOB', 'BindData');
           end;
+
         end
+        {$ENDIF}
         else if (Bindings[I].VObject is TStream) then
         begin
           BlobStdStream := TStream(Bindings[I].VObject);
@@ -501,16 +525,21 @@ var
   iStepResult: integer;
 begin
   try
+
     if Sqlite3_Prepare_v2(self.fDB, PAnsiChar(SQL), -1, Stmt, NextSQLStatement) <>
       SQLITE_OK then
       RaiseError('Error executing SQL', SQL);
     if (Stmt = nil) then
       RaiseError('Could not prepare SQL statement', SQL);
     DoQuery(SQL);
+
     SetParams(Stmt);
+
     BindData(Stmt, Bindings);
 
+
     iStepResult := Sqlite3_step(Stmt);
+
     if (iStepResult <> SQLITE_DONE) then
       begin
       SQLite3_reset(stmt);

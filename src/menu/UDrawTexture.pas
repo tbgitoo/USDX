@@ -34,7 +34,8 @@ interface
 {$I switches.inc}
 
 uses
-  UTexture;
+  UTexture,
+  ULog;
 
 procedure DrawLine(X1, Y1, X2, Y2, ColR, ColG, ColB: real);
 procedure DrawQuad(X,  Y,  W,  H,  ColR, ColG, ColB: real);
@@ -74,10 +75,19 @@ var
 begin
   with Texture do
   begin
+
     glColor4f(ColR * Int, ColG * Int, ColB * Int, Alpha);
+
     glEnable(GL_TEXTURE_2D);
+
     glEnable(GL_BLEND);
+    {$ifdef ANDROID}
+    glDepthRangef(0, 10);
+    {$else}
     glDepthRange(0, 10);
+    {$endif}
+
+
     glDepthFunc(GL_LEQUAL);
 //    glDepthFunc(GL_GEQUAL);
     glEnable(GL_DEPTH_TEST);
@@ -116,6 +126,19 @@ begin
       y4 := (y + h/2) + yt4 * cos(Rot) + xt4 * sin(Rot);
 
     end;
+    {$ifdef ANDROID}
+       draw_quads_opengles_z(
+           x1, y1 + (y2 - (LeftScale * (y2))),
+           x2, y2 - (y2 - (LeftScale * (y2))),
+           x3, y3 - (y2 - (RightScale * (y2))),
+           x4, y4 + (y2 - (RightScale * (y2))),z,
+           TexX1*TexW, TexY1*TexH,
+           TexX1*TexW, TexY2*TexH,
+           TexX2*TexW, TexY2*TexH,
+           TexX2*TexW, TexY1*TexH,
+           TexNum);
+
+    {$else}
 
 {
     glBegin(GL_QUADS);
@@ -133,6 +156,7 @@ begin
       glTexCoord2f(TexX2*TexW, TexY1*TexH); glVertex3f(x4, y4, z);
     glEnd;
     }
+    Log.logStatus('UDrawTexture','DrawTexture2');
     glBegin(GL_QUADS);
       glTexCoord2f(TexX1*TexW, TexY1*TexH);
       glVertex3f(x1, y1 + (y2 - (LeftScale * (y2))), z);
@@ -143,6 +167,7 @@ begin
       glTexCoord2f(TexX2*TexW, TexY1*TexH);
       glVertex3f(x4, y4 + (y2 - (RightScale * (y2))), z);
     glEnd;
+    {$endif}
 
   end;
   glDisable(GL_DEPTH_TEST);

@@ -532,7 +532,7 @@ begin
     LyricsState := TLyricsState.Create();
 
     // Graphics
-    Initialize3D(WindowTitle);
+    //Initialize3D(WindowTitle);
 
     // Playlist Manager
     Log.LogStatus('Playlist Manager', 'Initialization');

@@ -300,9 +300,14 @@ function TAvatarDatabase.AddAvatar(const Filename: IPath): TAvatar;
 var
   AvatarID: int64;
   Thumbnail: PSDL_Surface;
+  {$IFDEF ANDROID}
+  AvatarData: TCByteMemory;
+  {$ELSE}
   AvatarData: TBlobWrapper;
+  {$ENDIF}
   FileDate: TDateTime;
   Info: TAvatarThumbnailInfo;
+  index_bytes: integer;
 begin
   Result := nil;
 
@@ -313,8 +318,10 @@ begin
   FileDate := Now(); //FileDateToDateTime(FileAge(Filename));
 
   Thumbnail := CreateAvatarThumbnail(Filename, Info);
+
   if (Thumbnail = nil) then
     Exit;
+
   SDL_LockSurface(Thumbnail);
   if not assigned(Thumbnail^.pixels) then
   begin
@@ -323,12 +330,21 @@ begin
     Exit;
   end;
 
-  AvatarData := TBlobWrapper.Create;
+  {$IFDEF ANDROID}
+  AvatarData:=TCByteMemory.Create;
+  {$ELSE}
+  AvatarData:=TBlobWrapper.Create;
+  {$ENDIF}
+
   AvatarData.Write(Thumbnail^.pixels, Thumbnail^.h * Thumbnail^.pitch);
+
+
+
 
   try
     // Note: use a transaction to speed-up file-writing.
     // Without data written by the first INSERT might be moved at the second INSERT.
+
     DB.BeginTransaction();
 
     // add general cover info
@@ -349,6 +365,7 @@ begin
                 Thumbnail^.w, Thumbnail^.h, AvatarData]);
 
     Result := TAvatar.Create(AvatarID, Filename);
+
   except on E: Exception do
     Log.LogError(E.Message, 'TAvatarDatabase.AddAvatar');
   end;
@@ -418,12 +435,13 @@ var
   //TargetWidth, TargetHeight: integer;
   Thumbnail: PSDL_Surface;
   MaxSize: integer;
+  p: PByte;
 begin
   Result := nil;
-
   MaxSize := GetMaxAvatarSize();
 
   Thumbnail := LoadImage(Filename);
+
   if (not assigned(Thumbnail)) then
   begin
     Log.LogError('Could not load avatar: "'+ Filename.ToNative +'"', 'TAvatarDatabase.AddAvatar');
@@ -432,6 +450,7 @@ begin
 
   // Convert pixel format as needed
   AdjustPixelFormat(Thumbnail, TEXTURE_TYPE_PLAIN);
+
 
   Info.AvatarWidth  := Thumbnail^.w;
   Info.AvatarHeight := Thumbnail^.h;
@@ -456,6 +475,7 @@ begin
 
   // TODO: do not scale if image is smaller
   ScaleImage(Thumbnail, MaxSize, MaxSize);
+  p:=Thumbnail.pixels;
 
   Result := Thumbnail;
 end;

@@ -131,6 +131,20 @@ function SQLite3_ColumnInt64(hStmt: TSqliteStmt; ColNum: integer): Int64; cdecl;
 function SQLite3_Finalize(hStmt: TSqliteStmt): integer; cdecl; external SQLiteDLL name 'sqlite3_finalize';
 function SQLite3_Reset(hStmt: TSqliteStmt): integer; cdecl; external SQLiteDLL name 'sqlite3_reset';
 
+type
+// Simple class to store a byte stream. Used in Android because of some issues with
+// TCCustomMemoryStream
+TCByteMemory = class
+  private
+    FMemory: array of byte;
+    FSize: Longint;
+  public
+    procedure Write(Buffer: PByte; Count: Longint);
+    function Read(): PByte;
+    function GetSize(): Longint;
+    constructor Create;
+end;
+
 // 
 // In the SQL strings input to sqlite3_prepare() and sqlite3_prepare16(),
 // one or more literals can be replace by a wildcard "?" or ":N:" where
@@ -246,6 +260,34 @@ begin
     Result := 'NULL'
   else
     Result := Value;
+end;
+
+
+
+procedure TCByteMemory.Write(Buffer: PByte; Count: Longint);
+var ind: longint;
+begin
+   setlength(FMemory,Count);
+   for ind:=0 to Count-1 do
+       FMemory[ind]:=Buffer[ind];
+   FSize:=Count;
+end;
+
+
+function TCByteMemory.Read(): PByte;
+begin
+   Read:=PByte(FMemory);
+end;
+
+function TCByteMemory.GetSize(): Longint;
+begin
+  GetSize:=FSize;
+end;
+
+
+constructor TCByteMemory.Create;
+begin
+   setlength(FMemory,0);
 end;
 
 

@@ -832,7 +832,7 @@ type
 
 implementation
 
-uses Types;
+uses Types, ULog;
 
 const
   //** shear factor used for the italic effect (bigger value -> more bending)
@@ -963,6 +963,7 @@ procedure TFont.Print(const Text: TUCS4StringArray);
 var
   LineIndex: integer;
 begin
+
   // recursively call this function to draw reflected text
   if ((Reflect in Style) and not ReflectionPass) then
   begin
@@ -972,7 +973,9 @@ begin
   end;
 
   // store current color, enable-flags, matrix-mode
+  {$IFNDEF ANDROID}
   glPushAttrib(GL_CURRENT_BIT or GL_ENABLE_BIT or GL_TRANSFORM_BIT);
+  {$ENDIF}
 
   // set OpenGL state
   glMatrixMode(GL_MODELVIEW);
@@ -1027,8 +1030,10 @@ begin
     if (Italic in Style) then
       glMultMatrixf(@cShearMatrix);
 
+
     // render text line
     Render(Text[LineIndex]);
+
 
     glPopMatrix();
   end;
@@ -1037,7 +1042,10 @@ begin
   {$IFDEF FLIP_YAXIS}
   glPopMatrix();
   {$ENDIF}
+  {$IFNDEF ANDROID}
   glPopAttrib();
+  {$ENDIF}
+
 end;
 
 procedure TFont.Print(const Text: UCS4String);
@@ -1045,7 +1053,9 @@ var
   LineArray: TUCS4StringArray;
 begin
   SplitLines(Text, LineArray);
+
   Print(LineArray);
+
   SetLength(LineArray, 0);
 end;
 
@@ -1218,7 +1228,11 @@ end;
  *}
 function TScalableFont.GetMipmapLevel(): integer;
 var
+  {$IFDEF ANDROID}
+  ModelMatrix, ProjMatrix: TGLMatrixf4;
+  {$ELSE}
   ModelMatrix, ProjMatrix: TGLMatrixd4;
+  {$ENDIF}
   ViewPortArray: TGLVectori4;
   Dist, Dist2, DistSum, PM15x2: double;
   WidthScale, HeightScale: double;
@@ -1229,9 +1243,15 @@ const
   // With bias=0.1 we prefer larger mipmaps over smaller ones.
   cBias = 0.2;
 begin
+
   // 1. retrieve current transformation matrices for gluProject
+  {$IFDEF ANDROID}
+  glGetFloatv(GL_MODELVIEW_MATRIX, @ModelMatrix);
+  glGetFloatv(GL_PROJECTION_MATRIX, @ProjMatrix);
+  {$ELSE}
   glGetDoublev(GL_MODELVIEW_MATRIX, @ModelMatrix);
   glGetDoublev(GL_PROJECTION_MATRIX, @ProjMatrix);
+  {$ENDIF}
   glGetIntegerv(GL_VIEWPORT, @ViewPortArray);
 
   // See 6545ededd512ea7c7dc5c08a1ef96397afdcbe49 for the original
@@ -1312,8 +1332,8 @@ var
   MipmapScale: single;
 begin
   Result := nil;
-  DesiredLevel := GetMipmapLevel();
 
+  DesiredLevel := GetMipmapLevel();
   // get the smallest mipmap available for the desired level
   // as not all levels must be assigned to a font.
   for Level := DesiredLevel downto 0 do
@@ -1333,6 +1353,7 @@ end;
 
 procedure TScalableFont.Print(const Text: TUCS4StringArray);
 begin
+
   glPushMatrix();
 
   // set scale and stretching
@@ -1343,6 +1364,7 @@ begin
     ChooseMipmapFont().Print(Text)
   else
     fBaseFont.Print(Text);
+
 
   glPopMatrix();
 end;
@@ -1820,9 +1842,15 @@ begin
       end;
 
       if (ReflectionPass) then
-        Glyph.RenderReflection()
+        begin
+
+          Glyph.RenderReflection();
+        end
       else
+        begin
+
         Glyph.Render(fUseDisplayLists);
+        end;
 
       glTranslatef(Glyph.Advance.x + fGlyphSpacing, 0, 0);
     end;
@@ -2547,6 +2575,11 @@ begin
   // move to top left glyph position
   glTranslatef(fBitmapCoords.Left, fBitmapCoords.Top, 0);
 
+  {$IFDEF ANDROID}
+    draw_rectangle_quads_opengles(0,0,fBitmapCoords.Width,-fBitmapCoords.Height,
+    0,0,fTexOffset.X, fTexOffset.Y,fTexture);
+  {$ELSE}
+
   // draw glyph texture
   glBegin(GL_QUADS);
     // top right
@@ -2566,7 +2599,10 @@ begin
     glVertex2f(fBitmapCoords.Width, -fBitmapCoords.Height);
   glEnd();
 
+  {$ENDIF}
+
   glPopMatrix();
+
 end;
 
 procedure TFTGlyph.RenderReflection();
@@ -2606,6 +2642,15 @@ begin
                     fBitmapCoords.Height + 1) * fTexOffset.Y;
 
   // draw glyph texture
+  {$IFDEF ANDROID}
+      draw_rectangle_quads_opengles_color(0, UpperPos, fBitmapCoords.Width,fFont.Descender,
+          Color.r, Color.g, Color.b, 0,
+          Color.r, Color.g, Color.b, 0,
+          Color.r, Color.g, Color.b, Color.a-0.3,
+          Color.r, Color.g, Color.b, Color.a-0.3,
+          0, TexUpperPos, fTexOffset.X,TexLowerPos,fTexture);
+
+  {$ELSE}
   glBegin(GL_QUADS);
     // top right
     glColor4f(Color.r, Color.g, Color.b, 0);
@@ -2625,13 +2670,18 @@ begin
     glTexCoord2f(fTexOffset.X, TexLowerPos);
     glVertex2f(fBitmapCoords.Width, fFont.Descender);
   glEnd();
+  {$ENDIF}
 
   glPopMatrix();
+
 
   // restore old color
   // Note: glPopAttrib(GL_CURRENT_BIT)/glPopAttrib() is much slower then
   // glGetFloatv(GL_CURRENT_COLOR, ...)/glColor4fv(...)
+  {$IFNDEF ANDROID}
   glColor4fv(@Color.vals);
+  {$ENDIF}
+
 end;
 
 function TFTGlyph.GetAdvance(): TPositionDbl;

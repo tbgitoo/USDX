@@ -93,6 +93,9 @@ begin
 end;
 
 procedure   TMenuBackgroundTexture.Draw;
+var
+  vertex_coords: array[0..7] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
 begin
   Log.logStatus('TMenuBackgroundTexture','Draw');
   If (ScreenAct = 1) then //Clear just once when in dual screen mode
@@ -104,6 +107,10 @@ begin
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBindTexture(GL_TEXTURE_2D, Tex.TexNum);
+  {$IFDEF ANDROID}
+  draw_rectangle_quads_opengles(0,0,800,600,
+       Tex.TexX1*Tex.TexW,Tex.TexY1*Tex.TexH,Tex.TexX2*Tex.TexW,Tex.TexY2*Tex.TexH,Tex.TexNum);
+  {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(Tex.TexX1*Tex.TexW, Tex.TexY1*Tex.TexH);
     glVertex2f(0, 0);
@@ -117,7 +124,7 @@ begin
     glTexCoord2f(Tex.TexX2*Tex.TexW, Tex.TexY1*Tex.TexH);
     glVertex2f(800, 0);
   glEnd;
-
+  {$ENDIF}
   glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
 end;

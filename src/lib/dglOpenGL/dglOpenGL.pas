@@ -188,6 +188,9 @@ uses
   {$IFDEF DGL_USE_SDL}, SDL2{$ENDIF}
   ;
 
+
+
+
 type
   {$IFDEF DELPHI6_AND_DOWN}
     // Delphi 6 compatibility
@@ -15098,7 +15101,33 @@ procedure Read_WIN_swap_hint;
 {$ENDIF}
 
 
+{$IFDEF ANDROID}
+procedure draw_rectangle_quads_opengles(left: GLFloat; top: GLFloat; right: GLFloat; bottom: GLFloat;
+  tx1: GLfloat; ty1: GLfloat; tx2: GLFloat; ty2: GLFloat; tex_num: GLenum);
+// The order of corners is topleft, topright, bottomright, bottomleft for the color coordinates
+// the tex coordiantes are tx1=left, tx2=right, ty1=top, ty2=bottom
+procedure draw_rectangle_quads_opengles_color(left: GLFloat; top: GLFloat; right: GLFloat; bottom: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tx1: GLfloat; ty1: GLfloat; tx2: GLFloat; ty2: GLFloat; tex_num: GLenum);
+procedure draw_quads_opengles_color(x1,y1,x2,y2,
+  x3,y3,x4,y4: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tex_num:  GLenum);
+
+procedure draw_quads_opengles_z(x1,y1,x2,y2,x3,y3,x4,y4, z: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat; tex_num:  GLenum);
+procedure draw_quads_opengles_z_color(x1,y1,z1,x2,y2,z2,
+  x3,y3,z3,x4,y4, z4: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tex_num:  GLenum);
+{$ENDIF}
+
+
 implementation
+
+uses ULog;
 
 
 {$IFDEF DGL_LINUX}
@@ -19668,13 +19697,15 @@ var
 
 
 begin
-  // determine version of implementation
+  // determine version of gl
   // GL
   if not Assigned(@glGetString) then
     glGetString := dglGetProcAddress('glGetString');
 
   AnsiBuffer := glGetString(GL_VERSION);
   Buffer := String(AnsiBuffer);
+
+  Log.logStatus('dglOpenGL, ReadCoreVersion',Buffer);
 
   TrimAndSplitVersionString(Buffer, MajorVersion, MinorVersion);
 
@@ -20687,6 +20718,163 @@ procedure DeactivateRenderingContext;
 begin
   wglMakeCurrent(0, 0);
 end;
+{$ENDIF}
+
+{$IFDEF ANDROID}
+procedure draw_rectangle_quads_opengles(left: GLFloat; top: GLFloat; right: GLFloat; bottom: GLFloat;
+  tx1: GLfloat; ty1: GLfloat; tx2: GLFloat; ty2: GLFloat; tex_num: GLenum);
+var
+  vertex_coords: array[0..7] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
+begin
+
+  vertex_coords[0]:=left;  vertex_coords[1]:=top;
+  vertex_coords[2]:=left;  vertex_coords[3]:=bottom;
+  vertex_coords[4]:=right;  vertex_coords[5]:=bottom;
+  vertex_coords[6]:=right;  vertex_coords[7]:=top;
+
+  texcoords[0]:=tx1; texcoords[1]:=ty1;
+  texcoords[2]:=tx1; texcoords[3]:=ty2;
+  texcoords[4]:=tx2; texcoords[5]:=ty2;
+  texcoords[6]:=tx2; texcoords[7]:=ty1;
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glVertexPointer(2, GL_FLOAT, 0, @vertex_coords[0]);
+  glClientActiveTexture(GL_TEXTURE0 + tex_num);
+  glTexCoordPointer(2, GL_FLOAT, 0, @texcoords[0]);
+  //glDisableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLE_FAN,0,4);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  end;
+
+
+procedure draw_rectangle_quads_opengles_color(left: GLFloat; top: GLFloat; right: GLFloat; bottom: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tx1: GLfloat; ty1: GLfloat; tx2: GLFloat; ty2: GLFloat; tex_num: GLenum);
+begin
+  draw_quads_opengles_color(left,top,right,top,
+  right,bottom,left,bottom,tx1,ty1,tx2,ty1,tx2,ty2,tx1,ty2,
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4,
+  tex_num);
+end;
+
+procedure draw_quads_opengles_z(x1,y1,x2,y2,x3,y3,x4,y4, z: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat; tex_num:  GLenum);
+var
+  vertex_coords: array[0..11] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
+begin
+
+  vertex_coords[0]:=x1;  vertex_coords[1]:=y1; vertex_coords[2]:=z;
+  vertex_coords[3]:=x2;  vertex_coords[4]:=y2; vertex_coords[5]:=z;
+  vertex_coords[6]:=x3;  vertex_coords[7]:=y3; vertex_coords[8]:=z;
+  vertex_coords[9]:=x4;  vertex_coords[10]:=y4; vertex_coords[11]:=z;
+
+  texcoords[0]:=tx1; texcoords[1]:=ty1;
+  texcoords[2]:=tx2; texcoords[3]:=ty2;
+  texcoords[4]:=tx3; texcoords[5]:=ty3;
+  texcoords[6]:=tx4; texcoords[7]:=ty4;
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glVertexPointer(3, GL_FLOAT, 0, @vertex_coords[0]);
+  glClientActiveTexture(GL_TEXTURE0 + tex_num);
+  glTexCoordPointer(2, GL_FLOAT, 0, @texcoords[0]);
+  //glDisableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLE_FAN,0,4);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  end;
+
+
+procedure draw_quads_opengles_z_color(x1,y1,z1,x2,y2,z2,
+  x3,y3,z3,x4,y4, z4: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tex_num:  GLenum);
+var
+  vertex_coords: array[0..11] of GLfloat;
+  color_coords: array[0..15] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
+begin
+
+  vertex_coords[0]:=x1;  vertex_coords[1]:=y1; vertex_coords[2]:=z1;
+  vertex_coords[3]:=x2;  vertex_coords[4]:=y2; vertex_coords[5]:=z2;
+  vertex_coords[6]:=x3;  vertex_coords[7]:=y3; vertex_coords[8]:=z3;
+  vertex_coords[9]:=x4;  vertex_coords[10]:=y4; vertex_coords[11]:=z4;
+
+  texcoords[0]:=tx1; texcoords[1]:=ty1;
+  texcoords[2]:=tx2; texcoords[3]:=ty2;
+  texcoords[4]:=tx3; texcoords[5]:=ty3;
+  texcoords[6]:=tx4; texcoords[7]:=ty4;
+
+  color_coords[0]:=r1;  color_coords[1]:=g1; color_coords[2]:=b1; color_coords[3]:=alpha1;
+  color_coords[4]:=r2;  color_coords[5]:=g2; color_coords[6]:=b2; color_coords[7]:=alpha2;
+  color_coords[8]:=r3;  color_coords[9]:=g3; color_coords[10]:=b3; color_coords[11]:=alpha3;
+  color_coords[12]:=r4;  color_coords[13]:=g4; color_coords[14]:=b4; color_coords[15]:=alpha4;
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
+  glVertexPointer(3, GL_FLOAT, 0, @vertex_coords[0]);
+  glClientActiveTexture(GL_TEXTURE0 + tex_num);
+  glTexCoordPointer(2, GL_FLOAT, 0, @texcoords[0]);
+  glColorPointer(4, GL_FLOAT, 0, @color_coords[0]);
+  //glDisableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLE_FAN,0,4);
+  glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  end;
+
+procedure draw_quads_opengles_color(x1,y1,x2,y2,
+  x3,y3,x4,y4: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tex_num:  GLenum);
+var
+  vertex_coords: array[0..7] of GLfloat;
+  color_coords: array[0..15] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
+begin
+
+  vertex_coords[0]:=x1;  vertex_coords[1]:=y1;
+  vertex_coords[2]:=x2;  vertex_coords[3]:=y2;
+  vertex_coords[4]:=x3;  vertex_coords[5]:=y3;
+  vertex_coords[6]:=x4;  vertex_coords[7]:=y4;
+
+  texcoords[0]:=tx1; texcoords[1]:=ty1;
+  texcoords[2]:=tx2; texcoords[3]:=ty2;
+  texcoords[4]:=tx3; texcoords[5]:=ty3;
+  texcoords[6]:=tx4; texcoords[7]:=ty4;
+
+  color_coords[0]:=r1;  color_coords[1]:=g1; color_coords[2]:=b1; color_coords[3]:=alpha1;
+  color_coords[4]:=r2;  color_coords[5]:=g2; color_coords[6]:=b2; color_coords[7]:=alpha2;
+  color_coords[8]:=r3;  color_coords[9]:=g3; color_coords[10]:=b3; color_coords[11]:=alpha3;
+  color_coords[12]:=r4;  color_coords[13]:=g4; color_coords[14]:=b4; color_coords[15]:=alpha4;
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
+  glVertexPointer(2, GL_FLOAT, 0, @vertex_coords[0]);
+  glClientActiveTexture(GL_TEXTURE0 + tex_num);
+  glTexCoordPointer(2, GL_FLOAT, 0, @texcoords[0]);
+  glColorPointer(4, GL_FLOAT, 0, @color_coords[0]);
+  //glDisableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLE_FAN,0,4);
+  glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  end;
+
 {$ENDIF}
 
 

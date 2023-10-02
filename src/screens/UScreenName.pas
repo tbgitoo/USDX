@@ -553,17 +553,24 @@ begin
   for I := 1 to High(AvatarsList) do
   begin
     // create avatar
+
     PlayerAvatarButton[I] := AddButton(Theme.Name.PlayerAvatar);
 
     AvatarFile := AvatarsList[I];
 
     Hash := MD5Print(MD5File(AvatarFile.ToNative));
+
     PlayerAvatarButtonMD5[I] := UpperCase(Hash);
 
     // load avatar and cache its texture
     Avatar := Avatars.FindAvatar(AvatarFile);
+
     if (Avatar = nil) then
+      begin
+
       Avatar := Avatars.AddAvatar(AvatarFile);
+      end;
+
 
     if (Avatar <> nil) then
     begin
@@ -824,7 +831,6 @@ begin
   isScrolling := false;
 
   GenerateAvatars();
-
   NumVisibleAvatars := Theme.Name.PlayerScrollAvatar.NumAvatars;
   DistanceVisibleAvatars := Theme.Name.PlayerScrollAvatar.DistanceAvatars;
 

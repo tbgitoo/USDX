@@ -269,8 +269,9 @@ begin
     Exit;
 
   GLFont := @Fonts[CurrentFont.FontFamily][CurrentFont.FontStyle];
-
+  Log.logStatus('TextGL','glPrint');
   glPushMatrix();
+
     // set font position
     glTranslatef(GLFont.X, GLFont.Y + GLFont.Font.Ascender, GLFont.Z);
     // draw string

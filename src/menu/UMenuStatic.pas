@@ -60,12 +60,14 @@ type
 implementation
 uses
   UDrawTexture,
-  UDisplay;
+  UDisplay,
+  ULog;
 
 procedure TStatic.Draw;
 begin
   if Visible then
   begin
+
     DrawTexture(Texture);
 
   //Reflection Mod
@@ -77,13 +79,33 @@ begin
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
 
+        {$IFNDEF ANDROID}
         glDepthRange(0, 10);
+        {$ENDIF}
+
         glDepthFunc(GL_LEQUAL);
+
         glEnable(GL_DEPTH_TEST);
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBindTexture(GL_TEXTURE_2D, TexNum);
 
+        {$IFDEF ANDROID}
+        draw_quads_opengles_z_color(
+        x, y+h*scaleH+ Reflectionspacing,z,
+        x, y+h*scaleH + h*scaleH/2 + Reflectionspacing,z,
+        x+w*scaleW, y+h*scaleH + h*scaleH/2 + Reflectionspacing,z,
+        x+w*scaleW, y+h*scaleH + Reflectionspacing,z,
+        TexX1*TexW, TexY2*TexH,
+        TexX1*TexW, 0.5*TexH+TexY1,
+        TexX2*TexW, 0.5*TexH+TexY1,
+        TexX2*TexW, TexY2*TexH,
+        ColR * Int, ColG * Int, ColB * Int, Alpha-0.3,
+        ColR * Int, ColG * Int, ColB * Int, 0,
+        ColR * Int, ColG * Int, ColB * Int, 0,
+        ColR * Int, ColG * Int, ColB * Int, Alpha-0.3,
+        TexNum);
+        {$ELSE}
         //Draw
         glBegin(GL_QUADS);//Top Left
           glColor4f(ColR * Int, ColG * Int, ColB * Int, Alpha-0.3);
@@ -106,6 +128,8 @@ begin
           glTexCoord2f(TexX2*TexW, TexY2*TexH);
           glVertex3f(x+w*scaleW, y+h*scaleH + Reflectionspacing, z);
         glEnd;
+        {$ENDIF}
+
 
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);

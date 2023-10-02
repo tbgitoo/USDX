@@ -100,7 +100,8 @@ uses
   UDisplay,
   UUnicodeStringHelper,
   UUnicodeUtils,
-  StrUtils;
+  StrUtils,
+  ULog;
 
 procedure TText.SetSelect(Value: boolean);
 begin
@@ -290,6 +291,7 @@ var
 begin
   if Visible then
   begin
+
     SetFontFamily(Font);
     SetFontStyle(Style);
     SetFontSize(Size);
@@ -302,6 +304,7 @@ begin
       SetFontReflection(true, ReflectionSpacing)
     else
       SetFontReflection(false,0);
+
 
     // if selected set blink...
     if SelectBool then
@@ -343,9 +346,11 @@ begin
         if (not (SelectBool and SelectBlink)) or (I <> High(TextTiles)) then
         begin
           Text2 := TextTiles[I];
+
         end
         else
         begin
+
           if (Writable) then
             Text2 := TextTiles[I] + '|'
           else

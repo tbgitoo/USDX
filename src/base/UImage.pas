@@ -539,6 +539,7 @@ end;
 function LoadImage(const Filename: IPath): PSDL_Surface;
 var
   FilenameCaseAdj: IPath;
+
 begin
   Result := nil;
 
@@ -558,6 +559,7 @@ begin
     Log.LogError('Could not load from file "' + FilenameCaseAdj.ToNative + '"', 'LoadImage');
     Exit;
   end;
+
 end;
 
 (*******************************************************

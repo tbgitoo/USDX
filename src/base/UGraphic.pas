@@ -486,7 +486,7 @@ procedure Initialize3D (Title: string);
 var
   Icon: PSDL_Surface;
 begin
-  Log.LogStatus('SDL_Init', 'UGraphic.Initialize3D');
+
   if ( SDL_InitSubSystem(SDL_INIT_VIDEO) = -1 ) then
   begin
     Log.LogCritical('SDL_Init Failed', 'UGraphic.Initialize3D');
@@ -532,8 +532,9 @@ begin
 
   // Show the Loading Screen
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading first screen'));
-  Log.LogStatus('Loading Loading Screen', 'UGraphic.Initialize3D');
+
   LoadLoadingScreen;
+
 
   // Covers Cache
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading and checking songs'));
@@ -561,7 +562,7 @@ begin
 
   // this would be run in the loadingthread
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading screens'));
-  Log.LogStatus(' Loading Screens', 'UGraphic.Initialize3D');
+
   LoadScreens(Title);
 
   SDL_SetWindowTitle(Screen, PChar(Title));
@@ -967,20 +968,28 @@ end;
 procedure LoadScreens(Title: string);
 begin
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenMain & ScreenName'));
+
   ScreenMain :=             TScreenMain.Create;
+
   ScreenName :=             TScreenName.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenLevel & ScreenSong'));
+
   ScreenLevel :=            TScreenLevel.Create;
+  Log.logStatus('UGraphic','ScreenLevel created');
   ScreenSong :=             TScreenSong.Create;
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenSongMenu & ScreenJukebox'));
+  Log.logStatus('UGraphic','ScreenSong created');
   ScreenSongMenu :=             TScreenSongMenu.Create;
+  Log.logStatus('UGraphic','ScreenSongMenu created');
   ScreenJukebox :=             TScreenJukebox.Create;
+   Log.logStatus('UGraphic','ScreenJukebox created');
   Log.BenchmarkEnd(3); Log.LogBenchmark('====> Screen Jukebox', 3); Log.BenchmarkStart(3);
   ScreenJukeboxOptions :=   TScreenJukeboxOptions.Create;
   Log.BenchmarkEnd(3); Log.LogBenchmark('====> Screen Jukebox Options', 3); Log.BenchmarkStart(3);
   ScreenJukeboxPlaylist :=   TScreenJukeboxPlaylist.Create;
   Log.BenchmarkEnd(3); Log.LogBenchmark('====> Screen Jukebox Playlist', 3); Log.BenchmarkStart(3);
   ScreenTop5 :=             TScreenTop5.Create;
+
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenOptions & ScreenOptionsGame'));
   ScreenOptions :=          TScreenOptions.Create;
   ScreenOptionsGame :=      TScreenOptionsGame.Create;
@@ -1025,6 +1034,7 @@ begin
   ScreenPopupCheck := TScreenPopupCheck.Create;
   ScreenPopupError := TScreenPopupError.Create;
   ScreenPopupHelp  := TScreenPopupHelp.Create;
+
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenPopupInfo & ScreenScoreX & ScreenPartyNewRound'));
   ScreenPopupInfo := TScreenPopupInfo.Create;
   ScreenPopupInsertUser := TScreenPopupInsertUser.Create;

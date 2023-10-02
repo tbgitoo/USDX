@@ -1954,6 +1954,8 @@ begin
 
   LoadFromTheme(Theme.Jukebox);
 
+
+
   Lyrics := TLyricEngine.Create(
       Theme.LyricBar.UpperX, Theme.LyricBar.UpperY, Theme.LyricBar.UpperW, Theme.LyricBar.UpperH,
       Theme.LyricBar.LowerX, Theme.LyricBar.LowerY, Theme.LyricBar.LowerW, Theme.LyricBar.LowerH);
@@ -2044,6 +2046,8 @@ begin
   JukeboxStaticSongMenuTimeBackground := AddStatic(Theme.Jukebox.StaticSongMenuTimeBackground);
   JukeboxTextSongMenuTimeText         := AddText(Theme.Jukebox.SongMenuTextTime);
   JukeboxStaticSongMenuBackground     := AddStatic(Theme.Jukebox.StaticSongMenuBackground);
+
+
 end;
 
 procedure TScreenJukebox.OnShow;
