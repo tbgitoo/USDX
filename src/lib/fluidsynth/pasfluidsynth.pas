@@ -82,31 +82,9 @@ uses
 {$PACKRECORDS C}
 {$ENDIF}
 
-
-
-type TFluidSynth = class
-        protected
-        procedure _GetFunc(dest : pointer; const funcname : ansistring); inline; // Get the pointer to a given fluidsynth function
-        procedure _GetFuncs(); // populate the points to all the fluidsynth functions
-	public
-	const
-	FLUID_OK = 0;
-	FLUID_FAILED = -1;
-
-	// tempo_type used by fluid_player_set_tempo()
-	FLUID_PLAYER_TEMPO_INTERNAL = 0;
-	FLUID_PLAYER_TEMPO_EXTERNAL_BPM = 1;
-	FLUID_PLAYER_TEMPO_EXTERNAL_MIDI = 2;
-
-	FLUID_PANIC = 0;
-	FLUID_ERR = 1;
-	FLUID_WARN = 2;
-	FLUID_INFO = 3;
-	FLUID_DBG = 4;
-
-	type
-	PFluidAudioDriver = pointer; // opaque audio driver struct
-	PFluidCmdHandler = pointer; // opaque command handler struct, access via fluid_command() and fluid_source()
+type
+        PFluidAudioDriver = pointer; // opaque audio driver struct
+        PFluidCmdHandler = pointer; // opaque command handler struct, access via fluid_command() and fluid_source()
 	PFluidEvent = pointer; // opaque event struct, access via fluid_event_*() and fluid_midi_event_*()
 	PFluidFileRenderer = pointer; // opaque file renderer struct, access via fluid_file_renderer_*()
 	PFluidMidiDriver = pointer; // opaque midi driver struct
@@ -149,6 +127,30 @@ type TFluidSynth = class
 	fluid_log_function_t = procedure(level : longint; message : pchar; data : pointer);
 	fluid_settings_foreach_t = procedure(data : pointer; name : pchar; type_ : longint);
 	fluid_settings_foreach_option_t = procedure(data : pointer; name, option : pchar);
+
+
+
+type TFluidSynth = class
+        protected
+        procedure _GetFunc(dest : pointer; const funcname : ansistring); inline; // Get the pointer to a given fluidsynth function
+        procedure _GetFuncs(); // populate the points to all the fluidsynth functions
+	public
+	const
+	FLUID_OK = 0;
+	FLUID_FAILED = -1;
+
+	// tempo_type used by fluid_player_set_tempo()
+	FLUID_PLAYER_TEMPO_INTERNAL = 0;
+	FLUID_PLAYER_TEMPO_EXTERNAL_BPM = 1;
+	FLUID_PLAYER_TEMPO_EXTERNAL_MIDI = 2;
+
+	FLUID_PANIC = 0;
+	FLUID_ERR = 1;
+	FLUID_WARN = 2;
+	FLUID_INFO = 3;
+	FLUID_DBG = 4;
+
+
 
 	var
 	delete_fluid_audio_driver : procedure(driver : PFluidAudioDriver);
@@ -568,6 +570,10 @@ type TFluidSynth = class
 	property isLoaded : boolean read _IsLoaded;
 	constructor Create;
 	destructor Destroy; override;
+
+        public
+        fluid_synth_handle_midi_event_pointer:handle_midi_event_func_t;
+        fluid_midi_router_handle_midi_event_pointer:handle_midi_event_func_t;
 end;
 
 

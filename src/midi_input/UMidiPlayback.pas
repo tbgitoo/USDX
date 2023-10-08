@@ -39,11 +39,8 @@ uses
   UTime,
   UPath,
   UMusic,
-  {$IFDEF ANDROID}
-   UFluidSynthAndroid;
-{$ELSE}
   UFluidSynth;
-{$ENDIF}
+
 
 
 type

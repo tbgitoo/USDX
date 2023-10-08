@@ -256,13 +256,13 @@ uses
   UMidiInputStream in 'midi_input\UMidiInputStream.pas',
   {$IF Defined(ANDROID)}
   pasfluidsynth_android in 'lib\fluidsynth\pasfluidsynth_android.pas',
-  UFluidSynthAndroid in 'lib\fluidsynth\UFluidSynthAndroid.pas',
+
   {$ELSE}
   pasfluidsynth in 'lib\fluidsynth\pasfluidsynth.pas',
-  UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
+
   {$IFEND}
 
-
+  UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
 
   UMidiTransfer in 'midi_input\UMidiTransfer.pas',
   UMidiNote in 'midi_input\UMidiNote.pas',
