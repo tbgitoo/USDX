@@ -559,3 +559,13 @@ android-so:
 	cp -r build/x86 android_project/app/libs/
 	cp -r build/x86_64 android_project/app/libs/
 
+.PHONY: android_test
+android_test:
+	$(MAKE) -C $(USDX_SRC_DIR) $@
+	cp src/libusdx/include/test.h android_project/app/src/main/cpp/libusdx/include/test.h
+	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/libs/ || :
+	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/libs/ || :
+	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/libs/ || :
+	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/libs/ || :
+
+

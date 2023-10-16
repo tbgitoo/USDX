@@ -3,57 +3,33 @@ plugins {
 }
 
 android {
-    namespace 'com.tbgitoo.ultrastardx_android'
     compileSdk 33
-
+    ndkVersion '25.1.8937393'
+    
     defaultConfig {
-        applicationId "com.tbgitoo.ultrastardx_android"
-        minSdk 29
-        targetSdk 33
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        applicationId 'com.android.gl2jni'
+        minSdkVersion 14
+        targetSdkVersion 33
+        externalNativeBuild {
+            cmake {
+                // Available arguments are inside ${SDK}/cmake/.../android.toolchain.cmake file
+                arguments '-DANDROID_STL=c++_static'
+            }
+        }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                          'proguard-rules.pro'
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
     externalNativeBuild {
         cmake {
-            path file('src/main/cpp/CMakeLists.txt')
-            version '3.22.1'
-
+            path 'src/main/cpp/CMakeLists.txt'
         }
-
-
-
     }
-
-
-    buildFeatures {
-        viewBinding true
-    }
+    namespace 'com.android.gl2jni'
 }
-
-dependencies {
-
-
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
-    implementation 'net.lingala.zip4j:zip4j:2.11.5'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
-}
-
 

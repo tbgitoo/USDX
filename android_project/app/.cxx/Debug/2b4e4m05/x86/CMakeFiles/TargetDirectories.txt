@@ -1,0 +1,3 @@
+/Users/thomasbraschler/git/ndk-samples/hello-gl2/app/.cxx/Debug/2b4e4m05/x86/CMakeFiles/rebuild_cache.dir
+/Users/thomasbraschler/git/ndk-samples/hello-gl2/app/.cxx/Debug/2b4e4m05/x86/CMakeFiles/edit_cache.dir
+/Users/thomasbraschler/git/ndk-samples/hello-gl2/app/.cxx/Debug/2b4e4m05/x86/CMakeFiles/gl2jni.dir
