@@ -151,6 +151,10 @@ If you want to use the script at https://github.com/AlexanderAgd/SDL2-Android/, 
 ./build_SDL2.sh  --api=29 --arch=arm64-v8a
 ./build_SDL2.sh  --api=29 --arch=x86
 ./build_SDL2.sh  --api=29 --arch=x86_64
+
+SDL3 is also available from https://github.com/libsdl-org/SDL/ build-scripts/android-prefab.sh, find libSDL3.so for each architecture, along with the includes and .pc files
+
+SDL3_image is also available from https://github.com/libsdl-org/SDL_image/ build-scripts/android-prefab.sh, find libSL3_image.so for each architecture along the includes and .pc files 
  
 
 

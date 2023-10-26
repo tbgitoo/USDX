@@ -53,7 +53,7 @@ build CMakeFiles/gl2jni.dir/gl_code.cpp.o: CXX_COMPILER__gl2jni_Debug /Users/tho
   DEFINES = -Dgl2jni_EXPORTS
   DEP_FILE = CMakeFiles/gl2jni.dir/gl_code.cpp.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -std=c++11 -Wall -fno-limit-debug-info  -fPIC
-  INCLUDES = -I/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/libusdx/include
+  INCLUDES = -I/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/libusdx/include -I/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/include/SDL3
   OBJECT_DIR = CMakeFiles/gl2jni.dir
   OBJECT_FILE_DIR = CMakeFiles/gl2jni.dir
 
@@ -65,10 +65,10 @@ build CMakeFiles/gl2jni.dir/gl_code.cpp.o: CXX_COMPILER__gl2jni_Debug /Users/tho
 #############################################
 # Link the shared library /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/build/intermediates/cxx/Debug/506o3d23/obj/x86/libgl2jni.so
 
-build /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/build/intermediates/cxx/Debug/506o3d23/obj/x86/libgl2jni.so: CXX_SHARED_LIBRARY_LINKER__gl2jni_Debug CMakeFiles/gl2jni.dir/gl_code.cpp.o | /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/x86/libtest.so
+build /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/build/intermediates/cxx/Debug/506o3d23/obj/x86/libgl2jni.so: CXX_SHARED_LIBRARY_LINKER__gl2jni_Debug CMakeFiles/gl2jni.dir/gl_code.cpp.o | /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/x86/libtest.so /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/x86/libSDL3.so /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/x86/libSDL3_image.so
   LANGUAGE_COMPILE_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -std=c++11 -Wall -fno-limit-debug-info
   LINK_FLAGS = -static-libstdc++ -Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--fatal-warnings -Wl,--gc-sections -Wl,--no-undefined -Qunused-arguments
-  LINK_LIBRARIES = /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/x86/libtest.so  -landroid  -llog  -lEGL  -lGLESv2  -latomic -lm
+  LINK_LIBRARIES = /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/x86/libtest.so  -landroid  -llog  -lEGL  -lGLESv2  /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/x86/libSDL3.so  /Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/../../../libs/x86/libSDL3_image.so  -latomic -lm
   OBJECT_DIR = CMakeFiles/gl2jni.dir
   POST_BUILD = :
   PRE_LINK = :

@@ -235,18 +235,18 @@ fi
 # check for libraries
 # -----------------------------------------
 
-# find sdl2
+# find sdl2/sdl3
 if [[ "$android_cross" = "yes" ]]; then
-  ANDROID_PKG_HAVE([sdl2], [sdl2], yes)
+  ANDROID_PKG_HAVE([sdl3], [sdl3], yes)
 else
   PKG_HAVE([sdl2], [sdl2], yes)
 fi
 
 
 
-# find SDL2_image
+# find SDL2_image / SDL3_image
 if [[ "$android_cross" = "yes" ]]; then
-  ANDROID_PKG_HAVE([sdl2_image], [sdl2_image], yes)
+  ANDROID_PKG_HAVE([sdl3_image], [sdl3_image], yes)
 else
   PKG_HAVE([sdl2_image], [SDL2_image], yes)
 fi

@@ -17,16 +17,21 @@
 package com.android.gl2jni;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 
 import java.io.File;
 
 
-public class GL2JNIActivity extends Activity {
+public class GL2JNIActivity extends Activity  {
 
     GL2JNIView mView;
+
+    protected static boolean mFullscreenModeActive;
 
     @Override protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -43,4 +48,10 @@ public class GL2JNIActivity extends Activity {
         super.onResume();
         mView.onResume();
     }
+
+
+
+
+
+
 }

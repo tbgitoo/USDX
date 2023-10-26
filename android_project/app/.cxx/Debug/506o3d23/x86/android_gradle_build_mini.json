@@ -22,7 +22,9 @@
       "abi": "x86",
       "output": "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/build/intermediates/cxx/Debug/506o3d23/obj/x86/libgl2jni.so",
       "runtimeFiles": [
-        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libtest.so"
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libtest.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libSDL3.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libSDL3_image.so"
       ]
     }
   }

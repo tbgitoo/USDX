@@ -41,7 +41,9 @@ uses
 
   SysUtils,
 
-  dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas';
+  dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
+
+  SDL3 in 'lib\SDL3\sdl3.pas';
 
 
 
@@ -91,6 +93,12 @@ function setupGraphics(w,h: integer): boolean;
       {$IFEND}
       checkGlError('glViewport');
       setupGraphics:=True;
+      if SDL_Init(SDL_INIT_VIDEO)>=0 then
+         debug_message_to_android('SDL init failed with error'+SDL_GetError())
+      else
+         debug_message_to_android('SDL_INIT: Initialized video system successfully');
+
+
     end;
 
 procedure renderFrame();
