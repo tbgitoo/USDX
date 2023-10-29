@@ -43,7 +43,9 @@ uses
 
   dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
 
-  SDL3 in 'lib\SDL3\sdl3.pas';
+  SDL3 in 'lib\SDL3\sdl3.pas',
+
+  SDL3_Android in 'lib\SDL3\sdl3_android.pas';
 
 
 
@@ -122,35 +124,15 @@ begin
   checkGlError('glDrawArrays');
 end;
 
-
 procedure Java_com_android_gl2jni_GL2JNILib_init(vm:PJavaVM;reserved:pointer; width,height:jint); cdecl;
-begin
-  setupGraphics(width, height);
-end;
+  begin
+    setupGraphics(width, height);
+  end;
 
-procedure Java_com_android_gl2jni_GL2JNILib_step(vm:PJavaVM;reserved:pointer; width,height:jint); cdecl;
-begin
-  renderFrame();
-end;
-
-procedure Java_com_android_gl2jni_SDLJNILib_onNativeMouse(vm:PJavaVM;reserved:pointer; button,action: jint; x,y: jfloat; relative:jboolean); cdecl;
-begin
-
-end;
-
-procedure Java_com_android_gl2jni_SDLJNILib_nativeSetNaturalOrientation(vm:PJavaVM;reserved:pointer; orientation:jint); cdecl;
-begin
-
-end;
-
-procedure Java_com_android_gl2jni_SDLJNILib_onNativeRotationChanged(vm:PJavaVM;reserved:pointer; rotation:jint); cdecl;
-begin
-
-end;
-
-
-
-
+  procedure Java_com_android_gl2jni_GL2JNILib_step(vm:PJavaVM;reserved:pointer; width,height:jint); cdecl;
+  begin
+    renderFrame();
+  end;
 
 
 exports Java_com_android_gl2jni_GL2JNILib_init name 'Java_com_android_gl2jni_GL2JNILib_init';
@@ -162,7 +144,6 @@ exports Java_com_android_gl2jni_SDLJNILib_onNativeMouse name 'Java_com_android_g
 
 exports Java_com_android_gl2jni_SDLJNILib_nativeSetNaturalOrientation name 'Java_com_android_gl2jni_SDLJNILib_nativeSetNaturalOrientation';
 exports Java_com_android_gl2jni_SDLJNILib_onNativeRotationChanged name 'Java_com_android_gl2jni_SDLJNILib_onNativeRotationChanged';
-
 
 
 

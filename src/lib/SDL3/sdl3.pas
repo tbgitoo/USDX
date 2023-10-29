@@ -176,25 +176,51 @@ const
   {$ENDIF}
 
 
-const
+
   // From SDL_init.h
-   SDL_INIT_TIMER        = $00000001;
-   SDL_INIT_AUDIO        = $00000010;
-   SDL_INIT_VIDEO        = $00000020;  // `SDL_INIT_VIDEO` implies `SDL_INIT_EVENTS`
-   SDL_INIT_JOYSTICK     = $00000200;  // `SDL_INIT_JOYSTICK` implies `SDL_INIT_EVENTS`
-   SDL_INIT_HAPTIC       = $00001000;
-   SDL_INIT_GAMEPAD      = $00002000;  // `SDL_INIT_GAMEPAD` implies `SDL_INIT_JOYSTICK`
-   SDL_INIT_EVENTS       = $00004000;
-   SDL_INIT_SENSOR       = $00008000;
-
-
-{$I sdltype.inc}
-{$I sdlversion.inc}
-{$I sdlerror.inc}
 
 
 
-function SDL_Init(flags: Uint32): integer; cdecl; external SDL_LibName name 'SDL_Init';
+   {$I sdltype.inc}
+   {$I sdlversion.inc}
+   {$I sdlerror.inc}
+   {$I sdlplatform.inc}
+   {$I sdlpower.inc}
+   {$I sdlthread.inc}
+   {$I sdlmutex.inc}
+   {$I sdltimer.inc}
+   {$I sdlpixels.inc}
+   {$I sdlrect.inc}
+   {$I sdlrwops.inc}
+   {$I sdlaudio.inc}
+   {$I sdlblendmode.inc}
+   {$I sdlsurface.inc}
+   {$I sdlshape.inc}
+   {$I sdlvideo.inc}
+   {$I sdlhints.inc}
+   {$I sdlloadso.inc}
+   {$I sdlmessagebox.inc}
+   {$I sdlrenderer.inc}
+   {$I sdlscancode.inc}
+   {$I sdlkeyboard.inc}
+   {$I sdlmouse.inc}
+   {$I sdljoystick.inc}
+   {$I sdlgamecontroller.inc}
+   {$I sdlhaptic.inc}
+   {$I sdltouch.inc}
+   {$I sdlgesture.inc}
+   {$I sdlsyswm.inc}
+   {$I sdlevents.inc}
+   {$I sdlclipboard.inc}
+   {$I sdlcpuinfo.inc}
+   {$I sdlfilesystem.inc}
+   {$I sdllog.inc}
+   {$I sdlsystem.inc}
+   {$I sdl.inc}
+
+
+
+
 
 
 implementation
@@ -222,6 +248,200 @@ end;
 function SDL_VERSION_ATLEAST(X,Y,Z: Cardinal): Boolean;
 begin
   Result := SDL_COMPILEDVERSION >= SDL_VERSIONNUM(X,Y,Z);
+end;
+
+//from "sdl_mouse.h"
+function SDL_Button(button: SInt32): SInt32;
+begin
+  Result := 1 shl (button - 1);
+end;
+
+{$IFDEF WINDOWS}
+//from "sdl_thread.h"
+
+function SDL_CreateThread(fn: TSDL_ThreadFunction; name: PAnsiChar; data: Pointer): PSDL_Thread; overload;
+begin
+  Result := SDL_CreateThread(fn,name,data,nil,nil);
+end;
+
+{$ENDIF}
+
+//from "sdl_rect.h"
+function SDL_RectEmpty(X: TSDL_Rect): Boolean;
+begin
+  Result := (X.w <= 0) or (X.h <= 0);
+end;
+
+function SDL_RectEquals(A: TSDL_Rect; B: TSDL_Rect): Boolean;
+begin
+  Result := (A.x = B.x) and (A.y = B.y) and (A.w = B.w) and (A.h = B.h);
+end;
+
+function SDL_PointInRect(const p: PSDL_Point; const r: PSDL_Rect): Boolean; Inline;
+begin
+  Result :=
+    (p^.x >= r^.x) and (p^.x < (r^.x + r^.w))
+    and
+    (p^.y >= r^.y) and (p^.y < (r^.y + r^.h))
+end;
+
+//from "sdl_rwops.h"
+
+function SDL_RWsize(ctx: PSDL_RWops): SInt64;
+begin
+  Result := ctx^.size(ctx);
+end;
+
+function SDL_RWseek(ctx: PSDL_RWops; offset: SInt64; whence: SInt32): SInt64;
+begin
+  Result := ctx^.seek(ctx,offset,whence);
+end;
+
+function SDL_RWtell(ctx: PSDL_RWops): SInt64;
+begin
+  Result := ctx^.seek(ctx, 0, RW_SEEK_CUR);
+end;
+
+function SDL_RWread(ctx: PSDL_RWops; ptr: Pointer; size: size_t; n: size_t): size_t;
+begin
+  Result := ctx^.read(ctx, ptr, size, n);
+end;
+
+function SDL_RWwrite(ctx: PSDL_RWops; ptr: Pointer; size: size_t; n: size_t): size_t;
+begin
+  Result := ctx^.write(ctx, ptr, size, n);
+end;
+
+function SDL_RWclose(ctx: PSDL_RWops): SInt32;
+begin
+  Result := ctx^.close(ctx);
+end;
+
+//from "sdl_audio.h"
+
+function SDL_LoadWAV(_file: PAnsiChar; spec: PSDL_AudioSpec; audio_buf: PPUInt8; audio_len: PUInt32): PSDL_AudioSpec;
+begin
+  Result := SDL_LoadWAV_RW(SDL_RWFromFile(_file, 'rb'), 1, spec, audio_buf, audio_len);
+end;
+
+function SDL_AUDIO_BITSIZE(x: Cardinal): Cardinal;
+begin
+  Result := x and SDL_AUDIO_MASK_BITSIZE;
+end;
+
+function SDL_AUDIO_ISFLOAT(x: Cardinal): Cardinal;
+begin
+  Result := x and SDL_AUDIO_MASK_DATATYPE;
+end;
+
+function SDL_AUDIO_ISBIGENDIAN(x: Cardinal): Cardinal;
+begin
+  Result := x and SDL_AUDIO_MASK_ENDIAN;
+end;
+
+function SDL_AUDIO_ISSIGNED(x: Cardinal): Cardinal;
+begin
+  Result := x and SDL_AUDIO_MASK_SIGNED;
+end;
+
+function SDL_AUDIO_ISINT(x: Cardinal): Cardinal;
+begin
+  Result := not SDL_AUDIO_ISFLOAT(x);
+end;
+
+function SDL_AUDIO_ISLITTLEENDIAN(x: Cardinal): Cardinal;
+begin
+  Result := not SDL_AUDIO_ISLITTLEENDIAN(x);
+end;
+
+function SDL_AUDIO_ISUNSIGNED(x: Cardinal): Cardinal;
+begin
+  Result := not SDL_AUDIO_ISSIGNED(x);
+end;
+
+//from "sdl_pixels.h"
+
+function SDL_PIXELFLAG(X: Cardinal): Cardinal;
+begin
+  Result := (X shr 28) and $0F;
+end;
+
+function SDL_PIXELTYPE(X: Cardinal): Cardinal;
+begin
+  Result := (X shr 24) and $0F;
+end;
+
+function SDL_PIXELORDER(X: Cardinal): Cardinal;
+begin
+  Result := (X shr 20) and $0F;
+end;
+
+function SDL_PIXELLAYOUT(X: Cardinal): Cardinal;
+begin
+  Result := (X shr 16) and $0F;
+end;
+
+function SDL_BITSPERPIXEL(X: Cardinal): Cardinal;
+begin
+  Result := (X shr 8) and $FF;
+end;
+
+function SDL_IsPixelFormat_FOURCC(format: Variant): Boolean;
+begin
+  {* The flag is set to 1 because 0x1? is not in the printable ASCII range *}
+  Result := format and SDL_PIXELFLAG(format) <> 1;
+end;
+
+//from "sdl_surface.h"
+function SDL_LoadBMP(_file: PAnsiChar): PSDL_Surface;
+begin
+  Result := SDL_LoadBMP_RW(SDL_RWFromFile(_file, 'rb'), 1);
+end;
+
+function SDL_SaveBMP(Const surface:PSDL_Surface; Const filename:AnsiString):sInt32;
+begin
+   Result := SDL_SaveBMP_RW(surface, SDL_RWFromFile(PAnsiChar(filename), 'wb'), 1)
+end;
+
+{**
+ *  Evaluates to true if the surface needs to be locked before access.
+ *}
+function SDL_MUSTLOCK(Const S:PSDL_Surface):Boolean;
+begin
+  Result := ((S^.flags and SDL_RLEACCEL) <> 0)
+end;
+
+//from "sdl_video.h"
+function SDL_WindowPos_IsUndefined(X: Variant): Variant;
+begin
+  Result := (X and $FFFF0000) = SDL_WINDOWPOS_UNDEFINED_MASK;
+end;
+
+function SDL_WindowPos_IsCentered(X: Variant): Variant;
+begin
+  Result := (X and $FFFF0000) = SDL_WINDOWPOS_CENTERED_MASK;
+end;
+
+//from "sdl_events.h"
+
+function SDL_GetEventState(type_: UInt32): UInt8;
+begin
+  Result := SDL_EventState(type_, SDL_QUERY);
+end;
+
+// from "sdl_timer.h"
+function SDL_TICKS_PASSED(Const A, B:UInt32):Boolean;
+begin
+   Result := ((Int64(B) - Int64(A)) <= 0)
+end;
+
+// from "sdl_gamecontroller.h"
+  {**
+   *  Load a set of mappings from a file, filtered by the current SDL_GetPlatform()
+   *}
+function SDL_GameControllerAddMappingsFromFile(Const FilePath:PAnsiChar):SInt32;
+begin
+  Result := SDL_GameControllerAddMappingsFromRW(SDL_RWFromFile(FilePath, 'rb'), 1)
 end;
 
 
