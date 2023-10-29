@@ -323,8 +323,10 @@ class GL2JNIView extends GLSurfaceView {
         private int[] mValue = new int[1];
     }
 
-    private static class Renderer implements GLSurfaceView.Renderer {
+    protected static class Renderer implements GLSurfaceView.Renderer {
         public void onDrawFrame(GL10 gl) {
+
+
             GL2JNILib.step();
         }
 

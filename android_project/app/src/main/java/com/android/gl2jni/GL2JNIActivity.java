@@ -29,14 +29,16 @@ import java.io.File;
 
 public class GL2JNIActivity extends Activity  {
 
-    GL2JNIView mView;
+    protected GL2JNIView mView;
 
     protected static boolean mFullscreenModeActive;
 
     @Override protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        mView = new GL2JNIView(getApplication());
-	setContentView(mView);
+        if(mView==null) {
+            mView = new GL2JNIView(getApplication());
+            setContentView(mView);
+        }
     }
 
     @Override protected void onPause() {

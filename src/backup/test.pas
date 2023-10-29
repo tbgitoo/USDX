@@ -94,7 +94,7 @@ function setupGraphics(w,h: integer): boolean;
       checkGlError('glViewport');
       setupGraphics:=True;
       if SDL_Init(SDL_INIT_VIDEO)>=0 then
-         debug_message_to_android('SDL init failed with error'+SDL_GetError());
+         debug_message_to_android('SDL init failed with error'+SDL_GetError())
       else
          debug_message_to_android('SDL_INIT: Initialized video system successfully');
 
@@ -133,11 +133,37 @@ begin
   renderFrame();
 end;
 
+procedure Java_com_android_gl2jni_SDLJNILib_onNativeMouse(vm:PJavaVM;reserved:pointer; button,action: jint; x,y: jfloat; relative:jboolean); cdecl;
+begin
+
+end;
+
+procedure Java_com_android_gl2jni_SDLJNILib_nativeSetNaturalOrientation(vm:PJavaVM;reserved:pointer; orientation:jint); cdecl;
+begin
+
+end;
+
+procedure Java_com_android_gl2jni_SDLJNILib_onNativeRotationChanged(vm:PJavaVM;reserved:pointer; rotation:jint); cdecl;
+begin
+
+end;
+
+
+
+
 
 
 exports Java_com_android_gl2jni_GL2JNILib_init name 'Java_com_android_gl2jni_GL2JNILib_init';
 
 exports Java_com_android_gl2jni_GL2JNILib_step name 'Java_com_android_gl2jni_GL2JNILib_step';
+
+
+exports Java_com_android_gl2jni_SDLJNILib_onNativeMouse name 'Java_com_android_gl2jni_SDLJNILib_onNativeMouse';
+
+exports Java_com_android_gl2jni_SDLJNILib_nativeSetNaturalOrientation name 'Java_com_android_gl2jni_SDLJNILib_nativeSetNaturalOrientation';
+exports Java_com_android_gl2jni_SDLJNILib_onNativeRotationChanged name 'Java_com_android_gl2jni_SDLJNILib_onNativeRotationChanged';
+
+
 
 
 exports JNI_OnLoad name 'JNI_OnLoad';
