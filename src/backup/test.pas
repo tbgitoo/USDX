@@ -54,6 +54,7 @@ uses
 var gvPositionHandle, gProgram: GLuint;
     grey: GLfloat;
     gTriangleVertices: array[0..5] of GLfloat = (0.0, 0.5, -0.5, -0.5, 0.5, -0.5);
+    Screen:         PSDL_Window;
 
 
 function setupGraphics(w,h: integer): boolean;
@@ -95,12 +96,21 @@ function setupGraphics(w,h: integer): boolean;
       {$IFEND}
       checkGlError('glViewport');
       setupGraphics:=True;
-      if SDL_Init(SDL_INIT_VIDEO)>=0 then
-         debug_message_to_android('SDL init failed with error'+SDL_GetError())
+      if SDL_Init(SDL_INIT_VIDEO)>=0 then begin
+         debug_message_to_android('SDL init failed with error'+SDL_GetError());
+         setupGraphics:=false;
+         exit;
+      end
       else
          debug_message_to_android('SDL_INIT: Initialized video system successfully');
-
-
+      screen:=SDL_CreateWindow('UltraStar Deluxe loading...',
+               w, h, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN or SDL_WINDOW_RESIZABLE);
+      if(screen=nil) then
+      begin
+         debug_message_to_android('setupGraphics: Failed to set up window: '+SDL_GetError());
+         setupGraphics:=false;
+         exit;
+      end;
     end;
 
 procedure renderFrame();
@@ -140,10 +150,10 @@ exports Java_com_android_gl2jni_GL2JNILib_init name 'Java_com_android_gl2jni_GL2
 exports Java_com_android_gl2jni_GL2JNILib_step name 'Java_com_android_gl2jni_GL2JNILib_step';
 
 
-exports Java_com_android_gl2jni_SDLJNILib_onNativeMouse name 'Java_com_android_gl2jni_SDLJNILib_onNativeMouse';
+exports Java_org_libsdl_app_SDLActivity_onNativeMouse name 'Java_org_libsdl_app_SDLActivity_onNativeMouse';
 
-exports Java_com_android_gl2jni_SDLJNILib_nativeSetNaturalOrientation name 'Java_com_android_gl2jni_SDLJNILib_nativeSetNaturalOrientation';
-exports Java_com_android_gl2jni_SDLJNILib_onNativeRotationChanged name 'Java_com_android_gl2jni_SDLJNILib_onNativeRotationChanged';
+exports Java_org_libsdl_app_SDLActivity_nativeSetNaturalOrientation name 'Java_org_libsdl_app_SDLActivity_nativeSetNaturalOrientation';
+exports Java_org_libsdl_app_SDLActivity_onNativeRotationChanged name 'Java_org_libsdl_app_SDLActivity_onNativeRotationChanged';
 
 
 

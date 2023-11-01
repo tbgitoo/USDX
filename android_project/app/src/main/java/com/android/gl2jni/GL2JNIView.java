@@ -39,6 +39,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.Surface;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -105,6 +106,10 @@ class GL2JNIView extends GLSurfaceView {
 
         /* Set the renderer responsible for frame rendering */
         setRenderer(new Renderer());
+    }
+
+    public Surface getNativeSurface() {
+        return getHolder().getSurface();
     }
 
     private static class ContextFactory implements GLSurfaceView.EGLContextFactory {

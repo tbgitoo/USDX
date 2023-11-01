@@ -1,14 +1,9 @@
 package com.android.gl2jni;
 
 import android.content.Context;
-import android.os.Build;
-import android.util.Log;
 import android.view.Display;
-import android.view.InputDevice;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.View;
 import android.view.WindowManager;
 
 public class SDLSurface extends GL2JNIView implements SurfaceHolder.Callback
@@ -45,7 +40,7 @@ public class SDLSurface extends GL2JNIView implements SurfaceHolder.Callback
 
 
     public boolean onKeyEvent(int keyCode, KeyEvent event) {
-        return SDLSimpleActivity.handleKeyEvent(this, keyCode, event, null);
+        return SDL_GL2JNI_Activity.handleKeyEvent(this, keyCode, event, null);
     }
 
 
