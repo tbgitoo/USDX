@@ -1,0 +1,1 @@
+/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp/CMakeLists.txt

@@ -6,7 +6,7 @@
       android:fullBackupContent="false"
       android:icon="@mipmap/ic_launcher"
       android:label="@string/sdl_test">
-    <activity android:name=".SDL_GL2JNI_Activity"
+    <activity android:name="org.libsdl.app.SDLActivity"
               android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
               android:launchMode="singleTask"
               android:configChanges="orientation|keyboardHidden"

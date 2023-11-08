@@ -330,7 +330,7 @@ function SDL_ConvertPixels(width: SInt32; height: SInt32; src_format: UInt32; co
    *  0 on success, or -1 on error.
    *}
 
-function SDL_FillRect(dst: PSDL_Surface; const rect: PSDL_Rect; color: UInt32): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_FillRect' {$ENDIF} {$ENDIF};
+function SDL_FillSurfaceRect(dst: PSDL_Surface; const rect: PSDL_Rect; color: UInt32): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_FillSurfaceRect' {$ENDIF} {$ENDIF};
 function SDL_FillRects(dst: PSDL_Surface; const rects: PSDL_Rect; count: SInt32; color: UInt32): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_FillRects' {$ENDIF} {$ENDIF};
 
   {**

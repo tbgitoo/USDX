@@ -12,6 +12,9 @@ interface
 
 
 
+
+
+
   procedure Java_org_libsdl_app_SDLActivity_onNativeMouse(vm:PJavaVM;reserved:pointer; button,action: jint; x,y: jfloat; relative:jboolean); cdecl;
 
 
@@ -22,7 +25,7 @@ interface
 
   function Java_org_libsdl_app_SDLActivity_nativeSetupJNI(vm:PJavaVM;reserved:pointer): jint; cdecl; external SDL_LibName  name 'Java_org_libsdl_app_SDLActivity_nativeSetupJNI';
 
-
+  //function Android_JNI_GetNativeWindow(): PANativeWindow; cdecl; external 'libnativewindow.so'  name 'Android_JNI_GetNativeWindow';
 
 
 

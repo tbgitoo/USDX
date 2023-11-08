@@ -9,13 +9,19 @@
    *   SDL_GetCurrentDisplayMode()
    *   SDL_GetClosestDisplayMode()
    *   SDL_SetWindowDisplayMode()
-   *   SDL_GetWindowDisplayMode()
+   *   SDL_GetWindowFullscreenMode()
    *}
 
 
 
+TSDL_DisplayID= UInt32;
+TSDL_WindowID=UInt32;
+
+PSDL_VideoDevice=Pointer;
+
   PSDL_DisplayMode = ^TSDL_DisplayMode;
   TSDL_DisplayMode = record
+   displayID: TSDL_DisplayID;
     format: UInt32;              {**< pixel format *}
     w: SInt32;                   {**< width *}
     h: SInt32;                   {**< height *}
@@ -484,13 +490,13 @@ function SDL_GetDisplayMode(displayIndex: SInt32; modeIndex: SInt32; mode: PSDL_
    *  Fill in information about the desktop display mode.
    *}
 
-function SDL_GetDesktopDisplayMode(displayIndex: SInt32; mode: PSDL_DisplayMode): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetDesktopDisplayMode' {$ENDIF} {$ENDIF};
+function SDL_GetDesktopDisplayMode(displayIndex: SInt32): PSDL_DisplayMode cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetDesktopDisplayMode' {$ENDIF} {$ENDIF};
 
   {**
    *  Fill in information about the current display mode.
    *}
 
-function SDL_GetCurrentDisplayMode(displayIndex: SInt32; mode: PSDL_DisplayMode): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetCurrentDisplayIndex' {$ENDIF} {$ENDIF};
+function SDL_GetCurrentDisplayMode(displayIndex: SInt32): PSDL_DisplayMode cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetCurrentDisplayIndex' {$ENDIF} {$ENDIF};
 
   {**
    *  Get the closest match to the requested display mode.
@@ -534,7 +540,7 @@ function SDL_GetWindowDisplayIndex(window: PSDL_Window): SInt32 cdecl; external 
    *  
    *  0 on success, or -1 if setting the display mode failed.
    *  
-   *  SDL_GetWindowDisplayMode()
+   *  SDL_GetWindowFullscreenMode()
    *  SDL_SetWindowFullscreen()
    *}
 
@@ -548,7 +554,7 @@ function SDL_SetWindowDisplayMode(window: PSDL_Window; const mode: PSDL_DisplayM
    *  SDL_SetWindowFullscreen()
    *}
 
-function SDL_GetWindowDisplayMode(window: PSDL_Window; mode: PSDL_DisplayMode): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowDisplayMode' {$ENDIF} {$ENDIF};
+function SDL_GetWindowFullscreenMode(window: PSDL_Window; mode: PSDL_DisplayMode): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowFullscreenMode' {$ENDIF} {$ENDIF};
 
   {**
    *  Get the pixel format associated with the window.
@@ -873,7 +879,7 @@ procedure SDL_RestoreWindow(window: PSDL_Window) cdecl; external SDL_LibName {$I
    *  0 on success, or -1 if setting the display mode failed.
    *  
    *  SDL_SetWindowDisplayMode()
-   *  SDL_GetWindowDisplayMode()
+   *  SDL_GetWindowFullscreenMode()
    *}
 
 function SDL_SetWindowFullscreen(window: PSDL_Window; flags: UInt32): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_SetWindowFullscreen' {$ENDIF} {$ENDIF};
@@ -1268,3 +1274,19 @@ procedure SDL_GL_SwapWindow(window: PSDL_Window) cdecl; external SDL_LibName {$I
 procedure SDL_GL_DeleteContext(context: TSDL_GLContext) cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GL_DeleteContext' {$ENDIF} {$ENDIF};
 
   {*OpenGL support functions*}
+  
+  
+  
+ function SDL_GetPrimaryDisplay():  TSDL_DisplayID cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL3_GetPrimaryDisplay' {$ENDIF} {$ENDIF};
+  
+  
+ procedure SDL_GetWindowSizeInPixels(window: PSDL_Window; w: PInt; h: PInt) cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetWindowSizeInPixels' {$ENDIF} {$ENDIF};
+ 
+ 
+ function SDL_CreateWindowWithPosition(const title: PAnsiChar;x:SInt32; y:SInt32; w: SInt32; h: SInt32; flags: UInt32): PSDL_Window cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_CreateWindowWithPosition' {$ENDIF} {$ENDIF};
+
+ 
+ function SDL_GetVideoDevice: PSDL_VideoDevice cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetVideoDevice' {$ENDIF} {$ENDIF};
+  
+ function Android_CreateWindow(videoDevice: PSDL_VideoDevice; window: PSDL_Window): SInt32 cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_Android_CreateWindow' {$ENDIF} {$ENDIF};
+ 

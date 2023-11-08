@@ -54,8 +54,92 @@ uses
 var gvPositionHandle, gProgram: GLuint;
     grey: GLfloat;
     gTriangleVertices: array[0..5] of GLfloat = (0.0, 0.5, -0.5, -0.5, 0.5, -0.5);
-    Screen:         PSDL_Window;
 
+
+procedure renderFrame();
+begin
+  grey := grey+0.01;
+  if grey > 1 then grey:=0;
+
+  glClearColor(grey, grey, grey, 1.0);
+  checkGlError('glClearColor');
+  glClear(GL_DEPTH_BUFFER_BIT + GL_COLOR_BUFFER_BIT);
+  checkGlError('glClear');
+  glUseProgram(gProgram);
+  checkGlError('glUseProgram');
+
+  glVertexAttribPointer(gvPositionHandle, 2, GL_FLOAT, Bytebool(GL_FALSE), 0,
+                        @gTriangleVertices[0]);
+  checkGlError('glVertexAttribPointer');
+  glEnableVertexAttribArray(gvPositionHandle);
+  checkGlError('glEnableVertexAttribArray');
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+  checkGlError('glDrawArrays');
+end;
+
+
+function SDL_main(argc: integer; argv: PPChar): integer;
+var
+    Screen: PSDL_Window;
+    window: TSDL_Window;
+
+    maincontext: TSDL_GLContext;
+
+    screenSurface: PSDL_Surface;
+
+
+    ind : integer;
+
+begin
+  if(SDL_Init(SDL_INIT_VIDEO)<0) then exit(1);
+  SDL_main:=0;
+
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+
+
+
+   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+    // Create our window centered at 512x512 resolution
+    Screen := SDL_CreateWindow('title',512, 512, SDL_WINDOW_OPENGL or SDL_WINDOW_SHOWN or SDL_WINDOW_FULLSCREEN);
+    if Screen=nil then
+        debug_message_to_android('Could not create window.');
+
+    window:=Screen^;
+
+    debug_message_to_android('Could not create window.');
+
+    screenSurface := SDL_GetWindowSurface( Screen );
+    if(screenSurface=nil) then
+        debug_message_to_android('Could not get screen surface');
+
+    debug_message_to_android('w='+IntToStr((screenSurface^).w)+' h='+IntToStr((screenSurface^).h));
+
+    SDL_FillSurfaceRect( screenSurface, nil, SDL_MapRGB( screenSurface.format, $FF, $FF, $FF ) );
+
+
+
+    SDL_UpdateWindowSurface( Screen );
+
+
+
+
+
+    while (true)  do begin
+
+       SDL_Delay(1000);
+       SDL_FillSurfaceRect( screenSurface, nil, SDL_MapRGB( screenSurface.format, $FF, $FF, $FF ) );
+       SDL_UpdateWindowSurface( Screen );
+    end;
+
+
+
+
+  SDL_Quit();
+
+end;
 
 function setupGraphics(w,h: integer): boolean;
     var gVertexShader, gFragmentShader : String;
@@ -103,36 +187,16 @@ function setupGraphics(w,h: integer): boolean;
       end
       else
          debug_message_to_android('SDL_INIT: Initialized video system successfully');
-      screen:=SDL_CreateWindow('UltraStar Deluxe loading...',
-               w, h, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN or SDL_WINDOW_RESIZABLE);
-      if(screen=nil) then
-      begin
-         debug_message_to_android('setupGraphics: Failed to set up window: '+SDL_GetError());
-         setupGraphics:=false;
-         exit;
-      end;
+      //screen:=Android_JNI_GetNativeWindow();
+      //if(screen=nil) then
+      //begin
+      //   debug_message_to_android('setupGraphics: Failed to set up window: '+SDL_GetError());
+      //   setupGraphics:=false;
+      //   exit;
+      //end;
     end;
 
-procedure renderFrame();
-begin
-  grey := grey+0.01;
-  if grey > 1 then grey:=0;
 
-  glClearColor(grey, grey, grey, 1.0);
-  checkGlError('glClearColor');
-  glClear(GL_DEPTH_BUFFER_BIT + GL_COLOR_BUFFER_BIT);
-  checkGlError('glClear');
-  glUseProgram(gProgram);
-  checkGlError('glUseProgram');
-
-  glVertexAttribPointer(gvPositionHandle, 2, GL_FLOAT, Bytebool(GL_FALSE), 0,
-                        @gTriangleVertices[0]);
-  checkGlError('glVertexAttribPointer');
-  glEnableVertexAttribArray(gvPositionHandle);
-  checkGlError('glEnableVertexAttribArray');
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-  checkGlError('glDrawArrays');
-end;
 
 procedure Java_com_android_gl2jni_GL2JNILib_init(vm:PJavaVM;reserved:pointer; width,height:jint); cdecl;
   begin
@@ -155,9 +219,11 @@ exports Java_org_libsdl_app_SDLActivity_onNativeMouse name 'Java_org_libsdl_app_
 exports Java_org_libsdl_app_SDLActivity_nativeSetNaturalOrientation name 'Java_org_libsdl_app_SDLActivity_nativeSetNaturalOrientation';
 exports Java_org_libsdl_app_SDLActivity_onNativeRotationChanged name 'Java_org_libsdl_app_SDLActivity_onNativeRotationChanged';
 
-
+exports Java_org_libsdl_app_SDLActivity_nativeSetupJNI name 'Java_org_libsdl_app_SDLActivity_nativeSetupJNI';
 
 exports JNI_OnLoad name 'JNI_OnLoad';
+
+exports SDL_main name 'SDL_main';
 
 
 
