@@ -21,6 +21,7 @@ uses
         GL_COMPILE_STATUS = $8B81;
         GL_INFO_LOG_LENGTH = $8B84;
         GL_VERTEX_SHADER = $8B31;
+        GL_ARRAY_BUFFER = $8892;
         GL_FRAGMENT_SHADER = $8B30;
         GL_FALSE = 0;
         GL_TRUE = 1;
@@ -33,6 +34,7 @@ uses
         GL_COLOR_BUFFER_BIT = $00004000;
         GL_FLOAT = $1406;
         GL_TRIANGLES = $0004;
+        GL_STATIC_DRAW = $88E4;
 
 
 
@@ -85,6 +87,13 @@ procedure printGLString(name: String; s: GLenum);
 
 procedure glGenVertexArrays (n: GLsizei; arrays: PGLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGenVertexArrays';
 
+procedure glBindVertexArray(array_ : GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glBindVertexArray';
+
+procedure glGenBuffers (n: GLsizei; buffers: PGLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGenBuffers';
+
+procedure glBindBuffer(target: GLenum; array_ : GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glBindBuffer';
+
+procedure glBufferData (target: GLenum; size_:GLsizei; data: Pointer; usage: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glBufferData';
 
 implementation
 

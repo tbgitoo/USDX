@@ -105,6 +105,12 @@ var
     var gVertexShader, gFragmentShader : String;
 
     vao: GLUint;
+    vbo: GLUint;
+    vertices: array[1..9] of GLFloat =( -0.5, -0.5, 0.0,
+        0.5, -0.5, 0.0,
+        0.0,  0.5, 0.0);
+
+    vertex_length: GLsizei;
 
 begin
   if(SDL_Init(SDL_INIT_VIDEO)<0) then exit(1);
@@ -158,7 +164,15 @@ begin
 
     glViewport(0, 0, displayMode.w, displayMode.h);
 
-    glGenVertexArrays(@vao,1);
+    glGenVertexArrays(1,@vao);
+    glBindVertexArray(vao);
+
+    glGenBuffers(1, @vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+
+    vertex_length:=sizeof(vertices);
+    glBufferData(GL_ARRAY_BUFFER, @vertex_length, @vertices[1], GL_STATIC_DRAW);
 
     printGLString('Version', GL_VERSION);
       printGLString('Vendor', GL_VENDOR);
