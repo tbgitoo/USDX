@@ -55,6 +55,12 @@ var gvPositionHandle, gProgram: GLuint;
     grey: GLfloat;
     gTriangleVertices: array[0..5] of GLfloat = (0.0, 0.5, -0.5, -0.5, 0.5, -0.5);
 
+    Screen: PSDL_Window;
+    window: TSDL_Window;
+    gl: TSDL_GLContext;
+
+    screenSurface: PSDL_Surface;
+
 
 procedure renderFrame();
 begin
@@ -80,30 +86,48 @@ end;
 
 function SDL_main(argc: integer; argv: PPChar): integer;
 var
-    Screen: PSDL_Window;
-    window: TSDL_Window;
 
-    maincontext: TSDL_GLContext;
+    displayID: TSDL_DisplayID;
+    displayMode: TSDL_DisplayMode;
 
-    screenSurface: PSDL_Surface;
+
+
+
+
 
 
     ind : integer;
+
+    go_on: boolean;
+
+    e: TSDL_Event;
+
+    var gVertexShader, gFragmentShader : String;
+
+    vao: GLUint;
 
 begin
   if(SDL_Init(SDL_INIT_VIDEO)<0) then exit(1);
   SDL_main:=0;
 
    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
 
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,    SDL_GL_CONTEXT_PROFILE_ES);
 
    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-    // Create our window centered at 512x512 resolution
-    Screen := SDL_CreateWindow('title',512, 512, SDL_WINDOW_OPENGL or SDL_WINDOW_SHOWN or SDL_WINDOW_FULLSCREEN);
+   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+
+   displayID:=SDL_GetPrimaryDisplay();
+   displayMode:=SDL_GetCurrentDisplayMode(displayID)^;
+
+   debug_message_to_android('Display w='+IntToStr(displayMode.w)+' h='+IntToStr(displayMode.h));
+
+
+    // Create our window centered at display resolution
+    Screen := SDL_CreateWindow('title',displayMode.w, displayMode.h, SDL_WINDOW_OPENGL or SDL_WINDOW_SHOWN or SDL_WINDOW_FULLSCREEN);
     if Screen=nil then
         debug_message_to_android('Could not create window.');
 
@@ -115,25 +139,42 @@ begin
     if(screenSurface=nil) then
         debug_message_to_android('Could not get screen surface');
 
-    debug_message_to_android('w='+IntToStr((screenSurface^).w)+' h='+IntToStr((screenSurface^).h));
+    debug_message_to_android('drawing surface w='+IntToStr((screenSurface^).w)+' h='+IntToStr((screenSurface^).h));
 
-    SDL_FillSurfaceRect( screenSurface, nil, SDL_MapRGB( screenSurface.format, $FF, $FF, $FF ) );
-
-
-
-    SDL_UpdateWindowSurface( Screen );
 
 
     ind:=0;
+    go_on:=false;
+
+    while ((SDL_WaitEvent(@e) <> 0) and not go_on) do begin
+
+       if(e.type_ and SDL_WINDOWEVENT > 0) then begin
+          go_on:=true;
+          end;
+    end;
+
+    gl := SDL_GL_CreateContext(Screen);
+    if(gl=nil) then debug_message_to_android('could not create GL context: '+SDL_GetError());
+
+    glViewport(0, 0, displayMode.w, displayMode.h);
+
+    glGenVertexArrays(1,@vao);
+
+    printGLString('Version', GL_VERSION);
+      printGLString('Vendor', GL_VENDOR);
+      printGLString('Renderer', GL_RENDERER);
+      printGLString('Extensions', GL_EXTENSIONS);
+
 
 
     while (true)  do begin
 
-       SDL_Delay(100);
+       SDL_Delay(10);
        SDL_FillSurfaceRect( screenSurface, nil, SDL_MapRGB( screenSurface.format, ind, $FF, $FF ) );
        SDL_UpdateWindowSurface( Screen );
        ind:=ind+1;
        if ind>255 then ind:=0;
+       SDL_GL_SwapWindow(Screen);
     end;
 
 

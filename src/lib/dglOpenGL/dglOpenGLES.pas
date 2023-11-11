@@ -17,7 +17,7 @@ uses
 
  const
 
-        gles_lib = 'libGLESv2.so';
+        gles_lib = 'libGLESv3.so';
         GL_COMPILE_STATUS = $8B81;
         GL_INFO_LOG_LENGTH = $8B84;
         GL_VERTEX_SHADER = $8B31;
@@ -40,6 +40,7 @@ uses
 type
   GLenum = Cardinal;
   GLuint = Cardinal;
+  PGLuint = ^GLuint;
   GLsizei = Integer;
   PGLsizei = ^GLsizei;
   GLint = Integer;
@@ -81,6 +82,8 @@ function createProgram(vertexSource, fragmentSource: String): GLuint;
 function glGetAttribLocation(prog: GLuint; name: String): GLint;
 
 procedure printGLString(name: String; s: GLenum);
+
+procedure glGenVertexArrays (n: GLsizei; arrays: PGLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGenVertexArrays';
 
 
 implementation

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-// OpenGL ES 2.0 code
+// OpenGL ES 3.0 code
 
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
 #include <android/log.h>
 #include <jni.h>
 

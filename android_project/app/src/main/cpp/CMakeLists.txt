@@ -33,7 +33,7 @@ target_link_libraries(gl2jni
                       android
                       log 
                       EGL
-                      GLESv2
+                      GLESv3
                       SDL3
                       sdl3_image)
 

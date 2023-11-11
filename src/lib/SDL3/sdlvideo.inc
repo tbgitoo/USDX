@@ -25,9 +25,12 @@ PSDL_VideoDevice=Pointer;
     format: UInt32;              {**< pixel format *}
     w: SInt32;                   {**< width *}
     h: SInt32;                   {**< height *}
-    refresh_rate: SInt32;        {**< refresh rate (or zero for unspecified) *}
+    pixel_density: real;
+    refresh_rate: real;        {**< refresh rate (or zero for unspecified) *}
     driverdata: Pointer;         {**< driver-specific data, initialize to 0 *}
   end;
+  
+ 
 
   {* Define the SDL window-shaper structure *}
   PSDL_WindowShaper = ^TSDL_WindowShaper;
@@ -496,7 +499,7 @@ function SDL_GetDesktopDisplayMode(displayIndex: SInt32): PSDL_DisplayMode cdecl
    *  Fill in information about the current display mode.
    *}
 
-function SDL_GetCurrentDisplayMode(displayIndex: SInt32): PSDL_DisplayMode cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_GetCurrentDisplayIndex' {$ENDIF} {$ENDIF};
+function SDL_GetCurrentDisplayMode(displayIndex: SInt32): PSDL_DisplayMode cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_ SDL_GetCurrentDisplayMode' {$ENDIF} {$ENDIF};
 
   {**
    *  Get the closest match to the requested display mode.
