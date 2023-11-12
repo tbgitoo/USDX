@@ -1,6 +1,7 @@
+ {$mode objfpc}
 unit dglOpenGLES;
 
- {$mode objfpc}
+
 
 interface
 
@@ -77,7 +78,6 @@ procedure glEnableVertexAttribArray (index: GLuint); {$IFDEF WINDOWS}stdcall; {$
 
 procedure glDrawArrays(mode: GLenum; first: GLint; count: GLsizei); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDrawArrays';
 
-function loadShader(shaderType: GLenum; sourceCode: String): GLuint;
 
 function createProgram(vertexSource, fragmentSource: String): GLuint;
 
@@ -95,6 +95,16 @@ procedure glBindBuffer(target: GLenum; array_ : GLuint); {$IFDEF WINDOWS}stdcall
 
 procedure glBufferData (target: GLenum; size_:GLsizei; data: Pointer; usage: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glBufferData';
 
+
+procedure glShaderSource (shader: GLuint; count: GLsizei;  source_code_string_array: PPGLChar; length_array: pglint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glShaderSource';
+
+procedure glCompileShader(shader: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glCompileShader';
+
+
+procedure glGetShaderiv (shader: GLuint; pname: GLenum; params: PGLint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetShaderiv';
+
+function loadShader(shaderType: GLenum; psourceCode: PString): GLuint;
+
 implementation
 
 {$IF Defined(ANDROID)}
@@ -111,11 +121,8 @@ function __glGetString(name: GLenum): PAnsiChar; {$IFDEF WINDOWS}stdcall; {$ELSE
 
 
 
-procedure __glShaderSource (shader: GLuint; count: GLsizei;  source_code_string_array: PPGLChar; length_array: pglint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glShaderSource';
 
-procedure __glCompileShader(shader: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glCompileShader';
 
-procedure __glGetShaderiv (shader: GLuint; pname: GLenum; params: PGLint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetShaderiv';
 
 procedure __glGetShaderInfoLog(shader: GLuint; bufSize: GLsizei; length:PGLsizei; infoLog: PByte); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetShaderInfoLog';
 
@@ -195,16 +202,17 @@ begin
 end;
 
 
-function loadShader(shaderType: GLenum; sourceCode: String): GLuint;
-var
 
-  Buffer: PGLchar;
+
+function loadShader(shaderType: GLenum; PsourceCode: PString): GLuint;
+var
 
   retBuffer: array of Byte;
   ind: integer;
   compiled: GLint;
   shader: GLUint;
   infoLen: GLint;
+  length_for_length_array: GLint;
 
 begin
 
@@ -213,31 +221,31 @@ begin
 
   if shader>0 then begin
 
+  length_for_length_array:=length(psourceCode^);
 
-    Buffer:= PCharFromString(sourceCode);
-   __glShaderSource(shader, 1, @Buffer, nil);
-   __glCompileShader(shader);
+   glShaderSource(shader, 1, PPGLchar(psourceCode), @length_for_length_array);
+   glCompileShader(shader);
 
 
    compiled := 0;
-   __glGetShaderiv(shader, GL_COMPILE_STATUS, @compiled);
+   glGetShaderiv(shader, GL_COMPILE_STATUS, @compiled);
 
    if compiled = 0 then begin
 
      infoLen:=0;
-     __glGetShaderiv(shader, GL_INFO_LOG_LENGTH, @infoLen);
+     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, @infoLen);
      if (infoLen>0) then begin
        setLength(retBuffer,infoLen);
        __glGetShaderInfoLog(shader, infoLen, nil, @retBuffer[0]);
        {$IF Defined(ANDROID)}
       debug_message_to_android(String(TEncoding.ANSI.GetString(retBuffer)));
       {$IFEND}
-       setLength(retBuffer,0);
+
       __glDeleteShader(shader);
       shader := 0;
      end;
    end;
-   FreeMem(Buffer,Length(sourceCode) + 1);
+
   end;
   loadShader:=shader;
 end;
@@ -249,13 +257,13 @@ var
   linkStatus, bufLength: GLint;
   buf: array of byte;
 begin
-  vertexShader := loadShader(GL_VERTEX_SHADER, vertexSource);
+  vertexShader := loadShader(GL_VERTEX_SHADER, @vertexSource);
 
 
   if (vertexShader = 0) then exit(0);
 
 
-  pixelShader := loadShader(GL_FRAGMENT_SHADER, fragmentSource);
+  pixelShader := loadShader(GL_FRAGMENT_SHADER, @fragmentSource);
 
 
   if (pixelShader =0) then exit(0);

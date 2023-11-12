@@ -1,3 +1,5 @@
+
+
 library test;
 
 {$IFDEF MSWINDOWS}
@@ -5,7 +7,7 @@ library test;
 {$ENDIF}
 
 {$IFDEF FPC}
-  {$MODE Delphi}
+  {$MODE OBJFPC}
 {$ENDIF}
 
 {$I switches.inc}
@@ -60,6 +62,8 @@ var gvPositionHandle, gProgram: GLuint;
     gl: TSDL_GLContext;
 
     screenSurface: PSDL_Surface;
+    gVertexShader : String;
+    gFragmentShader : String;
 
 
 procedure renderFrame();
@@ -102,7 +106,7 @@ var
 
     e: TSDL_Event;
 
-    var gVertexShader, gFragmentShader : String;
+
 
     vao: GLUint;
     vbo: GLUint;
@@ -112,7 +116,25 @@ var
 
     vertex_length: GLsizei;
 
+    vs,fs : GLUint;
+
+
 begin
+
+    gFragmentShader :=
+        'precision mediump float; '+
+        'void main() { '+
+        '  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); '+
+        '} ';
+
+
+
+
+    gVertexShader := 'attribute vec4 vPosition; '+
+        'void main() { '+
+        '  gl_Position = vPosition; '+
+        '} ';
+
   if(SDL_Init(SDL_INIT_VIDEO)<0) then exit(1);
   SDL_main:=0;
 
@@ -173,6 +195,22 @@ begin
 
     vertex_length:=sizeof(vertices);
     glBufferData(GL_ARRAY_BUFFER, vertex_length, @vertices[1], GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(GL_FLOAT), nil);
+    glEnableVertexAttribArray(0);
+
+
+    vs:=loadShader(GL_VERTEX_SHADER,@gVertexShader);
+    fs:=glCreateShader(GL_FRAGMENT_SHADER);
+    //vs:=loadShader(GL_VERTEX_SHADER,gVertexShader);
+    //debug_message_to_android(gFragmentShader);
+    //fs:=loadShader(GL_FRAGMENT_SHADER,gFragmentShader);
+
+
+
+
+    //glShaderSource (shader: GLuint; count: GLsizei;  source_code_string_array: PPGLChar; length_array: pglint)
+
+
 
     printGLString('Version', GL_VERSION);
       printGLString('Vendor', GL_VENDOR);
@@ -184,7 +222,7 @@ begin
     while (true)  do begin
 
        SDL_Delay(10);
-       SDL_FillSurfaceRect( screenSurface, nil, SDL_MapRGB( screenSurface.format, ind, $FF, $FF ) );
+       SDL_FillSurfaceRect( screenSurface, nil, SDL_MapRGB( screenSurface^.format, ind, $FF, $FF ) );
        SDL_UpdateWindowSurface( Screen );
        ind:=ind+1;
        if ind>255 then ind:=0;
