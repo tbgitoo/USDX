@@ -9,7 +9,7 @@ interface
 
 uses
     // LoadLibrary functions
-  SysUtils;
+  SysUtils,SDL3;
 
 {$IFDEF FPC}
 {$PACKRECORDS C}
@@ -103,7 +103,39 @@ procedure glCompileShader(shader: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl
 
 procedure glGetShaderiv (shader: GLuint; pname: GLenum; params: PGLint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetShaderiv';
 
-function loadShader(shaderType: GLenum; psourceCode: PString): GLuint;
+function loadShader(shaderType: GLenum; sourceCode: String): GLuint;
+
+function PCharFromString(s: string): PChar;
+
+function glCreateProgram(): GLuint;  {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glCreateProgram';
+
+procedure glAttachShader(prog,shader: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glAttachShader';
+
+
+procedure glLinkProgram (prog: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glLinkProgram';
+
+
+procedure glGetProgramiv(prog: GLuint; pname: GLenum; params: PGLint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetProgramiv';
+
+procedure glGetProgramInfoLog(prog: GLuint; bufSize: GLsizei ; len: PGLsizei; infoLog: PByte); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetProgramInfoLog';
+
+procedure glDeleteProgram(prog: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDeleteProgram';
+
+
+procedure glDeleteShader(shader: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDeleteShader';
+
+function setupGraphicsAndroid: boolean;
+
+function openGLESexampleProgram: boolean;
+
+procedure openGLESexampleProgramRenderFrame();
+
+var
+
+  Screen: PSDL_Window;
+
+
+
 
 implementation
 
@@ -113,6 +145,18 @@ uses
       UJniCallback;
 {$IFEND}
 
+var
+  actualScreen: TSDL_Window;  // To ensure persistance of the data behind PDSL_Window
+  sdl_wait_event: TSDL_Event;  // This can't be local, otherwise we get a segmentation fault
+  glesContext: TSDL_GLContext;  // This too has to be persistent
+  screenSurface: PSDL_Surface;  // For accessing the native surace
+  shader_fragments : array of PGLChar = ();  // to guarantee the persistence of the shader code
+
+
+  // This is a bit more experimental stuff
+  gvPositionHandle, gProgram: GLuint;
+  grey: GLfloat;
+  gTriangleVertices: array[0..5] of GLfloat = (0.0, 0.5, -0.5, -0.5, 0.5, -0.5);
 
 
 
@@ -126,19 +170,11 @@ function __glGetString(name: GLenum): PAnsiChar; {$IFDEF WINDOWS}stdcall; {$ELSE
 
 procedure __glGetShaderInfoLog(shader: GLuint; bufSize: GLsizei; length:PGLsizei; infoLog: PByte); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetShaderInfoLog';
 
-procedure __glDeleteShader(shader: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDeleteShader';
 
-function glCreateProgram(): GLuint;  {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glCreateProgram';
 
-procedure __glAttachShader(prog,shader: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glAttachShader';
 
-procedure __glLinkProgram (prog: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glLinkProgram';
 
-procedure __glGetProgramiv(prog: GLuint; pname: GLenum; params: PGLint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetProgramiv';
 
-procedure __glGetProgramInfoLog(prog: GLuint; bufSize: GLsizei ; len: PGLsizei; infoLog: PByte); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetProgramInfoLog';
-
-procedure __glDeleteProgram(prog: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDeleteProgram';
 
 
 
@@ -204,7 +240,7 @@ end;
 
 
 
-function loadShader(shaderType: GLenum; PsourceCode: PString): GLuint;
+function loadShader(shaderType: GLenum; sourceCode: String): GLuint;
 var
 
   retBuffer: array of Byte;
@@ -215,15 +251,17 @@ var
   length_for_length_array: GLint;
 
 begin
+  setLength(shader_fragments,length(shader_fragments)+1);
 
+  shader_fragments[length(shader_fragments)]:=PCharFromString(sourceCode);
 
   shader:=glCreateShader(shaderType);
 
   if shader>0 then begin
 
-  length_for_length_array:=length(psourceCode^);
+  length_for_length_array:=length(sourceCode);
 
-   glShaderSource(shader, 1, PPGLchar(psourceCode), @length_for_length_array);
+   glShaderSource(shader, 1, PPGLchar(@shader_fragments[length(shader_fragments)]), @length_for_length_array);
    glCompileShader(shader);
 
 
@@ -231,7 +269,9 @@ begin
    glGetShaderiv(shader, GL_COMPILE_STATUS, @compiled);
 
    if compiled = 0 then begin
-
+     {$IF Defined(ANDROID)}
+      debug_message_to_android('Compilation of shader failed: '+sourceCode);
+      {$IFEND}
      infoLen:=0;
      glGetShaderiv(shader, GL_INFO_LOG_LENGTH, @infoLen);
      if (infoLen>0) then begin
@@ -241,7 +281,7 @@ begin
       debug_message_to_android(String(TEncoding.ANSI.GetString(retBuffer)));
       {$IFEND}
 
-      __glDeleteShader(shader);
+      glDeleteShader(shader);
       shader := 0;
      end;
    end;
@@ -257,39 +297,39 @@ var
   linkStatus, bufLength: GLint;
   buf: array of byte;
 begin
-  vertexShader := loadShader(GL_VERTEX_SHADER, @vertexSource);
+  vertexShader := loadShader(GL_VERTEX_SHADER, vertexSource);
 
 
   if (vertexShader = 0) then exit(0);
 
 
-  pixelShader := loadShader(GL_FRAGMENT_SHADER, @fragmentSource);
+  pixelShader := loadShader(GL_FRAGMENT_SHADER, fragmentSource);
 
 
   if (pixelShader =0) then exit(0);
 
   prog := glCreateProgram();
   if (prog <> 0) then begin
-    __glAttachShader(prog, vertexShader);
+    glAttachShader(prog, vertexShader);
     checkGlError('glAttachShader');
-    __glAttachShader(prog, pixelShader);
+    glAttachShader(prog, pixelShader);
     checkGlError('glAttachShader');
-    __glLinkProgram(prog);
+    glLinkProgram(prog);
     linkStatus := GL_FALSE;
-    __glGetProgramiv(prog, GL_LINK_STATUS, @linkStatus);
+    glGetProgramiv(prog, GL_LINK_STATUS, @linkStatus);
     if (linkStatus <> GL_TRUE) then begin
       bufLength := 0;
-      __glGetProgramiv(prog, GL_INFO_LOG_LENGTH, @bufLength);
+      glGetProgramiv(prog, GL_INFO_LOG_LENGTH, @bufLength);
       if (bufLength > 0) then begin
        setLength(buf,bufLength);
-       __glGetProgramInfoLog(prog, bufLength, nil, @buf[0]);
+       glGetProgramInfoLog(prog, bufLength, nil, @buf[0]);
        {$IF Defined(ANDROID)}
       debug_message_to_android('Could not link program, error='+String(TEncoding.ANSI.GetString(buf)));
       {$IFEND}
        setlength(buf,0);
 
       end;
-      __glDeleteProgram(prog);
+      glDeleteProgram(prog);
       prog := 0;
   end;
 end;
@@ -299,15 +339,150 @@ end;
 
 
 
+
+
+
 end;
 
 
 
+function setupGraphicsAndroid: boolean;
+    var
+
+    displayID: TSDL_DisplayID;
+    displayMode: TSDL_DisplayMode;
+
+
+    go_on: boolean;
+
+
+begin
+
+
+
+  if(SDL_Init(SDL_INIT_VIDEO)<0) then begin
+    debug_message_to_android('Failed to launch SDL');
+    exit(false);
+  end;
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,    SDL_GL_CONTEXT_PROFILE_ES);
+   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
+
+   displayID:=SDL_GetPrimaryDisplay();
+   displayMode:=SDL_GetCurrentDisplayMode(displayID)^;
+
+
+
+   debug_message_to_android('Detected display w='+IntToStr(displayMode.w)+' h='+IntToStr(displayMode.h));
+
+
+    // Create our window centered at display resolution
+    Screen := SDL_CreateWindow('title',displayMode.w, displayMode.h, SDL_WINDOW_OPENGL or SDL_WINDOW_SHOWN or SDL_WINDOW_FULLSCREEN);
+    if Screen=nil then begin
+        debug_message_to_android('Could not create window.');
+        exit(false);
+        end;
+
+    actualScreen:=Screen^;
+
+    screenSurface := SDL_GetWindowSurface( Screen );
+    if(screenSurface=nil) then begin
+        debug_message_to_android('Could not get screen surface');
+        exit(false);
+        end;
+
+    debug_message_to_android('drawing surface w='+IntToStr((screenSurface^).w)+' h='+IntToStr((screenSurface^).h));
+
+
+    go_on:=false;
+
+    while ((SDL_WaitEvent(@sdl_wait_event) <> 0) and not go_on) do begin
+
+       if(sdl_wait_event.type_ and SDL_WINDOWEVENT > 0) then begin
+          go_on:=true;
+          end;
+    end;
+
+    glesContext := SDL_GL_CreateContext(Screen);
+    if(glesContext=nil) then begin
+       debug_message_to_android('could not create GL context: '+SDL_GetError());
+       exit(false);
+       end;
+
+    glViewport(0, 0, displayMode.w, displayMode.h);
+
+
+    printGLString('Version', GL_VERSION);
+    printGLString('Vendor', GL_VENDOR);
+    printGLString('Renderer', GL_RENDERER);
+    printGLString('Extensions', GL_EXTENSIONS);
+
+   setupGraphicsAndroid:=true;
 
 
 
 
 
+
+    end;
+
+
+
+   function openGLESexampleProgram: boolean;
+    var gVertexShader, gFragmentShader : String;
+    begin
+
+
+      gVertexShader:='attribute vec4 vPosition; '+
+        'void main() { '+
+        '  gl_Position = vPosition; '+
+        '} ';
+
+
+      gFragmentShader :=
+        'precision mediump float; '+
+        'void main() { '+
+        '  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); '+
+        '} ';
+
+      gProgram := createProgram(gVertexShader, gFragmentShader);
+      if gProgram = 0 then begin
+      {$IF Defined(ANDROID)}
+          debug_message_to_android('Could not create program.');
+      {$IFEND}
+       exit(False);
+       end;
+      gvPositionHandle := glGetAttribLocation(gProgram, 'vPosition');
+      checkGlError('glGetAttribLocation');
+
+
+      openGLESexampleProgram:=True;
+    end;
+
+
+procedure openGLESexampleProgramRenderFrame();
+begin
+  grey := grey+0.01;
+  if grey > 1 then grey:=0;
+
+  glClearColor(grey, grey, grey, 1.0);
+  checkGlError('glClearColor');
+  glClear(GL_DEPTH_BUFFER_BIT + GL_COLOR_BUFFER_BIT);
+  checkGlError('glClear');
+  glUseProgram(gProgram);
+  checkGlError('glUseProgram');
+
+  glVertexAttribPointer(gvPositionHandle, 2, GL_FLOAT, Bytebool(GL_FALSE), 0,
+                        @gTriangleVertices[0]);
+  checkGlError('glVertexAttribPointer');
+  glEnableVertexAttribArray(gvPositionHandle);
+  checkGlError('glEnableVertexAttribArray');
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+  checkGlError('glDrawArrays');
+end;
 
 
 
