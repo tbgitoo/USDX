@@ -45,9 +45,7 @@ uses
 
   dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
 
-  SDL3 in 'lib\SDL3\sdl3.pas',
-
-  SDL3_Android in 'lib\SDL3\sdl3_android.pas';
+  SDL3 in 'lib\SDL3\sdl3.pas';
 
 
 
@@ -88,48 +86,12 @@ end;
 
 
 function SDL_main(argc: integer; argv: PPChar): integer;
-var
-
-    displayID: TSDL_DisplayID;
-    displayMode: TSDL_DisplayMode;
-
-
-
-
-
-
-
-    ind : integer;
-
-    go_on: boolean;
-
-    e: TSDL_Event;
-
-
-
-    vao: GLUint;
-    vbo: GLUint;
-    vertices: array[1..9] of GLFloat =( -0.01, -0.01, 0.1,
-        0.01, -0.01, 0.9,
-        0.01,  0.02, 0.2);
-
-    vertex_length: GLsizei;
-
-    vs,fs : GLUint;
-
-    buf: array of byte;
-    linkStatus, bufLength: GLint;
 
 
 begin
 
 
    if not setupGraphicsAndroid then exit(1);
-
-
-
-
-    ind:=0;
 
 
    openGLESexampleProgram;
@@ -152,87 +114,10 @@ begin
 
 end;
 
-function setupGraphics(w,h: integer): boolean;
-    var gVertexShader, gFragmentShader : String;
-    begin
-      printGLString('Version', GL_VERSION);
-      printGLString('Vendor', GL_VENDOR);
-      printGLString('Renderer', GL_RENDERER);
-      printGLString('Extensions', GL_EXTENSIONS);
-      {$IF Defined(ANDROID)}
-          debug_message_to_android('setupGraphics('+IntToStr(w)+', '+IntToStr(h)+')');
-      {$IFEND}
-
-      gVertexShader:='attribute vec4 vPosition; '+
-        'void main() { '+
-        '  gl_Position = vPosition; '+
-        '} ';
-
-
-      gFragmentShader :=
-        'precision mediump float; '+
-        'void main() { '+
-        '  gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0); '+
-        '} ';
-
-      gProgram := createProgram(gVertexShader, gFragmentShader);
-      if gProgram = 0 then begin
-      {$IF Defined(ANDROID)}
-          debug_message_to_android('Could not create program.');
-      {$IFEND}
-       exit(False);
-       end;
-      gvPositionHandle := glGetAttribLocation(gProgram, 'vPosition');
-      checkGlError('glGetAttribLocation');
-
-      glViewport(0, 0, w, h);
-      {$IF Defined(ANDROID)}
-          debug_message_to_android('glViewport');
-      {$IFEND}
-      checkGlError('glViewport');
-      setupGraphics:=True;
-      if SDL_Init(SDL_INIT_VIDEO)>=0 then begin
-         debug_message_to_android('SDL init failed with error'+SDL_GetError());
-         setupGraphics:=false;
-         exit;
-      end
-      else
-         debug_message_to_android('SDL_INIT: Initialized video system successfully');
-      //screen:=Android_JNI_GetNativeWindow();
-      //if(screen=nil) then
-      //begin
-      //   debug_message_to_android('setupGraphics: Failed to set up window: '+SDL_GetError());
-      //   setupGraphics:=false;
-      //   exit;
-      //end;
-    end;
 
 
 
-procedure Java_com_android_gl2jni_GL2JNILib_init(vm:PJavaVM;reserved:pointer; width,height:jint); cdecl;
-  begin
-    setupGraphics(width, height);
-  end;
 
-  procedure Java_com_android_gl2jni_GL2JNILib_step(vm:PJavaVM;reserved:pointer; width,height:jint); cdecl;
-  begin
-    renderFrame();
-  end;
-
-
-exports Java_com_android_gl2jni_GL2JNILib_init name 'Java_com_android_gl2jni_GL2JNILib_init';
-
-exports Java_com_android_gl2jni_GL2JNILib_step name 'Java_com_android_gl2jni_GL2JNILib_step';
-
-
-exports Java_org_libsdl_app_SDLActivity_onNativeMouse name 'Java_org_libsdl_app_SDLActivity_onNativeMouse';
-
-exports Java_org_libsdl_app_SDLActivity_nativeSetNaturalOrientation name 'Java_org_libsdl_app_SDLActivity_nativeSetNaturalOrientation';
-exports Java_org_libsdl_app_SDLActivity_onNativeRotationChanged name 'Java_org_libsdl_app_SDLActivity_onNativeRotationChanged';
-
-exports Java_org_libsdl_app_SDLActivity_nativeSetupJNI name 'Java_org_libsdl_app_SDLActivity_nativeSetupJNI';
-
-exports JNI_OnLoad name 'JNI_OnLoad';
 
 exports SDL_main name 'SDL_main';
 
