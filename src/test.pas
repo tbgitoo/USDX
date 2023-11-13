@@ -138,7 +138,7 @@ begin
 
     while (true)  do begin
 
-       SDL_Delay(10);
+
 
        openGLESexampleProgramRenderFrame();
 

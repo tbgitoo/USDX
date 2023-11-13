@@ -420,6 +420,8 @@ begin
     printGLString('Renderer', GL_RENDERER);
     printGLString('Extensions', GL_EXTENSIONS);
 
+    SDL_GL_SetSwapInterval(1);
+
    setupGraphicsAndroid:=true;
 
 
