@@ -36,8 +36,17 @@ interface
 uses
   UCommon,
   Math,
+  {$IFDEF UseSDL3}
+  SDL3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
+  //new work on current OpenGL implementation
+  {$IFDEF UseOpenGLES}
+   dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   SysUtils,
   UMenu,
   UPath,
@@ -247,7 +256,11 @@ begin
     glBindTexture(GL_TEXTURE_2D, FadeTex[i]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    {$IFDEF UseOpenGLES}
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, TexW, TexH, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+    {$ELSE}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, TexW, TexH, 0, GL_RGB, GL_UNSIGNED_BYTE, nil);
+    {$ENDIF}
   end;
 end;
 
@@ -400,6 +413,10 @@ begin
           glBindTexture(GL_TEXTURE_2D, FadeTex[S-1]);
           // TODO: check if glTexEnvi() gives any speed improvement
           //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+          {$IFDEF UseOpenGLES}
+          {$ELSE}
+
           glColor4f(1, 1, 1, 1-FadeStateSquare);
 
           glEnable(GL_TEXTURE_2D);
@@ -418,6 +435,7 @@ begin
             glTexCoord2f((1-FadeStateSquare/2)*FadeW, (0+FadeStateSquare/2)*FadeH);
             glVertex2f(RenderW, RenderH);
           glEnd;
+          {$ENDIF}
           glDisable(GL_BLEND);
           glDisable(GL_TEXTURE_2D);
 
@@ -617,7 +635,10 @@ begin
       DrawX := Cursor_X;
       if (ScreenAct = 2) then
         DrawX := DrawX - RenderW;
+      {$IFDEF UseOpenGLES}
+      {$ELSE}
       glColor4f(1, 1, 1, Alpha);
+      {$ENDIF}
       glEnable(GL_TEXTURE_2D);
       glEnable(GL_BLEND);
       glDisable(GL_DEPTH_TEST);
@@ -627,6 +648,8 @@ begin
       else
         glBindTexture(GL_TEXTURE_2D, Tex_Cursor_Unpressed.TexNum);
 
+      {$IFDEF UseOpenGLES}
+      {$ELSE}
       glBegin(GL_QUADS);
         glTexCoord2f(0, 0);
         glVertex2f(DrawX, Cursor_Y);
@@ -640,6 +663,7 @@ begin
         glTexCoord2f(1, 0);
         glVertex2f(DrawX + 32, Cursor_Y);
       glEnd;
+      {$ENDIF}
 
       glDisable(GL_BLEND);
       glDisable(GL_TEXTURE_2D);
@@ -780,7 +804,14 @@ begin
   RowSize := ((ScreenW*3 + (Align-1)) div Align) * Align;
 
   GetMem(ScreenData, RowSize * ScreenH);
-  glReadPixels(0, 0, ScreenW, ScreenH, GL_RGB, GL_UNSIGNED_BYTE, ScreenData);
+
+  {$IFDEF UseOpenGLES}
+    glReadPixels(0, 0, ScreenW, ScreenH, GL_RGBA, GL_UNSIGNED_BYTE, ScreenData);
+    {$ELSE}
+    glReadPixels(0, 0, ScreenW, ScreenH, GL_RGB, GL_UNSIGNED_BYTE, ScreenData);
+    {$ENDIF}
+
+
   // on big endian machines (powerpc) this may need to be changed to
   // Needs to be tests. KaMiSchi Sept 2008
   // in this case one may have to add " glext, " to the list of used units
@@ -811,6 +842,8 @@ begin
   // Some White Background for information
   glEnable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 0.5);
   glBegin(GL_QUADS);
     glVertex2f(690, 35);
@@ -818,6 +851,7 @@ begin
     glVertex2f(800, 0);
     glVertex2f(800, 35);
   glEnd;
+  {$ENDIF}
   glDisable(GL_BLEND);
 
   // set font specs
@@ -825,7 +859,10 @@ begin
   SetFontStyle(ftRegular);
   SetFontSize(21);
   SetFontItalic(false);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(0, 0, 0, 1);
+  {$ENDIF}
 
   // calculate fps
   Ticks := SDL_GetTicks();
@@ -846,10 +883,15 @@ begin
 
   // muffins
   SetFontPos(695, 13);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(0.8, 0.5, 0.2, 1);
+  {$ENDIF};
   glPrint ('Muffins!');
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 1);
+  {$ENDIF}
 end;
 
 procedure TDisplay.ToggleConsole;
@@ -917,6 +959,8 @@ begin
   // Some black background
   glEnable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(0, 0, 0, 0.85);
   glBegin(GL_QUADS);
     glVertex2f(0, 0);
@@ -924,6 +968,7 @@ begin
     glVertex2f(W, H);
     glVertex2f(W, 0);
   glEnd;
+  {$ENDIF}
   glDisable(GL_BLEND);
 
   // scale sizes to DPI/aspect
@@ -938,7 +983,10 @@ begin
   SetFontSize(FontSize);
   SetFontItalic(false);
   SetFontReflection(false, 0);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 1);
+  {$ENDIF}
 
   OldStretch := Fonts[CurrentFont.FontFamily][CurrentFont.FontStyle].Font.Stretch;
   Fonts[CurrentFont.FontFamily][CurrentFont.FontStyle].Font.Stretch := 1.4*ScaleF * Min(1.3, Max(0.8, power((1.0*ScreenW)/800.0, 1.2)));
@@ -964,6 +1012,8 @@ begin
   // draw scoll bar
   glEnable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(0.33, 0.33, 0.33, 1);
   glBegin(GL_QUADS);
     glVertex2f(W-ScrollPad-ScrollW, ScrollPad); // top left
@@ -971,12 +1021,14 @@ begin
     glVertex2f(W-ScrollPad, H-ScrollPad); // bottom right
     glVertex2f(W-ScrollPad-ScrollW, H-ScrollPad); // bottom left
   glEnd;
+  {$ENDIF}
 
   // visible height bar + offset
   YOffset := H * ((1.0*LineCount)/(1.0*Log.ConsoleCount));
   PosY := 0;
   if I > 0 then PosY := (H-2.0*ScrollPad) * Max(0.0, I)/(1.0*Log.ConsoleCount);
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 1);
   glBegin(GL_QUADS);
     glVertex2f(W-ScrollPad-ScrollW, ScrollPad + PosY); // top left
@@ -984,10 +1036,14 @@ begin
     glVertex2f(W-ScrollPad, ScrollPad + PosY + YOffset); // bottom right
     glVertex2f(W-ScrollPad-ScrollW, ScrollPad + PosY + YOffset); // bottom left
   glEnd;
+  {$ENDIF}
   glDisable(GL_BLEND);
 
   Fonts[CurrentFont.FontFamily][CurrentFont.FontStyle].Font.Stretch := OldStretch;
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 1);
+  {$ENDIF}
 end;
 
 end.

@@ -28,7 +28,6 @@ AC_SUBST(PACKAGE_IRC)
 
 
 
-
 AC_CONFIG_MACRO_DIRS([dists/autogen/m4 dists/android/m4])
 # Specify a source-file so autoconf can check if the source-dir exists
 AC_CONFIG_SRCDIR(src/ultrastardx.dpr)
@@ -244,12 +243,15 @@ fi
 
 
 
+
 # find SDL2_image / SDL3_image
 if [[ "$android_cross" = "yes" ]]; then
   ANDROID_PKG_HAVE([sdl3_image], [sdl3_image], yes)
 else
   PKG_HAVE([sdl2_image], [SDL2_image], yes)
 fi
+
+
 # find freetype
 if [[ "$android_cross" = "yes" ]]; then
   ANDROID_PKG_HAVE([freetype], [freetype], yes)
@@ -665,6 +667,7 @@ AC_SUBST(porttime_LIB_NAME)
 if test x$FPC_PLATFORM = xdarwin; then
   LDFLAGS="-macosx_version_min 10.4 -undefined dynamic_lookup -headerpad_max_install_names -L/usr/X11/lib"
 fi
+
 #LIBS=
 AC_SUBST(LDFLAGS)
 AC_SUBST(LIBS)
@@ -723,6 +726,10 @@ if test x$FPC_PLATFORM = xdarwin; then
 !!! Selected packaging: $USE_OSX_PACKAGING with libdir $USE_OSX_PACKAGING_LIBDIR
                    ])
 fi
+
+
+
+
 
 
 

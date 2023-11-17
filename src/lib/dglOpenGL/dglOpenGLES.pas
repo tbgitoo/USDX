@@ -36,6 +36,23 @@ uses
         GL_FLOAT = $1406;
         GL_TRIANGLES = $0004;
         GL_STATIC_DRAW = $88E4;
+        GL_TEXTURE_2D = $0DE1;
+        GL_TEXTURE_MAG_FILTER = $2800;
+        GL_LINEAR = $2601;
+        GL_TEXTURE_MIN_FILTER = $2801;
+        GL_UNSIGNED_BYTE = $1401;
+        GL_NO_ERROR = 0;
+        GL_SRC_ALPHA = $0302;
+        GL_ONE_MINUS_SRC_ALPHA = $0303;
+        GL_BLEND = $0BE2;
+        GL_DEPTH_TEST = $0B71;
+        GL_PACK_ALIGNMENT = $0D05;
+        GL_RGBA = $1908;
+        GL_TEXTURE_WRAP_S=$2802;
+        GL_CLAMP_TO_EDGE=$812F;
+        GL_TEXTURE_WRAP_T=$2803;
+
+
 
 
 
@@ -123,6 +140,31 @@ procedure glDeleteProgram(prog: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; 
 
 
 procedure glDeleteShader(shader: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDeleteShader';
+
+procedure glGenTextures (n:GLsizei; textures: PGLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGenTextures';
+
+procedure glDeleteTextures (n:GLsizei; textures: PGLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDeleteTextures';
+
+procedure glBindTexture (target: GLenum; texture: GLuint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glBindTexture';
+
+procedure glTexParameteri (target: GLenum; pname: GLenum; param: GLint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glTexParameteri';
+
+procedure glTexImage2D (target: GLenum; level,internalformat: GLint; width,height: GLsizei; border: GLint; format,type_: GLenum; pixels: pointer); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glTexImage2D';
+
+procedure glCopyTexSubImage2D (target: GLenum; level, xoffset, yoffset, x, y: GLint; width,height: GLsizei); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glCopyTexSubImage2D';
+
+procedure glEnable (cap: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glEnable';
+
+procedure glBlendFunc (sfactor, dfactor: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glBlendFunc';
+
+procedure glDisable (cap: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDisable';
+
+procedure glGetIntegerv (pname: GLenum; data: PGlint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetIntegerv';
+
+procedure glReadPixels (x,y: GLint; widht, height: GLsizei; format,type_: GLenum; pixels: pointer); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glReadPixels';
+
+
+procedure glTexSubImage2D (target: GLenum; level,xoffset,yoffset: GLint; width,height: GLsizei; format,type_: GLenum;pixels: pointer); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glTexSubImage2D';
 
 function setupGraphicsAndroid: boolean;
 

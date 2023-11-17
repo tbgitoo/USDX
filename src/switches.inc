@@ -73,6 +73,8 @@
   
  {$IF Defined(ANDROID)}
  {$I config-android.inc}
+ {$DEFINE UseSDL3}
+ {$DEFINE UseOpenGLES}
  {$IFEND}
 
   // use "configure --enable-debug", "make debug" or

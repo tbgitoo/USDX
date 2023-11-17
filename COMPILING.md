@@ -278,4 +278,14 @@ And for the other architectures, that's
 ./configure --host=x86_64-darwin --build=x86 --with-android
 ./configure --host=x86_64-darwin --build=x86_64 --with-android
 
+There is also a script that builds all the architectures
+./android_make_all.sh
+
+Specifically for the emulator or a device running x86:
+./configure --host=x86_64-darwin --build=x86 --with-android
+make android
+
+or for debugging when everything is installed already
+make android-so	
+
 

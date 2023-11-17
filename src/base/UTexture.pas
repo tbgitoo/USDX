@@ -34,13 +34,22 @@ interface
 {$I switches.inc}
 
 uses
+  {$IFDEF UseOpenGLES}
+   dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   Classes,
   SysUtils,
   UCommon,
   UPath,
+  {$IFDEF UseSDL3}
+  sdl3,
+  sdl3_image;
+  {$ELSE}
   sdl2,
   SDL2_image;
+  {$ENDIF}
 
 type
   PTexture = ^TTexture;
@@ -347,7 +356,11 @@ begin
   end
   else //if Typ = TEXTURE_TYPE_PLAIN then
   begin
+    {$IFDEF UseOpenGLES}
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, TexSurface.pixels);
+    {$ELSE}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, newWidth, newHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, TexSurface.pixels);
+    {$ENDIF}
   end;
 
   // setup texture struct
@@ -451,7 +464,12 @@ begin
 
   if SupportsNPOT or (((Width and (Width - 1)) = 0) and ((Height and (Height - 1)) = 0)) then
   begin
+    {$IFDEF UseOpenGLES}
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Data);
+    {$ELSE}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, Data);
+    {$ENDIF}
+
     Result.TexW := 1;
     Result.TexH := 1;
   end
@@ -459,8 +477,14 @@ begin
   begin
     TexWidth := RoundPOT(Width);
     TexHeight := RoundPOT(Height);
+    {$IFDEF UseOpenGLES}
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, TexWidth, TexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, Data);
+    {$ELSE}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, TexWidth, TexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nil);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Width, Height, GL_RGB, GL_UNSIGNED_BYTE, Data);
+    {$ENDIF}
+
     Result.TexW := Width / TexWidth;
     Result.TexH := Height / TexHeight;
   end;

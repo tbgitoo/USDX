@@ -45,23 +45,18 @@ uses
 
   dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
 
-  SDL3 in 'lib\SDL3\sdl3.pas',
-
-  SDL3_Android in 'lib\SDL3\sdl3_android.pas';
+  SDL3 in 'lib\SDL3\sdl3.pas';
 
 
 
 
 
-var gvPositionHandle, gProgram: GLuint;
-    grey: GLfloat;
-    gTriangleVertices: array[0..5] of GLfloat = (0.0, 0.5, -0.5, -0.5, 0.5, -0.5);
+var
 
 
 
 
 
-    prog: GLuint;
 
 
 

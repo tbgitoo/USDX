@@ -43,8 +43,14 @@ uses
   UTexture,
   UThemes,
   dglOpenGL,
-  SDL2,
-  SDL2_image,
+  {$IFDEF UseSDL3}
+  SDL3,
+  SDL3_image,
+  {$ELSE}
+  sdl2,
+  sdl2_image,
+  {$ENDIF}
+
   SysUtils;
 
 { beat detection constants and types }

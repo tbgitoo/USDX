@@ -34,7 +34,11 @@ interface
 {$I switches.inc}
 
 uses
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   UPath;
 
 {$DEFINE HaveBMP}
@@ -96,7 +100,11 @@ uses
     {$ENDIF}
   {$ENDIF}
   zlib,
-  SDL2_image,
+  {$IFDEF UseSDL3}
+  sdl3_image,
+  {$ELSE}
+  sdl2_image,
+  {$ENDIF}
   UCommon,
   ULog;
 

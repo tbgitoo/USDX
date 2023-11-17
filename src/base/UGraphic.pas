@@ -34,8 +34,16 @@ interface
 {$I switches.inc}
 
 uses
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
+  {$IFDEF UseOpenGLES}
+   dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UTexture,
   TextGL,
   UConfig,
@@ -582,21 +590,12 @@ end;
 procedure SwapBuffers;
 begin
   SDL_GL_SwapWindow(Screen);
-
+  {$IFNDEF UseOpenGLES}
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity;
-
-
-
-    {$IFDEF ANDROID}
-    glOrthof(0, RenderW, RenderH, 0, -1, 100);
-    {$ELSE}
-    glOrtho(0, RenderW, RenderH, 0, -1, 100);
-    {$ENDIF}
-
-
-
+  glOrtho(0, RenderW, RenderH, 0, -1, 100);
   glMatrixMode(GL_MODELVIEW);
+  {$ENDIF}
 
 
 end;
@@ -613,6 +612,12 @@ begin
 end;
 
 procedure InitializeScreen;
+{$IFDEF ANDROID}
+begin
+setupGraphicsAndroid;
+end;
+{$ELSE}
+
 var
   S:      string;
   I:      integer;
@@ -685,21 +690,21 @@ NoDoubledResolution:
     Log.LogStatus('Set Video Mode...   Borderless fullscreen', 'SDL_SetVideoMode');
     CurrentWindowMode := Mode_Borderless;
     screen := SDL_CreateWindow('UltraStar Deluxe loading...',
-              Ini.PositionX, Ini.PositionY, W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN_DESKTOP or SDL_WINDOW_RESIZABLE);
+               W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN_DESKTOP or SDL_WINDOW_RESIZABLE);
   end
   else if Fullscreen then
   begin
     Log.LogStatus('Set Video Mode...   Fullscreen', 'SDL_SetVideoMode');
     CurrentWindowMode := Mode_Fullscreen;
     screen := SDL_CreateWindow('UltraStar Deluxe loading...',
-              SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN or SDL_WINDOW_RESIZABLE);
+               W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN or SDL_WINDOW_RESIZABLE);
   end
   else
   begin
     Log.LogStatus('Set Video Mode...   Windowed', 'SDL_SetVideoMode');
     CurrentWindowMode := Mode_Windowed;
     screen := SDL_CreateWindow('UltraStar Deluxe loading...',
-              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE);
+               W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE);
   end;
 
   //SDL_ShowCursor(0);    just to be able to debug while having mosue cursor
@@ -784,6 +789,8 @@ NoDoubledResolution:
   SwapBuffers;}
 end;
 
+{$ENDIF}
+
 function HasWindowState(Flag: integer): boolean;
 begin
   Result := SDL_GetWindowFlags(screen) and Flag <> 0;
@@ -798,7 +805,11 @@ begin
   case CurrentWindowMode of
     Mode_Fullscreen:
     begin
+      {$IFDEF UseOpenGLES}
+       Disp:=SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay())^;
+      {$ELSE}
       SDL_GetWindowDisplayMode(screen, @Disp); // TODO: verify if not failed
+      {$ENDIF}
       Ini.GetResolutionFullscreen(Disp.W, Disp.H); // we use the fullscreen resolution without being doubled, true fullscreen uses non-multiplied one
       SDL_SetWindowDisplayMode(screen, @Disp);
       SDL_SetWindowSize(screen, Disp.W, Disp.H);
@@ -844,7 +855,11 @@ begin
   if Mode >= Mode_Fullscreen then
   begin
     Mode := Mode and not Mode_Borderless;
-    SDL_GetWindowDisplayMode(screen, @Disp);
+    {$IFDEF UseOpenGLES}
+       Disp:=SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay())^;
+      {$ELSE}
+      SDL_GetWindowDisplayMode(screen, @Disp); // TODO: verify if not failed
+      {$ENDIF}
     SDL_SetWindowFullscreen(screen, SDL_WINDOW_FULLSCREEN);
 
     Ini.GetResolutionFullscreen(Disp.W, Disp.H);
