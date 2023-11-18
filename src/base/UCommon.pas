@@ -131,7 +131,11 @@ uses
   {$IFDEF Delphi}
   Dialogs,
   {$ENDIF}
-  sdl2,
+   {$IFDEF UseSDL3}
+  SDL3,
+  {$ELSE}
+  SDL2,
+  {$ENDIF}
   UFilesystem,
   UMain,
   UUnicodeUtils;

@@ -46,8 +46,16 @@ interface
 
 uses
   FreeType,
+  {$IFDEF UseOpenGLES}
+   dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
+  {$IFDEF UseSDL3}
+  SDL3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   Math,
   Classes,
   SysUtils,
@@ -973,12 +981,15 @@ begin
   end;
 
   // store current color, enable-flags, matrix-mode
-  {$IFNDEF ANDROID}
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPushAttrib(GL_CURRENT_BIT or GL_ENABLE_BIT or GL_TRANSFORM_BIT);
-  {$ENDIF}
+
 
   // set OpenGL state
+
   glMatrixMode(GL_MODELVIEW);
+  {$ENDIF}
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glEnable(GL_TEXTURE_2D);
@@ -998,17 +1009,23 @@ begin
   }
 
   {$IFDEF FLIP_YAXIS}
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPushMatrix();
   glScalef(1, -1, 1);
+  {$ENDIF}
   {$ENDIF}
 
   // display text
   for LineIndex := 0 to High(Text) do
   begin
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     glPushMatrix();
 
     // move to baseline
     glTranslatef(0, -LineSpacing*LineIndex, 0);
+    {$ENDIF}
 
     if ((Underline in Style) and not ReflectionPass) then
     begin
@@ -1017,33 +1034,44 @@ begin
       glEnable(GL_TEXTURE_2D);
     end;
 
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     // draw reflection
     if (ReflectionPass) then
     begin
+
       // set reflection spacing
       glTranslatef(0, -ReflectionSpacing, 0);
       // flip y-axis
       glScalef(1, -1, 1);
+
     end;
 
     // shear for italic effect
     if (Italic in Style) then
       glMultMatrixf(@cShearMatrix);
 
-
+    {$ENDIF}
     // render text line
     Render(Text[LineIndex]);
 
-
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     glPopMatrix();
+    {$ENDIF}
   end;
 
   // restore settings
   {$IFDEF FLIP_YAXIS}
+  {$IFDEF UseOpenGLES}
+    {$ELSE}
   glPopMatrix();
+
   {$ENDIF}
-  {$IFNDEF ANDROID}
-  glPopAttrib();
+  {$ENDIF}
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
+   glPopAttrib();
   {$ENDIF}
 
 end;
@@ -1077,7 +1105,10 @@ begin
   UnderlineY1 := GetUnderlinePosition();
   UnderlineY2 := UnderlineY1 + GetUnderlineThickness();
   Bounds := BBox(Text, false);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glRectf(Bounds.Left, UnderlineY1, Bounds.Right, UnderlineY2);
+  {$ENDIF}
 end;
 
 procedure TFont.SetStyle(Style: TFontStyle);
@@ -1228,7 +1259,7 @@ end;
  *}
 function TScalableFont.GetMipmapLevel(): integer;
 var
-  {$IFDEF ANDROID}
+  {$IFDEF UseOpenGLES}
   ModelMatrix, ProjMatrix: TGLMatrixf4;
   {$ELSE}
   ModelMatrix, ProjMatrix: TGLMatrixd4;
@@ -1245,9 +1276,8 @@ const
 begin
 
   // 1. retrieve current transformation matrices for gluProject
-  {$IFDEF ANDROID}
-  glGetFloatv(GL_MODELVIEW_MATRIX, @ModelMatrix);
-  glGetFloatv(GL_PROJECTION_MATRIX, @ProjMatrix);
+  {$IFDEF UseOpenGLES}
+
   {$ELSE}
   glGetDoublev(GL_MODELVIEW_MATRIX, @ModelMatrix);
   glGetDoublev(GL_PROJECTION_MATRIX, @ProjMatrix);
@@ -1348,25 +1378,31 @@ begin
   // since the mipmap font (if level > 0) is smaller than the base-font
   // we have to scale to get its size right.
   MipmapScale := fMipmapFonts[0].Height/Result.Height;
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glScalef(MipmapScale, MipmapScale, 0);
+  {$ENDIF}
 end;
 
 procedure TScalableFont.Print(const Text: TUCS4StringArray);
 begin
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPushMatrix();
 
   // set scale and stretching
   glScalef(fScale * fStretch, fScale, 0);
-
+  {$ENDIF}
   // print text
   if (fUseMipmaps) then
     ChooseMipmapFont().Print(Text)
   else
     fBaseFont.Print(Text);
 
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPopMatrix();
+  {$ENDIF}
 end;
 
 procedure TScalableFont.Render(const Text: UCS4String);
@@ -1838,7 +1874,10 @@ begin
       begin
         FT_Get_Kerning(fFace.Data, PrevGlyph.CharIndex, Glyph.CharIndex,
                        FT_KERNING_UNSCALED, KernDelta);
+        {$IFDEF UseOpenGLES}
+        {$ELSE}
         glTranslatef(KernDelta.x * fFace.FontUnitScale.X, 0, 0);
+        {$ENDIF}
       end;
 
       if (ReflectionPass) then
@@ -1851,8 +1890,10 @@ begin
 
         Glyph.Render(fUseDisplayLists);
         end;
-
+      {$IFDEF UseOpenGLES}
+      {$ELSE}
       glTranslatef(Glyph.Advance.x + fGlyphSpacing, 0, 0);
+      {$ENDIF}
     end;
 
     PrevGlyph := Glyph;
@@ -2008,7 +2049,10 @@ var
   OutlineColor: TGLColor;
 begin
   // save current color
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glGetFloatv(GL_CURRENT_COLOR, @CurrentColor.vals);
+  {$ENDIF}
 
   // if the outline's alpha component is < 0 use the current alpha
   OutlineColor := fOutlineColor;
@@ -2016,15 +2060,27 @@ begin
     OutlineColor.a := CurrentColor.a;
 
   // draw underline outline (in outline color)
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4fv(@OutlineColor.vals);
+  {$ENDIF}
   fOutlineFont.DrawUnderline(Text);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4fv(@CurrentColor.vals);
+  {$ENDIF}
 
   // draw underline inner part (in current color)
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPushMatrix();
   glTranslatef(fOutset, 0, 0);
+  {$ENDIF}
   fInnerFont.DrawUnderline(Text);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPopMatrix();
+  {$ENDIF}
 end;
 
 procedure TFTOutlineFont.Render(const Text: UCS4String);
@@ -2033,7 +2089,10 @@ var
   OutlineColor: TGLColor;
 begin
   // save current color
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glGetFloatv(GL_CURRENT_COLOR, @CurrentColor.vals);
+  {$ENDIF}
 
   // if the outline's alpha component is < 0 use the current alpha
   OutlineColor := fOutlineColor;
@@ -2041,10 +2100,14 @@ begin
     OutlineColor.a := CurrentColor.a;
 
   { setup and render outline font }
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4fv(@OutlineColor.vals);
   glPushMatrix();
+  {$ENDIF}
   fOutlineFont.Render(Text);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPopMatrix();
   glColor4fv(@CurrentColor.vals);
 
@@ -2052,8 +2115,12 @@ begin
 
   glPushMatrix();
   glTranslatef(fOutset, fOutset, 0);
+  {$ENDIF}
   fInnerFont.Render(Text);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPopMatrix();
+  {$ENDIF}
 end;
 
 procedure TFTOutlineFont.SetOutlineColor(r, g, b: GLfloat; a: GLfloat);
@@ -2547,7 +2614,10 @@ end;
 destructor TFTGlyph.Destroy;
 begin
   if (fDisplayList <> 0) then
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     glDeleteLists(fDisplayList, 1);
+   {$ENDIF}
   if (fTexture <> 0) then
     glDeleteTextures(1, @fTexture);
   inherited;
@@ -2570,14 +2640,17 @@ begin
 
 
   glBindTexture(GL_TEXTURE_2D, fTexture);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPushMatrix();
 
   // move to top left glyph position
   glTranslatef(fBitmapCoords.Left, fBitmapCoords.Top, 0);
+  {$ENDIF}
 
-  {$IFDEF ANDROID}
-    draw_rectangle_quads_opengles(0,0,fBitmapCoords.Width,-fBitmapCoords.Height,
-    0,0,fTexOffset.X, fTexOffset.Y,fTexture);
+  {$IFDEF UseOpenGLES}
+    //draw_rectangle_quads_opengles(0,0,fBitmapCoords.Width,-fBitmapCoords.Height,
+    //0,0,fTexOffset.X, fTexOffset.Y,fTexture);
   {$ELSE}
 
   // draw glyph texture
@@ -2600,8 +2673,10 @@ begin
   glEnd();
 
   {$ENDIF}
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPopMatrix();
+  {$ENDIF}
 
 end;
 
@@ -2614,12 +2689,17 @@ var
 const
   CutOff = 0.6;
 begin
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPushMatrix();
+  {$ENDIF}
   glBindTexture(GL_TEXTURE_2D, fTexture);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glGetFloatv(GL_CURRENT_COLOR, @Color.vals);
-
   // add extra space to the left of the glyph
   glTranslatef(fBitmapCoords.Left, 0, 0);
+  {$ENDIF}
 
   // The upper position of the glyph, if CutOff is 1.0, it is fFont.Ascender.
   // If CutOff is set to 0.5 only half of the glyph height is displayed.
@@ -2642,13 +2722,13 @@ begin
                     fBitmapCoords.Height + 1) * fTexOffset.Y;
 
   // draw glyph texture
-  {$IFDEF ANDROID}
-      draw_rectangle_quads_opengles_color(0, UpperPos, fBitmapCoords.Width,fFont.Descender,
-          Color.r, Color.g, Color.b, 0,
-          Color.r, Color.g, Color.b, 0,
-          Color.r, Color.g, Color.b, Color.a-0.3,
-          Color.r, Color.g, Color.b, Color.a-0.3,
-          0, TexUpperPos, fTexOffset.X,TexLowerPos,fTexture);
+  {$IFDEF UseOpenGLES}
+      //draw_rectangle_quads_opengles_color(0, UpperPos, fBitmapCoords.Width,fFont.Descender,
+      //    Color.r, Color.g, Color.b, 0,
+      //    Color.r, Color.g, Color.b, 0,
+      //    Color.r, Color.g, Color.b, Color.a-0.3,
+      //   Color.r, Color.g, Color.b, Color.a-0.3,
+      //   0, TexUpperPos, fTexOffset.X,TexLowerPos,fTexture);
 
   {$ELSE}
   glBegin(GL_QUADS);
@@ -2671,14 +2751,15 @@ begin
     glVertex2f(fBitmapCoords.Width, fFont.Descender);
   glEnd();
   {$ENDIF}
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPopMatrix();
 
 
   // restore old color
   // Note: glPopAttrib(GL_CURRENT_BIT)/glPopAttrib() is much slower then
   // glGetFloatv(GL_CURRENT_COLOR, ...)/glColor4fv(...)
-  {$IFNDEF ANDROID}
+
   glColor4fv(@Color.vals);
   {$ENDIF}
 
@@ -3020,19 +3101,27 @@ begin
   
   if (not ReflectionPass) then
   begin
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(TexX, TexY); glVertex2f(PL, PT);
       glTexCoord2f(TexX, TexB); glVertex2f(PL, PB);
       glTexCoord2f(TexR, TexB); glVertex2f(PR, PB);
       glTexCoord2f(TexR, TexY); glVertex2f(PR, PT);
     glEnd;
+    {$ENDIF}
   end
   else
   begin
+    {$IFDEF UseOpenGLES}
+    glDepthRangef(0, 10);
+    {$ELSE}
     glDepthRange(0, 10);
+    {$ENDIF}
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_DEPTH_TEST);
-
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(TexX, TexY); glVertex2f(PL, PT);
       glTexCoord2f(TexX, TexB); glVertex2f(PL, PB);
@@ -3059,6 +3148,7 @@ begin
 
     //write the colour back
     glColor4fv(@fTempColor);
+    {$ENDIF}
 
     glDisable(GL_DEPTH_TEST);
   end; // reflection
@@ -3082,7 +3172,10 @@ begin
     Exit;
 
   //Save the current color and alpha (for reflection)
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glGetFloatv(GL_CURRENT_COLOR, @fTempColor);
+  {$ENDIF}
 
   AdvanceX := 0;
   for CharIndex := 0 to LengthUCS4(Text)-1 do

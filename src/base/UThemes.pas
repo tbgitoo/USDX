@@ -1602,7 +1602,11 @@ uses
   UPathUtils,
   UFileSystem,
   TextGL,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   math,
   StrUtils;
 
@@ -1611,8 +1615,8 @@ uses
 //-----------
 procedure glColorRGB(Color: TRGB);  overload;
 begin
-  {$IFDEF ANDROID}
-  glColor4f(Color.R, Color.G, Color.B,1.0);
+  {$IFDEF UseOpenGLES}
+
   {$ELSE}
   glColor3f(Color.R, Color.G, Color.B);
   {$ENDIF}
@@ -1620,17 +1624,29 @@ end;
 
 procedure glColorRGB(Color: TRGB; Alpha: real);  overload;
 begin
+  {$IFDEF UseOpenGLES}
+
+  {$ELSE}
   glColor4f(Color.R, Color.G, Color.B, Alpha);
+  {$ENDIF}
 end;
 
 procedure glColorRGB(Color: TRGBA); overload;
 begin
+  {$IFDEF UseOpenGLES}
+
+  {$ELSE}
   glColor4f(Color.R, Color.G, Color.B, Color.A);
+  {$ENDIF}
 end;
 
 procedure glColorRGB(Color: TRGBA; Alpha: real); overload;
 begin
+  {$IFDEF UseOpenGLES}
+
+  {$ELSE}
   glColor4f(Color.R, Color.G, Color.B, Min(Color.A, Alpha));
+  {$ENDIF}
 end;
 
 constructor TTheme.Create;

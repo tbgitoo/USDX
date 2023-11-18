@@ -689,22 +689,38 @@ NoDoubledResolution:
   begin
     Log.LogStatus('Set Video Mode...   Borderless fullscreen', 'SDL_SetVideoMode');
     CurrentWindowMode := Mode_Borderless;
+    {$IFDEF UseSDL3}
     screen := SDL_CreateWindow('UltraStar Deluxe loading...',
                W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN_DESKTOP or SDL_WINDOW_RESIZABLE);
+    {$ELSE}
+    screen := SDL_CreateWindow('UltraStar Deluxe loading...',
+              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN_DESKTOP or SDL_WINDOW_RESIZABLE);
+    {$ENDIF}
   end
   else if Fullscreen then
   begin
     Log.LogStatus('Set Video Mode...   Fullscreen', 'SDL_SetVideoMode');
     CurrentWindowMode := Mode_Fullscreen;
+    {$IFDEF UseSDL3}
     screen := SDL_CreateWindow('UltraStar Deluxe loading...',
                W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN or SDL_WINDOW_RESIZABLE);
+    {$ELSE}
+    screen := SDL_CreateWindow('UltraStar Deluxe loading...',
+              SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_FULLSCREEN or SDL_WINDOW_RESIZABLE);
+
+    {$ENDIF}
   end
   else
   begin
     Log.LogStatus('Set Video Mode...   Windowed', 'SDL_SetVideoMode');
     CurrentWindowMode := Mode_Windowed;
+    {$IFDEF UseSDL3}
     screen := SDL_CreateWindow('UltraStar Deluxe loading...',
                W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE);
+    {$ELSE}
+    screen := SDL_CreateWindow('UltraStar Deluxe loading...',
+              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, W, H, SDL_WINDOW_OPENGL or SDL_WINDOW_RESIZABLE);
+    {$ENDIF}
   end;
 
   //SDL_ShowCursor(0);    just to be able to debug while having mosue cursor

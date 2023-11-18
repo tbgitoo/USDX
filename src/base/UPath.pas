@@ -40,7 +40,11 @@ uses
   IniFiles,
   UConfig,
   UUnicodeStringHelper,
+  {$IFDEF UseSDL3}
+  SDL3;
+  {$ELSE}
   SDL2;
+  {$ENDIF}
 
 type
   IPath = interface;

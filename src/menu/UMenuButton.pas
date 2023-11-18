@@ -36,9 +36,17 @@ interface
 uses
   TextGL,
   UTexture,
-  dglOpenGL,
-  UMenuText,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
+  dglOpenGL,
+  {$ENDIF}
+  UMenuText,
   UMenuInteract;
 
 type

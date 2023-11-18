@@ -681,7 +681,11 @@ implementation
 
 uses
   StrUtils,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   UCommandLine,
   UDataBase,
   UDllManager,

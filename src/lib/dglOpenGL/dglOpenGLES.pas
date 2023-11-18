@@ -47,10 +47,14 @@ uses
         GL_BLEND = $0BE2;
         GL_DEPTH_TEST = $0B71;
         GL_PACK_ALIGNMENT = $0D05;
-        GL_RGBA = $1908;
+        GL_RGB = $1907;
         GL_TEXTURE_WRAP_S=$2802;
         GL_CLAMP_TO_EDGE=$812F;
         GL_TEXTURE_WRAP_T=$2803;
+        GL_VIEWPORT = $0BA2;
+        GL_LEQUAL = $0203;
+        GL_UNPACK_ALIGNMENT = $0CF5;
+        GL_ALPHA = $1906;
 
 
 
@@ -66,11 +70,17 @@ type
   GLint = Integer;
   PGlint  = ^Glint;
   GLfloat = Single;
+  PGLfloat = ^GLfloat;
   GLbitfield = Cardinal;
   GLboolean = BYTEBOOL;
   GLchar = AnsiChar;
   PGLchar = PAnsiChar;
   PPGLchar = ^PGLChar;
+  GLubyte = Byte;
+
+  TGLMatrixf4  = array[0..3, 0..3] of GLfloat;
+
+  TGLVectori4  = array[0..3] of GLint;
 
 function glGetString(name: GLenum): String;
 
@@ -165,6 +175,15 @@ procedure glReadPixels (x,y: GLint; widht, height: GLsizei; format,type_: GLenum
 
 
 procedure glTexSubImage2D (target: GLenum; level,xoffset,yoffset: GLint; width,height: GLsizei; format,type_: GLenum;pixels: pointer); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glTexSubImage2D';
+
+procedure glGetFloatv (pname: GLenum; data: PGLfloat); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glGetFloatv';
+
+procedure glPixelStorei (pname: GLenum; param: GLint); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glPixelStorei';
+
+procedure glDepthRangef (n,f: GLfloat);  {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDepthRangef';
+
+procedure glDepthFunc (func: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDepthFunc';
+
 
 function setupGraphicsAndroid: boolean;
 

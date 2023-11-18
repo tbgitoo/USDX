@@ -36,7 +36,11 @@ interface
 uses
   Classes,
   Math,
-  sdl2,
+  {$IFDEF UseSDL3}
+  SDL3,
+  {$ELSE}
+  SDL2,
+  {$ENDIF}
   SysUtils,
   UCommon,
   UMusic,

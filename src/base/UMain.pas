@@ -35,7 +35,11 @@ interface
 
 uses
   SysUtils,
+   {$IFDEF UseSDL3}
+  SDL3;
+  {$ELSE}
   SDL2;
+  {$ENDIF}
 
 var
   CheckMouseButton: boolean; // for checking mouse motion
@@ -66,7 +70,11 @@ implementation
 
 uses
   math,
+  {$IFDEF UseOpenGLES}
+   dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UCommandLine,
   UCommon,
   UConfig,

@@ -34,8 +34,16 @@ interface
 {$I switches.inc}
 
 uses
+  {$IFDEF UseOpenGLES}
+   dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
+  {$IFDEF UseSDL3}
+  SDL3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   Classes,
   UTexture,
   UFont,
@@ -270,13 +278,19 @@ begin
 
   GLFont := @Fonts[CurrentFont.FontFamily][CurrentFont.FontStyle];
   Log.logStatus('TextGL','glPrint');
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glPushMatrix();
 
     // set font position
     glTranslatef(GLFont.X, GLFont.Y + GLFont.Font.Ascender, GLFont.Z);
+    {$ENDIF}
     // draw string
+    {$IFDEF UseOpenGLES}
+  {$ELSE}
     GLFont.Font.Print(Text);
   glPopMatrix();
+  {$ENDIF}
 end;
 
 procedure ResetFont();

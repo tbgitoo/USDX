@@ -79,7 +79,13 @@ var
 implementation
 
 uses
+  {$IFDEF UseSDL3}
+  SDL3,
+
+  {$ELSE}
   sdl2,
+
+  {$ENDIF}
   UCommon;
   
 const
