@@ -49,7 +49,11 @@ uses
   SysUtils,
   Math,
   ctypes,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   avcodec,
   avformat,
   avutil,
@@ -58,7 +62,11 @@ uses
   {$IFDEF UseSWScale}
   swscale,
   {$ENDIF}
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   StrUtils,
   UMediaCore_FFmpeg,
   UCommon,

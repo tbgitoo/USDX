@@ -41,7 +41,11 @@ uses
   UMenu,
   UMusic,
   UThemes,
+  {$IFDEF UseSDL3}
+  sdl3;
+  {$ELSE}
   sdl2;
+  {$ENDIF}
 
 type
   TScreenOptionsThemes = class(TMenu)

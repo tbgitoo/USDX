@@ -43,8 +43,16 @@ uses
   UScreenPartyTournamentWin,
   UScreenSingController,
   UThemes,
-  dglOpenGL,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
+  dglOpenGL,
+  {$ENDIF}
   SysUtils,
   TextGL;
 
@@ -969,7 +977,10 @@ begin
   SetFontStyle(FontResult);
   SetFontSize(SizeResult);
   SetFontItalic(false);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(ColorResult.R, ColorResult.G, ColorResult.B, 1);
+  {$ENDIF}
 
   MaxPhase := PartyTournament.Phase;
   if (PartyTournament.Phase = 3) then
@@ -1667,6 +1678,8 @@ end;
 procedure TScreenPartyTournamentRounds.DrawLine(X, Y, W, H: real);
 begin
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 0.4);
   glbegin(gl_quads);
    glVertex2f(X, Y);
@@ -1674,6 +1687,7 @@ begin
    glVertex2f(X + W, Y + H);
    glVertex2f(X + W, Y);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure TScreenPartyTournamentRounds.DrawLinePlayer1(X, Y, W, H: real);
@@ -1695,6 +1709,8 @@ begin
   end;
 
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(R, G, B, 1);
   glbegin(gl_quads);
    glVertex2f(X, Y);
@@ -1702,6 +1718,7 @@ begin
    glVertex2f(X + W, Y + H);
    glVertex2f(X + W, Y);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure TScreenPartyTournamentRounds.DrawLinePlayer2(X, Y, W, H: real);
@@ -1723,6 +1740,8 @@ begin
   end;
 
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(R, G, B, 1);
   glbegin(gl_quads);
    glVertex2f(X, Y);
@@ -1730,6 +1749,7 @@ begin
    glVertex2f(X + W, Y + H);
    glVertex2f(X + W, Y);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure TScreenPartyTournamentRounds.SetAnimationProgress(Progress: real);

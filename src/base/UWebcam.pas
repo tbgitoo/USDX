@@ -36,7 +36,11 @@ interface
 uses
   Classes,
   UTexture,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   opencv_highgui,
   opencv_core,
   opencv_imgproc,
@@ -82,7 +86,11 @@ var
 implementation
 
 uses
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   SysUtils,
   ULog,
   UIni;

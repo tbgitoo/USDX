@@ -49,13 +49,21 @@ uses
   UTexture,
   UThemes,
   UTime,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   Math,
   {$IFDEF UseMIDIPort}
   MidiOut,
   MidiCons,
   {$ENDIF}
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   strutils,
   SysUtils;
 
@@ -3982,7 +3990,10 @@ var
   X1:      real;
   X2:      real;
 begin
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor3f(1, 1, 1);
+  {$ENDIF}
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -4010,7 +4021,8 @@ begin
 
   Rec.Top := 410 - (CurrentTone - 12*scale - Tracks[CurrentTrack].Lines[Tracks[CurrentTrack].CurrentLine].BaseNote) * Space/2 - H1;
   Rec.Bottom := Rec.Top + 2 * H1;
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor3f(1, 1, 1);
   glBindTexture(GL_TEXTURE_2D, Tex_Lyric_Help_Bar.TexNum);
   glBegin(GL_QUADS);
@@ -4019,11 +4031,15 @@ begin
     glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
     glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
   glEnd;
+  {$ENDIF}
 
   // draw currently recorded tone
   SetFontPos(Theme.EditSub.TextCurrentTone.X, Theme.EditSub.TextCurrentTone.Y);
   SetFontSize(Theme.EditSub.TextCurrentTone.Size);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(Theme.EditSub.TextCurrentTone.ColR, Theme.EditSub.TextCurrentTone.ColG, Theme.EditSub.TextCurrentTone.ColB, 1);
+  {$ENDIF}
   glPrint(GetNoteName(CurrentTone));
 end;
 
@@ -4118,20 +4134,33 @@ begin
   for LineIndex := 0 to numLines - 1 do
   begin
     if (LineIndex = Tracks[Track].CurrentLine) and not (PlaySentence or PlaySentenceMidi or PlayOne) then
+    begin
+      {$IFDEF UseOpenGLES}
+      {$ELSE}
       glColor4f(1, 0.6, 0, 1) // currently selected line in orange
+      {$ENDIF}
+    end
     else
       if (CurrentSong.Medley.Source <> msNone) and
          (MedleyNotes.isStart) and (MedleyNotes.isEnd) and
          (LineIndex >= MedleyNotes.start.line) and (LineIndex <= MedleyNotes.end_.line) then
         // medley section in green
-        glColor4f(0.15, 0.75, 0.15, 1)
+         begin
+           {$IFDEF UseOpenGLES}
+           {$ELSE}
+             glColor4f(0.15, 0.75, 0.15, 1)
+           {$ENDIF}
+         end
       else
       begin
         // all other lines in orange (current track) and gray (other track)
         if (Track = CurrentTrack) then
         begin
           Color := GetPlayerColor(Ini.SingColor[CurrentTrack]);
+          {$IFDEF UseOpenGLES}
+          {$ELSE}
           glColor4f(Color.R, Color.G, Color.B, 1)
+          {$ENDIF}
         end
         else
           glColor4f(0.7, 0.7, 0.7, 1);

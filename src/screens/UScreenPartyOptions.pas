@@ -39,7 +39,11 @@ uses
   UMenu,
   UMusic,
   UNote,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   SysUtils,
   UThemes;
 

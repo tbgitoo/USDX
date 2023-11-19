@@ -42,7 +42,11 @@ uses
   UScreensong,
   USongs,
   UThemes,
+  {$IFDEF UseSDL3}
+  sdl3;
+  {$ELSE}
   sdl2;
+  {$ENDIF}
 
 type
   TScreenOptionsGame = class(TMenu)

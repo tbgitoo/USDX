@@ -34,7 +34,11 @@ interface
 {$I switches.inc}
 
 uses
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   SysUtils,
   UDataBase,
   UDLLManager,
@@ -256,7 +260,11 @@ var
 implementation
 
 uses
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UGraphic,
   UMain,
   UIni,
@@ -1283,36 +1291,46 @@ begin
 
   width  := Theme.ScoreDownloadPopup.DownloadProgressSong.W;
   height := Theme.ScoreDownloadPopup.DownloadProgressSong.H;
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(Theme.ScoreDownloadPopup.DownloadProgressSong.ColR, Theme.ScoreDownloadPopup.DownloadProgressSong.ColG, Theme.ScoreDownloadPopup.DownloadProgressSong.ColB, 1); //Set Color
-
+  {$ENDIF}
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
 
   glBindTexture(GL_TEXTURE_2D,  Texture_ProgressBar.TexNum);
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
     glVertex2f(x, y);
-
+  {$ENDIF}
     CurProgress := Actual_Song;
     if (CurProgress > 0) then
     begin
       Progress := CurProgress / Num_Songs;
+      {$IFDEF UseOpenGLES}
+      {$ELSE}
       glTexCoord2f((width * Progress) / 8, 0);
       glVertex2f(x + width * Progress, y);
 
       glTexCoord2f((width * Progress) / 8, 1);
       glVertex2f(x + width * Progress, y + height);
+      {$ENDIF}
     end;
-
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     glTexCoord2f(0, 1);
     glVertex2f(x, y + height);
-  glEnd;
 
+  glEnd;
+  {$ENDIF}
  glDisable(GL_TEXTURE_2D);
  glDisable(GL_BLEND);
+ {$IFDEF UseOpenGLES}
+ {$ELSE}
  glcolor4f(1, 0, 0, 1);
+ {$ENDIF}
 
 end;
 
@@ -1328,36 +1346,47 @@ begin
 
   width  := Theme.ScoreDownloadPopup.DownloadProgressWeb.W;
   height := Theme.ScoreDownloadPopup.DownloadProgressWeb.H;
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(Theme.ScoreDownloadPopup.DownloadProgressWeb.ColR, Theme.ScoreDownloadPopup.DownloadProgressWeb.ColG, Theme.ScoreDownloadPopup.DownloadProgressWeb.ColB, 1); //Set Color
-
+  {$ENDIF}
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
 
   glBindTexture(GL_TEXTURE_2D, Texture_ProgressBar.TexNum);
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
     glVertex2f(x, y);
+  {$ENDIF}
 
     CurProgress := Actual_Song + ((Actual_Web - 1) * Num_Songs);
     if (CurProgress > 0) then
     begin
       Progress := CurProgress / (Num_Songs * Num_Webs);
+      {$IFDEF UseOpenGLES}
+      {$ELSE}
       glTexCoord2f((width * Progress) / 8, 0);
       glVertex2f(x + width * Progress, y);
 
       glTexCoord2f((width * Progress) / 8, 1);
       glVertex2f(x + width * Progress, y + height);
+      {$ENDIF}
     end;
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
     glTexCoord2f(0, 1);
     glVertex2f(x, y + height);
   glEnd;
+  {$ENDIF}
 
  glDisable(GL_TEXTURE_2D);
  glDisable(GL_BLEND);
+ {$IFDEF UseOpenGLES}
+ {$ELSE}
  glcolor4f(1, 0, 0, 1);
+ {$ENDIF}
 
 end;
 
@@ -1604,12 +1633,15 @@ begin
 
   //Background:
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glbegin(gl_quads);
     glColor4f(0.2, 0.2, 0.2, 0.8); glVertex2f(Rect.left-5, Rect.top-5);
     glColor4f(0.2, 0.2, 0.2, 0.8); glVertex2f(Rect.right+abs, Rect.top-5);
     glColor4f(0.2, 0.2, 0.2, 0.8); glVertex2f(Rect.right+abs, Rect.bottom+5);
     glColor4f(0.2, 0.2, 0.2, 0.8); glVertex2f(Rect.left-5, Rect.bottom+5);
   glEnd;
+  {$ENDIF}
   glDisable(GL_BLEND);
   glScissor(Rect.left-1, ScreenH-Rect.bottom-1, Rect.right-Rect.left+2, Rect.bottom-Rect.top+2);
   glScissor(round((Rect.left-1)*(ScreenW/Screens)/RenderW+(ScreenW/Screens)*(ScreenAct-1)),
@@ -2057,17 +2089,26 @@ end;
 
 procedure TScreenPopupHelp.DrawLine(line, index, Y: integer);
 begin
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 1);
+  {$ENDIF}
   glLineWidth(2);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glBegin(GL_LINES);
     glVertex2f(TextsGFX[line].lines[index].fX, TextsGFX[line].lines[index].fY - Y);
     glVertex2f(TextsGFX[line].lines[index].tX, TextsGFX[line].lines[index].tY - Y);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure TScreenPopupHelp.DrawText(line, index, Y: integer);
 begin
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 1);
+  {$ENDIF}
   SetFontFamily(TextsGFX[line].texts[index].Font);
   SetFontStyle(TextsGFX[line].texts[index].Style);
   SetFontItalic(TextsGFX[line].texts[index].Italic);
@@ -2080,27 +2121,35 @@ procedure TScreenPopupHelp.DrawScroll(X, Y, W, H: integer; pos, len: double);
 var
   fY, tY: double;
 begin
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor4f(1, 1, 1, 1);
+  {$ENDIF}
 
   glLineWidth(1);
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glBegin(GL_LINE_LOOP);
     glVertex2f(X, Y);
     glVertex2f(X+W, Y);
     glVertex2f(X+W, Y+H);
     glVertex2f(X, Y+H);
   glEnd;
+  {$ENDIF}
 
   fY := Y+(H-H*len)*Pos;
   tY := fY+H*len;
   if tY+0.001>=Y+H then
     tY := Y+H;
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glBegin(GL_QUADS);
     glVertex2f(X, fY);
     glVertex2f(X+W, fY);
     glVertex2f(X+W, tY);
     glVertex2f(X, tY);
   glEnd;
+  {$ENDIF}
 end;
 
 end.

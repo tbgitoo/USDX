@@ -97,7 +97,11 @@ uses
   UFiles,
   ULanguage,
   Classes,
+  {$IFDEF UseSDL3}
+  sdl3;
+  {$ELSE}
   sdl2;
+  {$ENDIF}
 
 //----------
 //Create - Construct Class then LoadList + Standard Language + Set Standard Implode Glues

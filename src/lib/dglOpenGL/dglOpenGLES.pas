@@ -55,6 +55,9 @@ uses
         GL_LEQUAL = $0203;
         GL_UNPACK_ALIGNMENT = $0CF5;
         GL_ALPHA = $1906;
+        GL_SCISSOR_TEST = $0C11;
+        GL_LINES = $0001;
+        GL_LINE_LOOP  = $0002;
 
 
 
@@ -184,6 +187,10 @@ procedure glDepthRangef (n,f: GLfloat);  {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; 
 
 procedure glDepthFunc (func: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glDepthFunc';
 
+
+procedure glScissor (x,y: GLint; width,height: GLsizei); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glScissor';
+
+procedure glLineWidth (width: GLfloat); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glLineWidth';
 
 function setupGraphicsAndroid: boolean;
 

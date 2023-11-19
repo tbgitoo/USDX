@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="/usr/local/bin/fpc" Date="1590953228"/>
+  <Params Value=" -MObjFPC -Scghi -O1 -gw -gl -l -vewnhibq -Fu/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/src/ -FU/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/src/lib/x86_64-darwin/ -FE/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/src/ -o/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/src/libusdx.dylib libusdx.pas"/>
+  <Complete Value="False"/>
+</CONFIG>

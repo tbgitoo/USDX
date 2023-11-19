@@ -35,10 +35,18 @@ interface
 
 uses
   UMenu,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   SysUtils,
   UThemes,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES;
+  {$ELSE}
   dglOpenGL;
+  {$ENDIF}
 
 type
   TScreenLoading = class(TMenu)

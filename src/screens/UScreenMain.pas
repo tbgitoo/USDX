@@ -43,7 +43,11 @@ uses
   USong,
   UThemes,
   MD5,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   SysUtils;
 
 type

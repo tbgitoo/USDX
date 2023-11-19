@@ -44,19 +44,28 @@ procedure DrawTexture(Texture: TTexture);
 implementation
 
 uses
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES;
+  {$ELSE}
   dglOpenGL;
+  {$ENDIF}
 
 procedure DrawLine(X1, Y1, X2, Y2, ColR, ColG, ColB: real);
 begin
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor3f(ColR, ColG, ColB);
   glBegin(GL_LINES);
     glVertex2f(x1, y1);
     glVertex2f(x2, y2);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure DrawQuad(X, Y, W, H, ColR, ColG, ColB: real);
 begin
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor3f(ColR, ColG, ColB);
   glBegin(GL_QUADS);
     glVertex2f(x,   y);
@@ -64,6 +73,7 @@ begin
     glVertex2f(x+w, y+h);
     glVertex2f(x+w, y);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure DrawTexture(Texture: TTexture);
@@ -75,13 +85,14 @@ var
 begin
   with Texture do
   begin
-
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     glColor4f(ColR * Int, ColG * Int, ColB * Int, Alpha);
-
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
 
     glEnable(GL_BLEND);
-    {$ifdef ANDROID}
+    {$ifdef UseOpenGLES}
     glDepthRangef(0, 10);
     {$else}
     glDepthRange(0, 10);
@@ -126,8 +137,8 @@ begin
       y4 := (y + h/2) + yt4 * cos(Rot) + xt4 * sin(Rot);
 
     end;
-    {$ifdef ANDROID}
-       draw_quads_opengles_z(
+    {$ifdef UseOpenGLES}
+       {draw_quads_opengles_z(
            x1, y1 + (y2 - (LeftScale * (y2))),
            x2, y2 - (y2 - (LeftScale * (y2))),
            x3, y3 - (y2 - (RightScale * (y2))),
@@ -136,7 +147,7 @@ begin
            TexX1*TexW, TexY2*TexH,
            TexX2*TexW, TexY2*TexH,
            TexX2*TexW, TexY1*TexH,
-           TexNum);
+           TexNum);}
 
     {$else}
 

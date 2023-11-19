@@ -84,8 +84,16 @@ type
 implementation
 uses
   math,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES;
+  {$ELSE}
   dglOpenGL;
+  {$ENDIF}
 
 constructor Tms_Equalizer.Create(Source: IAudioPlayback; mySkin: TThemeEqualizer);
 var
@@ -240,13 +248,15 @@ begin
       for J := 1 to BandData[I] do
       begin
         // Draw block
+        {$IFDEF UseSDL3}
+        {$ELSE}
         glBegin(GL_QUADS);
           glVertex3f(PosX, PosY, Z);
           glVertex3f(PosX, PosY+H, Z);
           glVertex3f(PosX+W, PosY+H, Z);
           glVertex3f(PosX+W, PosY, Z);
         glEnd;
-
+        {$ENDIF}
         if (Reflection) and (J <= BandLength div 2) then
         begin
           Diff := (Y-PosY) + H;
@@ -254,6 +264,8 @@ begin
           //Draw Reflection
           if Direction then
           begin
+            {$IFDEF UseSDL3}
+           {$ELSE}
             glBegin(GL_QUADS);
               glColorRGB(Color, GetAlpha(Diff));
               glVertex3f(PosX, Diff + Y + ReflectionSpacing, Z);
@@ -266,9 +278,12 @@ begin
               glColorRGB(Color, GetAlpha(Diff));
               glVertex3f(PosX+W, Diff + Y + ReflectionSpacing, Z);
             glEnd;
+            {$ENDIF}
           end
           else
           begin
+            {$IFDEF UseSDL3}
+            {$ELSE}
             glBegin(GL_QUADS);
               glColorRGB(Color, GetAlpha(Diff));
               glVertex3f(PosX, Diff + Y + (H + Space)*Bands + ReflectionSpacing, Z);
@@ -277,6 +292,7 @@ begin
               glVertex3f(PosX+W, Diff + Y + (H + Space)*Bands + ReflectionSpacing, Z);
               glColorRGB(Color, GetAlpha(Diff + H));
             glEnd;
+            {$ENDIF}
           end;
 
           glColorRGB(Color, Alpha);

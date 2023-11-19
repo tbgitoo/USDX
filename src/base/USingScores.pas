@@ -34,7 +34,11 @@ interface
 {$I switches.inc}
 
 uses
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UCommon,
   UThemes,
   UTexture;
@@ -241,7 +245,11 @@ implementation
 uses
   SysUtils,
   Math,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   TextGL,
   ULog,
   UNote,

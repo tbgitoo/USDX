@@ -34,7 +34,11 @@ interface
 {$I switches.inc}
 
 uses
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   TextGL,
   UMenuText,
   UTexture,

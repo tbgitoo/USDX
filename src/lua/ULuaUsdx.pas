@@ -63,7 +63,15 @@ const
   );
 
 implementation
-uses sdl2, ULuaCore, ULuaUtils, UHookableEvent, UConfig;
+uses {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
+  sdl2,
+  {$ENDIF}
+  ULuaCore,
+  ULuaUtils,
+  UHookableEvent,
+  UConfig;
 
 { Usdx.Time - returns sdl_time to have time numbers comparable with
               ultrastar deluxe ones. no arguments }

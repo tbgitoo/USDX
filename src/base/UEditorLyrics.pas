@@ -35,7 +35,11 @@ interface
 
 uses
   SysUtils,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UMusic,
   UTexture;
 

@@ -35,8 +35,16 @@ interface
 
 uses
   SysUtils,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   TextGL,
   UCommon,
   UGraphicClasses,

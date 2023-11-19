@@ -40,7 +40,11 @@ uses
   UMenu,
   UMusic,
   UThemes,
+  {$IFDEF UseSDL3}
+  sdl3;
+  {$ELSE}
   sdl2;
+  {$ENDIF}
 
 // Class definition for the options screen for the tapping (accessible through
 // Tools -> Options -> Beat Tapping in the english version

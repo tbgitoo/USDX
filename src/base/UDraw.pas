@@ -36,7 +36,11 @@ interface
 uses
   UCommon,
   UThemes,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   UGraphicClasses,
   UIni;
 
@@ -98,7 +102,11 @@ implementation
 uses
   SysUtils,
   Math,
+  {$IFDEF UseOpenGLES}
+   dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   opencv_core,
   TextGL,
   UDrawTexture,

@@ -37,7 +37,11 @@ uses
   UTexture,
   ULog,
   UIni,
-  SDL2;
+  {$IFDEF UseSDL3}
+  sdl3;
+  {$ELSE}
+  sdl2;
+  {$ENDIF}
 
 const
   DelayBetweenFrames : cardinal = 60;
@@ -143,7 +147,11 @@ implementation
 uses
   SysUtils,
   Math,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UCommon,
   UDrawTexture,
   UGraphic,

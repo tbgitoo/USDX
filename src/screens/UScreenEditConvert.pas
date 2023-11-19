@@ -73,7 +73,11 @@ uses
   MidiOut,
   MidiCons,
   {$ENDIF}
-  SDL2;
+  {$IFDEF UseSDL3}
+  sdl3;
+  {$ELSE}
+  sdl2;
+  {$ENDIF}
 
 type
   TMidiNote = record
@@ -192,7 +196,11 @@ uses
   USkins,
   UTextEncoding,
   UUnicodeUtils,
-  dglOpenGL,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
+  dglOpenGLES,
+  {$ENDIF}
   SysUtils,
   TextGL;
 
@@ -1056,8 +1064,10 @@ begin
   DrawLine(Padding,   Y,  Padding,   Bottom, 0, 0, 0);
   DrawLine(XTrack,    Y,  XTrack,    Bottom, 0, 0, 0);
   DrawLine(Right,     Y,  Right,     Bottom, 0, 0, 0);
-
+  {$IFDEF UseOpenGLES}
+  {$ELSE}
   glColor3f(0, 0, 0);
+  {$ENDIF}
   DrawLine(Padding, Y, Right, Y, 0, 0, 0);
   for Count := 0 to High(MTracks) do
   begin
@@ -1077,9 +1087,19 @@ begin
     if MTracks[Count].NoteType = ntAvail then
     begin
       if tsNotes in MTracks[Count].Status then
+        begin
+        {$IFDEF UseOpenGLES}
+        {$ELSE}
         glColor3f(0, 0, 0)
+        {$ENDIF}
+        end
       else
+        begin
+        {$IFDEF UseOpenGLES}
+        {$ELSE}
         glColor3f(0.7, 0.7, 0.7);
+        {$ENDIF}
+        end;
       SetFontPos(Padding+FontSize, Y);
       SetFontSize(FontSize);
       glPrint('N');
@@ -1087,9 +1107,19 @@ begin
     if MTracks[Count].LyricType <> [] then
     begin
       if tsLyrics in MTracks[Count].Status then
+        begin
+        {$IFDEF UseOpenGLES}
+        {$ELSE}
         glColor3f(0, 0, 0)
+        {$ENDIF}
+        end
       else
+        begin
+        {$IFDEF UseOpenGLES}
+        {$ELSE}
         glColor3f(0.7, 0.7, 0.7);
+        {$ENDIF}
+        end;
       SetFontPos(Padding+30, Y);
       SetFontSize(FontSize);
       glPrint('L');
@@ -1198,7 +1228,10 @@ begin
 
   for Count := 0 to High(Channels) do
   begin
+    {$IFDEF UseOpenGLES}
+    {$ELSE}
     glColor3f(0, 0, 0);
+    {$ENDIF}
 
     // draw channel-filter state
     if Channels[Count].Filter then
