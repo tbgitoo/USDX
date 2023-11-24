@@ -23,7 +23,7 @@
  * $Id$
  *}
 
-unit UMenuBackgroundColor;
+unit UMenuBackgroundNone;
 
 interface
 
@@ -34,17 +34,16 @@ interface
 {$I switches.inc}
 
 uses
-  UCommon,
   UThemes,
   UMenuBackground;
 
-//TMenuBackgroundColor - Background Color
+//TMenuBackgroundNone - Just no Background (e.g. for Overlays)
 //--------
 
 type
-  TMenuBackgroundColor = class (TMenuBackground)
+  TMenuBackgroundNone = class (TMenuBackground)
     private
-      Color: TRGB;
+
     public
       constructor Create(const ThemedSettings: TThemeBackground); override;
       procedure   Draw; override;
@@ -52,26 +51,19 @@ type
 
 implementation
 uses
-  {$IFDEF UseOpenGLES}
-  dglOpenGLES,
-  {$ELSE}
   dglOpenGL,
-  {$ENDIF}
   UGraphic;
 
-constructor TMenuBackgroundColor.Create(const ThemedSettings: TThemeBackground);
+constructor TMenuBackgroundNone.Create(const ThemedSettings: TThemeBackground);
 begin
   inherited;
-  Color := ThemedSettings.Color;
 end;
 
-procedure   TMenuBackgroundColor.Draw;
+procedure   TMenuBackgroundNone.Draw;
 begin
-  if (ScreenAct = 1) then
-  begin //just clear once, even when using two screens
-   glClearColor(Color.R, Color.G, Color.B, 0);
-   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-  end;
+  //Do just nothing in here!
+  If (ScreenAct = 1) then //Clear just once when in dual screen mode
+    glClear(GL_DEPTH_BUFFER_BIT);
 end;
 
 end.

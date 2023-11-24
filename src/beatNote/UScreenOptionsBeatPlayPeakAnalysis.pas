@@ -127,7 +127,11 @@ uses
   ULog,
   UUnicodeUtils,
   SysUtils,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UCommon,
   TextGL;
 

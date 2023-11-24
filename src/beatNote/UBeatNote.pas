@@ -114,7 +114,11 @@ uses
   UNote,
   Math,
   UGraphic,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UDraw,
   ULyrics; // Drawing routines;
 

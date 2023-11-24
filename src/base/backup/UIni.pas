@@ -175,13 +175,14 @@ type
       MaxFramerateGet: byte;
       Screens:        integer;
       Split:          integer;
+      PositionX:      integer;
+      PositionY:      integer;
       Resolution:     integer;             // Resolution for windowed mode
       ResolutionFullscreen:     integer;   // Resolution for real fullscreen (changing Video mode)
       Depth:          integer;
       VisualizerOption: integer;
       FullScreen:     integer;
       TextureSize:    integer;
-      SingWindow:     integer;
       Oscilloscope:   integer;
       // not used
       //Spectrum:       integer;
@@ -429,8 +430,6 @@ const
   ITextureSize:      array[0..3] of UTF8String  = ('64', '128', '256', '512');
   ITextureSizeVals:  array[0..3] of integer     = ( 64,   128,   256,   512);
 
-  ISingWindow:       array[0..1] of UTF8String  = ('Small', 'Big');
-
   // SingBar Mod
   IOscilloscope:     array[0..1] of UTF8String  = ('Off', 'On');
 
@@ -582,7 +581,6 @@ var
   IVisualizerTranslated:       array[0..3] of UTF8String  = ('Off', 'WhenNoVideo', 'WhenNoVideoAndImage','On');
 
   IBackgroundMusicTranslated:  array[0..1] of UTF8String  = ('Off', 'On');
-  ISingWindowTranslated:       array[0..1] of UTF8String  = ('Small', 'Big');
 
   // SingBar Mod
   IOscilloscopeTranslated:     array[0..1] of UTF8String  = ('Off', 'On');
@@ -683,7 +681,11 @@ implementation
 
 uses
   StrUtils,
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
   UCommandLine,
   UDataBase,
   UDllManager,
@@ -773,9 +775,6 @@ begin
   IBackgroundMusicTranslated[0]       := ULanguage.Language.Translate('OPTION_VALUE_OFF');
   IBackgroundMusicTranslated[1]       := ULanguage.Language.Translate('OPTION_VALUE_ON');
 
-  ISingWindowTranslated[0]            := ULanguage.Language.Translate('OPTION_VALUE_SMALL');
-  ISingWindowTranslated[1]            := ULanguage.Language.Translate('OPTION_VALUE_BIG');
-
   IOscilloscopeTranslated[0]          := ULanguage.Language.Translate('OPTION_VALUE_OFF');
   IOscilloscopeTranslated[1]          := ULanguage.Language.Translate('OPTION_VALUE_ON');
 
@@ -832,6 +831,7 @@ begin
   IAdvanceDrawNotesTranslated[0]      := ULanguage.Language.Translate('OPTION_VALUE_OFF');
   IAdvanceDrawNotesTranslated[1]      := ULanguage.Language.Translate('OPTION_VALUE_ON');
   IAdvanceDrawNotesTranslated[2]      := ULanguage.Language.Translate('OPTION_VALUE_AT_END');
+  IAdvanceDrawNotesTranslated[3]      := ULanguage.Language.Translate('OPTION_VALUE_HIDE');
 
 
 
@@ -1583,6 +1583,9 @@ procedure TIni.LoadScreenModes(IniFile: TCustomIniFile);
 var
   I, Success, DisplayIndex:     integer;
   CurrentMode, ModeIter, MaxMode: TSDL_DisplayMode;
+  {$IFDEF UseSDL3}
+  PCurrentMode: PSDL_DisplayMode;
+  {$ENDIF}
   CurrentRes, ResString: string;
 begin
   MaxFramerate := ReadArrayIndex(IMaxFramerate, IniFile, 'Graphics', 'MaxFramerate', IGNORE_INDEX, '60');
@@ -1595,6 +1598,12 @@ begin
 
   // FullScreen
   FullScreen := ReadArrayIndex(IFullScreen, IniFile, 'Graphics', 'FullScreen', IGNORE_INDEX, 'Borderless');
+
+  // PositionX
+  PositionX := StrToInt(IniFile.ReadString('Graphics', 'PositionX', '0'));
+
+  // PositionY
+  PositionY := StrToInt(IniFile.ReadString('Graphics', 'PositionY', '0'));
 
   // standard fallback resolutions
   SetLength(IResolution, 27);
@@ -1634,7 +1643,19 @@ begin
   CurrentMode.h := -1; CurrentMode.w := -1;
   for I := 0 to SDL_GetNumVideoDisplays() - 1 do
   begin
+
+   {$IFDEF UseSDL3}
+   Success := 1;
+   PCurrentMode:=SDL_GetCurrentDisplayMode(I);
+   if(not (PCurrentMode = nil)) then begin
+     Success:=0;
+     CurrentMode:=PCurrentMode^;
+     end;
+
+   {$ELSE}
     Success := SDL_GetCurrentDisplayMode(I,  @CurrentMode);
+   {$ENDIF}
+
     if Success = 0 then
     begin
       DisplayIndex := I;
@@ -1834,9 +1855,6 @@ begin
 
   // TextureSize (aka CachedCoverSize)
   TextureSize := ReadArrayIndex(ITextureSize, IniFile, 'Graphics', 'TextureSize', IGNORE_INDEX, '256');
-
-  // SingWindow
-  SingWindow := ReadArrayIndex(ISingWindow, IniFile, 'Graphics', 'SingWindow', IGNORE_INDEX, 'Big');
 
   // Oscilloscope
   Oscilloscope := ReadArrayIndex(IOscilloscope, IniFile, 'Graphics', 'Oscilloscope', 0);
@@ -2223,14 +2241,15 @@ begin
     IniFile.WriteString('Graphics', 'Resolution', GetResolution);
     IniFile.WriteString('Graphics', 'ResolutionFullscreen', GetResolutionFullscreen);
 
+    // Position
+    IniFile.WriteString('Graphics', 'PositionX', IntToStr(PositionX));
+    IniFile.WriteString('Graphics', 'PositionY', IntToStr(PositionY));
+
     // Depth
     IniFile.WriteString('Graphics', 'Depth', IDepth[Depth]);
 
     // TextureSize
     IniFile.WriteString('Graphics', 'TextureSize', ITextureSize[TextureSize]);
-
-    // Sing Window
-    IniFile.WriteString('Graphics', 'SingWindow', ISingWindow[SingWindow]);
 
     // Oscilloscope
     IniFile.WriteString('Graphics', 'Oscilloscope', IOscilloscope[Oscilloscope]);

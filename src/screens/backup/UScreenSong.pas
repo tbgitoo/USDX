@@ -334,11 +334,7 @@ uses
   UScreenSongMenu,
   USkins,
   UUnicodeUtils,
-  {$IFDEF UseOpenGLES}
-   dglOpenGLES,
-  {$ELSE}
   dglOpenGL,
-  {$ENDIF}
   Math;
 
 const

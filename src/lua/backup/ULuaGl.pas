@@ -35,11 +35,7 @@ interface
 
 uses
   SysUtils,
-  {$IFDEF UseOpenGLES}
-  dglOpenGLES,
-  {$ELSE}
   dglOpenGL,
-  {$ENDIF}
   ULua;
 
 function luaopen_gl (L: Plua_State): Integer; cdecl;

@@ -609,6 +609,7 @@ begin
   end;
   {$IFDEF UseOpenGLES}
   {$ELSE}
+  end;
   glScalef(Scale, Scale, 1);
 
   glScalef(4/3, -1, 1);

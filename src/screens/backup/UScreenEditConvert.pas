@@ -199,7 +199,7 @@ uses
   {$IFDEF UseOpenGLES}
   dglOpenGLES,
   {$ELSE}
-  dglOpenGL,
+  dglOpenGLES,
   {$ENDIF}
   SysUtils,
   TextGL;

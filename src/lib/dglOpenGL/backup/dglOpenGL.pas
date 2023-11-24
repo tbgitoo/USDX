@@ -15706,7 +15706,11 @@ begin
   glNormal3s := dglGetProcAddress('glNormal3s');
   glNormal3sv := dglGetProcAddress('glNormal3sv');
   glNormalPointer := dglGetProcAddress('glNormalPointer');
+  {$IFDEF ANDROID}
+  glOrthof := dglGetProcAddress('glOrthof');
+  {$ELSE}
   glOrtho := dglGetProcAddress('glOrtho');
+  {$ENDIF}
   glPassThrough := dglGetProcAddress('glPassThrough');
   glPixelMapfv := dglGetProcAddress('glPixelMapfv');
   glPixelMapuiv := dglGetProcAddress('glPixelMapuiv');

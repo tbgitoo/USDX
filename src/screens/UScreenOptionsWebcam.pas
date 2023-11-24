@@ -80,7 +80,11 @@ uses
   ULog,
   UUnicodeUtils,
   UWebcam,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   SysUtils;
 
 function TScreenOptionsWebcam.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;

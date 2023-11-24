@@ -1583,6 +1583,9 @@ procedure TIni.LoadScreenModes(IniFile: TCustomIniFile);
 var
   I, Success, DisplayIndex:     integer;
   CurrentMode, ModeIter, MaxMode: TSDL_DisplayMode;
+  {$IFDEF UseSDL3}
+  PCurrentMode: PSDL_DisplayMode;
+  {$ENDIF}
   CurrentRes, ResString: string;
 begin
   MaxFramerate := ReadArrayIndex(IMaxFramerate, IniFile, 'Graphics', 'MaxFramerate', IGNORE_INDEX, '60');
@@ -1640,7 +1643,19 @@ begin
   CurrentMode.h := -1; CurrentMode.w := -1;
   for I := 0 to SDL_GetNumVideoDisplays() - 1 do
   begin
+
+   {$IFDEF UseSDL3}
+   Success := 1;
+   PCurrentMode:=SDL_GetCurrentDisplayMode(I);
+   if(not (PCurrentMode = nil)) then begin
+     Success:=0;
+     CurrentMode:=PCurrentMode^;
+   end;
+
+   {$ELSE}
     Success := SDL_GetCurrentDisplayMode(I,  @CurrentMode);
+   {$ENDIF}
+
     if Success = 0 then
     begin
       DisplayIndex := I;

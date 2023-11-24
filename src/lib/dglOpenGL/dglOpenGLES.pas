@@ -17,7 +17,7 @@ uses
 
 
  const
-
+        // Proper opengles constants
         gles_lib = 'libGLESv3.so';
         GL_COMPILE_STATUS = $8B81;
         GL_INFO_LOG_LENGTH = $8B84;
@@ -58,6 +58,70 @@ uses
         GL_SCISSOR_TEST = $0C11;
         GL_LINES = $0001;
         GL_LINE_LOOP  = $0002;
+        GL_UNPACK_ROW_LENGTH=$0CF2;
+        GL_RGBA=$1908;
+
+
+        // Re-implementation of functionality dropped from opengles
+        GL_QUADS = $0007;
+        GL_TEXTURE_ENV_MODE = $2200;
+        GL_TEXTURE_ENV_COLOR = $2201;
+        GL_TEXTURE_ENV = $2300;
+
+        GL_REPLACE = $1E01;
+        GL_MODULATE = $2100;
+
+        GL_LINE_STRIP = $0003;
+
+        GL_REPEAT = $2901;
+
+        GL_MODELVIEW = $1700;
+
+        GL_CLIP_PLANE0 = $3000;
+
+        // GL_ARB_pixel_buffer_object
+  GL_PIXEL_PACK_BUFFER_ARB = $88EB;
+  GL_PIXEL_UNPACK_BUFFER_ARB = $88EC;
+  GL_PIXEL_PACK_BUFFER_BINDING_ARB = $88ED;
+  GL_PIXEL_UNPACK_BUFFER_BINDING_ARB = $88EF;
+
+  // GL_ARB_depth_buffer_float
+  GL_DEPTH_COMPONENT32F = $8CAC;
+  GL_DEPTH32F_STENCIL8 = $8CAD;
+  GL_FLOAT_32_UNSIGNED_INT_24_8_REV = $8DAD;
+
+  // GL_ARB_vertex_buffer_object
+  GL_BUFFER_SIZE_ARB = $8764;
+  GL_BUFFER_USAGE_ARB = $8765;
+  GL_ARRAY_BUFFER_ARB = $8892;
+  GL_ELEMENT_ARRAY_BUFFER_ARB = $8893;
+  GL_ARRAY_BUFFER_BINDING_ARB = $8894;
+  GL_ELEMENT_ARRAY_BUFFER_BINDING_ARB = $8895;
+  GL_VERTEX_ARRAY_BUFFER_BINDING_ARB = $8896;
+  GL_NORMAL_ARRAY_BUFFER_BINDING_ARB = $8897;
+  GL_COLOR_ARRAY_BUFFER_BINDING_ARB = $8898;
+  GL_INDEX_ARRAY_BUFFER_BINDING_ARB = $8899;
+  GL_TEXTURE_COORD_ARRAY_BUFFER_BINDING_ARB = $889A;
+  GL_EDGE_FLAG_ARRAY_BUFFER_BINDING_ARB = $889B;
+  GL_SECONDARY_COLOR_ARRAY_BUFFER_BINDING_ARB = $889C;
+  GL_FOG_COORDINATE_ARRAY_BUFFER_BINDING_ARB = $889D;
+  GL_WEIGHT_ARRAY_BUFFER_BINDING_ARB = $889E;
+  GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING_ARB = $889F;
+  GL_READ_ONLY_ARB = $88B8;
+  GL_WRITE_ONLY_ARB = $88B9;
+  GL_READ_WRITE_ARB = $88BA;
+  GL_BUFFER_ACCESS_ARB = $88BB;
+  GL_BUFFER_MAPPED_ARB = $88BC;
+  GL_BUFFER_MAP_POINTER_ARB = $88BD;
+  GL_STREAM_DRAW_ARB = $88E0;
+  GL_STREAM_READ_ARB = $88E1;
+  GL_STREAM_COPY_ARB = $88E2;
+  GL_STATIC_DRAW_ARB = $88E4;
+  GL_STATIC_READ_ARB = $88E5;
+  GL_STATIC_COPY_ARB = $88E6;
+  GL_DYNAMIC_DRAW_ARB = $88E8;
+  GL_DYNAMIC_READ_ARB = $88E9;
+  GL_DYNAMIC_COPY_ARB = $88EA;
 
 
 
@@ -81,9 +145,19 @@ type
   PPGLchar = ^PGLChar;
   GLubyte = Byte;
 
+  // Extra stuff not implemented in OpenGLES anymore
+
   TGLMatrixf4  = array[0..3, 0..3] of GLfloat;
 
   TGLVectori4  = array[0..3] of GLint;
+
+  GLsizeiptrARB = GLsizei;
+
+  PGLvoid = Pointer;
+
+  GLshort = SmallInt;
+  GLdouble = Double;
+  PGLdouble = ^GLdouble;
 
 function glGetString(name: GLenum): String;
 
@@ -192,11 +266,115 @@ procedure glScissor (x,y: GLint; width,height: GLsizei); {$IFDEF WINDOWS}stdcall
 
 procedure glLineWidth (width: GLfloat); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glLineWidth';
 
+procedure glTexParameterf (target,pname: GLenum; param:GLfloat); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glTexParameterf';
+
+procedure glCullFace(mode: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glCullFace';
+
+procedure glFinish (); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glFinish';
+procedure glFlush (); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glFlush';
+
+procedure glFrontFace (mode: GLenum); {$IFDEF WINDOWS}stdcall; {$ELSE}cdecl; {$ENDIF} external gles_lib name 'glFrontFace';
+
+// Exta functions
+
+procedure draw_rectangle_quads_opengles(left: GLFloat; top: GLFloat; right: GLFloat; bottom: GLFloat;
+  tx1: GLfloat; ty1: GLfloat; tx2: GLFloat; ty2: GLFloat; tex_num: GLenum);
+
+procedure draw_rectangle_quads_opengles_color(left: GLFloat; top: GLFloat; right: GLFloat; bottom: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tx1: GLfloat; ty1: GLfloat; tx2: GLFloat; ty2: GLFloat; tex_num: GLenum);
+
+procedure draw_quads_opengles_z(x1,y1,x2,y2,x3,y3,x4,y4, z: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat; tex_num:  GLenum);
+
+
+procedure draw_quads_opengles_z_color(x1,y1,z1,x2,y2,z2,
+  x3,y3,z3,x4,y4, z4: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tex_num:  GLenum);
+
+procedure draw_quads_opengles_color(x1,y1,x2,y2,
+  x3,y3,x4,y4: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tex_num:  GLenum);
+
+
 function setupGraphicsAndroid: boolean;
 
 function openGLESexampleProgram: boolean;
 
 procedure openGLESexampleProgramRenderFrame();
+
+// Procedure to be re-implemented because they were dropped from openGLES
+
+procedure glColor4f(red: GLfloat; green: GLfloat; blue: GLfloat; alpha: GLfloat);
+
+procedure glbegin(mode: GLenum);
+
+procedure glEnd();
+
+procedure glVertex2f(x,y: GLfloat);
+
+procedure glColor3f(red,green,blue: GLfloat);
+
+procedure glTexEnvf(target: GLenum; pname: GLenum; param: GLfloat);
+
+procedure glTexCoord2f(s: GLfloat; t: GLfloat);
+
+procedure glTexEnvi(target: GLenum; pname: GLenum; param: GLint);
+
+procedure glVertex3f (x: GLfloat; y: GLfloat; z: GLfloat);
+
+procedure glGenBuffersARB(n: GLsizei; buffers: PGLuint);
+
+procedure glBindBufferARB(target: GLenum; buffer: GLuint);
+
+procedure glDeleteBuffersARB (n: GLsizei; const buffers: PGLuint);
+
+
+procedure glBufferDataARB(target: GLenum; size: GLsizeiptrARB; const data: PGLvoid; usage: GLenum);
+
+function glMapBufferARB (target: GLenum; access: GLenum): PGLvoid;
+
+function glUnmapBufferARB (target: GLenum): GLboolean;
+
+procedure glDepthRange (n,f: GLfloat);
+
+procedure glMatrixMode (mode: GLenum);
+
+procedure glPushMatrix();
+
+procedure glTranslatef(x: GLfloat; y: GLfloat; z: GLfloat);
+
+procedure glScalef(x: GLfloat; y: GLfloat; z: GLfloat);
+
+procedure glVertex2s(x: GLshort; y: GLshort);
+
+procedure glPopMatrix();
+
+
+procedure glClipPlane(plane: GLenum; const equation: PGLdouble);
+
+procedure glClearAccum(red: GLfloat; green: GLfloat; blue: GLfloat; alpha: GLfloat);
+
+procedure glColor3d(red: GLdouble; green: GLdouble; blue: GLdouble);
+procedure glColor4d(red: GLdouble; green: GLdouble; blue: GLdouble; alpha: GLdouble);
+
+procedure glDisableClientState(_array: GLenum);
+
+procedure glDrawBuffer(mode: GLenum);
+
+procedure glEnableClientState(_array: GLenum);
+
+procedure glEndList();
+
+procedure glInitNames();
+
+procedure glLoadIdentity();
+
+procedure glLogicOp(opcode: GLenum);
 
 var
 
@@ -555,6 +733,328 @@ begin
 end;
 
 
+procedure glColor4f(red: GLfloat; green: GLfloat; blue: GLfloat; alpha: GLfloat);
+begin
+
+end;
+
+procedure glbegin(mode: GLenum);
+begin
+
+end;
+
+
+procedure glEnd();
+begin
+
+end;
+
+
+procedure glVertex2f(x,y: GLfloat);
+begin
+
+end;
+
+procedure glColor3f(red,green,blue: GLfloat);
+begin
+
+end;
+
+procedure glTexEnvf(target: GLenum; pname: GLenum; param: GLfloat);
+begin
+
+end;
+
+procedure glTexCoord2f(s: GLfloat; t: GLfloat);
+begin
+
+end;
+
+procedure glTexEnvi(target: GLenum; pname: GLenum; param: GLint);
+begin
+
+end;
+
+procedure glVertex3f (x: GLfloat; y: GLfloat; z: GLfloat);
+begin
+
+end;
+
+procedure glGenBuffersARB(n: GLsizei; buffers: PGLuint);
+begin
+
+end;
+
+procedure glBindBufferARB(target: GLenum; buffer: GLuint);
+begin
+
+end;
+
+procedure glDeleteBuffersARB (n: GLsizei; const buffers: PGLuint);
+begin
+
+end;
+
+procedure glBufferDataARB(target: GLenum; size: GLsizeiptrARB; const data: PGLvoid; usage: GLenum);
+begin
+
+end;
+
+function glMapBufferARB (target: GLenum; access: GLenum): PGLvoid;
+begin
+  glMapBufferARB:=nil;
+end;
+
+function glUnmapBufferARB (target: GLenum): GLboolean;
+begin
+  glUnmapBufferARB:=True;
+end;
+
+procedure glDepthRange (n,f: GLfloat);
+begin
+  glDepthRangef(n,f);
+end;
+
+
+procedure glMatrixMode (mode: GLenum);
+begin
+
+end;
+
+procedure glPushMatrix();
+begin
+
+end;
+
+procedure glTranslatef(x: GLfloat; y: GLfloat; z: GLfloat);
+begin
+
+end;
+
+procedure glScalef(x: GLfloat; y: GLfloat; z: GLfloat);
+begin
+
+end;
+
+procedure glVertex2s(x: GLshort; y: GLshort);
+begin
+
+end;
+
+procedure glPopMatrix();
+begin
+
+end;
+
+
+procedure glClipPlane(plane: GLenum; const equation: PGLdouble);
+begin
+
+end;
+
+procedure glClearAccum(red: GLfloat; green: GLfloat; blue: GLfloat; alpha: GLfloat);
+begin
+
+end;
+
+procedure glColor3d(red: GLdouble; green: GLdouble; blue: GLdouble);
+begin
+
+end;
+
+procedure glColor4d(red: GLdouble; green: GLdouble; blue: GLdouble; alpha: GLdouble);
+begin
+   glColor4d(red,green,blue,alpha);
+end;
+
+procedure glDisableClientState(_array: GLenum);
+begin
+
+end;
+
+procedure glDrawBuffer(mode: GLenum);
+begin
+
+end;
+
+procedure glEnableClientState(_array: GLenum);
+begin
+
+end;
+
+procedure glEndList();
+begin
+
+end;
+
+procedure glInitNames();
+begin
+
+end;
+
+procedure glLoadIdentity();
+begin
+
+end;
+
+procedure glLogicOp(opcode: GLenum);
+begin
+
+end;
+
+procedure draw_rectangle_quads_opengles(left: GLFloat; top: GLFloat; right: GLFloat; bottom: GLFloat;
+  tx1: GLfloat; ty1: GLfloat; tx2: GLFloat; ty2: GLFloat; tex_num: GLenum);
+var
+  vertex_coords: array[0..7] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
+begin
+
+  {vertex_coords[0]:=left;  vertex_coords[1]:=top;
+  vertex_coords[2]:=left;  vertex_coords[3]:=bottom;
+  vertex_coords[4]:=right;  vertex_coords[5]:=bottom;
+  vertex_coords[6]:=right;  vertex_coords[7]:=top;
+
+  texcoords[0]:=tx1; texcoords[1]:=ty1;
+  texcoords[2]:=tx1; texcoords[3]:=ty2;
+  texcoords[4]:=tx2; texcoords[5]:=ty2;
+  texcoords[6]:=tx2; texcoords[7]:=ty1;
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glVertexPointer(2, GL_FLOAT, 0, @vertex_coords[0]);
+  glClientActiveTexture(GL_TEXTURE0 + tex_num);
+  glTexCoordPointer(2, GL_FLOAT, 0, @texcoords[0]);
+  //glDisableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLE_FAN,0,4);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);   }
+
+  end;
+
+
+procedure draw_rectangle_quads_opengles_color(left: GLFloat; top: GLFloat; right: GLFloat; bottom: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tx1: GLfloat; ty1: GLfloat; tx2: GLFloat; ty2: GLFloat; tex_num: GLenum);
+begin
+  draw_quads_opengles_color(left,top,right,top,
+  right,bottom,left,bottom,tx1,ty1,tx2,ty1,tx2,ty2,tx1,ty2,
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4,
+  tex_num);
+end;
+
+procedure draw_quads_opengles_z(x1,y1,x2,y2,x3,y3,x4,y4, z: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat; tex_num:  GLenum);
+var
+  vertex_coords: array[0..11] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
+begin
+
+  {vertex_coords[0]:=x1;  vertex_coords[1]:=y1; vertex_coords[2]:=z;
+  vertex_coords[3]:=x2;  vertex_coords[4]:=y2; vertex_coords[5]:=z;
+  vertex_coords[6]:=x3;  vertex_coords[7]:=y3; vertex_coords[8]:=z;
+  vertex_coords[9]:=x4;  vertex_coords[10]:=y4; vertex_coords[11]:=z;
+
+  texcoords[0]:=tx1; texcoords[1]:=ty1;
+  texcoords[2]:=tx2; texcoords[3]:=ty2;
+  texcoords[4]:=tx3; texcoords[5]:=ty3;
+  texcoords[6]:=tx4; texcoords[7]:=ty4;
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glVertexPointer(3, GL_FLOAT, 0, @vertex_coords[0]);
+  glClientActiveTexture(GL_TEXTURE0 + tex_num);
+  glTexCoordPointer(2, GL_FLOAT, 0, @texcoords[0]);
+  //glDisableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLE_FAN,0,4);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY); }
+
+  end;
+
+
+procedure draw_quads_opengles_z_color(x1,y1,z1,x2,y2,z2,
+  x3,y3,z3,x4,y4, z4: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tex_num:  GLenum);
+var
+  vertex_coords: array[0..11] of GLfloat;
+  color_coords: array[0..15] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
+begin
+
+  {vertex_coords[0]:=x1;  vertex_coords[1]:=y1; vertex_coords[2]:=z1;
+  vertex_coords[3]:=x2;  vertex_coords[4]:=y2; vertex_coords[5]:=z2;
+  vertex_coords[6]:=x3;  vertex_coords[7]:=y3; vertex_coords[8]:=z3;
+  vertex_coords[9]:=x4;  vertex_coords[10]:=y4; vertex_coords[11]:=z4;
+
+  texcoords[0]:=tx1; texcoords[1]:=ty1;
+  texcoords[2]:=tx2; texcoords[3]:=ty2;
+  texcoords[4]:=tx3; texcoords[5]:=ty3;
+  texcoords[6]:=tx4; texcoords[7]:=ty4;
+
+  color_coords[0]:=r1;  color_coords[1]:=g1; color_coords[2]:=b1; color_coords[3]:=alpha1;
+  color_coords[4]:=r2;  color_coords[5]:=g2; color_coords[6]:=b2; color_coords[7]:=alpha2;
+  color_coords[8]:=r3;  color_coords[9]:=g3; color_coords[10]:=b3; color_coords[11]:=alpha3;
+  color_coords[12]:=r4;  color_coords[13]:=g4; color_coords[14]:=b4; color_coords[15]:=alpha4;
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
+  glVertexPointer(3, GL_FLOAT, 0, @vertex_coords[0]);
+  glClientActiveTexture(GL_TEXTURE0 + tex_num);
+  glTexCoordPointer(2, GL_FLOAT, 0, @texcoords[0]);
+  glColorPointer(4, GL_FLOAT, 0, @color_coords[0]);
+  //glDisableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLE_FAN,0,4);
+  glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);  }
+
+  end;
+
+procedure draw_quads_opengles_color(x1,y1,x2,y2,
+  x3,y3,x4,y4: GLFloat;
+  tx1,ty1,tx2,ty2,tx3,ty3,tx4,ty4: GLFloat;
+  r1,g1,b1,alpha1,r2,g2,b2,alpha2,r3,g3,b3,alpha3,r4,g4,b4,alpha4: GLFloat;
+  tex_num:  GLenum);
+var
+  vertex_coords: array[0..7] of GLfloat;
+  color_coords: array[0..15] of GLfloat;
+  texcoords: array[0..7] of GLfloat;
+begin
+{
+  vertex_coords[0]:=x1;  vertex_coords[1]:=y1;
+  vertex_coords[2]:=x2;  vertex_coords[3]:=y2;
+  vertex_coords[4]:=x3;  vertex_coords[5]:=y3;
+  vertex_coords[6]:=x4;  vertex_coords[7]:=y4;
+
+  texcoords[0]:=tx1; texcoords[1]:=ty1;
+  texcoords[2]:=tx2; texcoords[3]:=ty2;
+  texcoords[4]:=tx3; texcoords[5]:=ty3;
+  texcoords[6]:=tx4; texcoords[7]:=ty4;
+
+  color_coords[0]:=r1;  color_coords[1]:=g1; color_coords[2]:=b1; color_coords[3]:=alpha1;
+  color_coords[4]:=r2;  color_coords[5]:=g2; color_coords[6]:=b2; color_coords[7]:=alpha2;
+  color_coords[8]:=r3;  color_coords[9]:=g3; color_coords[10]:=b3; color_coords[11]:=alpha3;
+  color_coords[12]:=r4;  color_coords[13]:=g4; color_coords[14]:=b4; color_coords[15]:=alpha4;
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
+  glVertexPointer(2, GL_FLOAT, 0, @vertex_coords[0]);
+  glClientActiveTexture(GL_TEXTURE0 + tex_num);
+  glTexCoordPointer(2, GL_FLOAT, 0, @texcoords[0]);
+  glColorPointer(4, GL_FLOAT, 0, @color_coords[0]);
+  //glDisableVertexAttribArray(0);
+
+  glDrawArrays(GL_TRIANGLE_FAN,0,4);
+  glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY); }
+
+  end;
 
 
 

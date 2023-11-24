@@ -61,11 +61,7 @@ implementation
 uses
   USkins,
   SysUtils,
-  {$IFDEF UseOpenGLES}
-  dglOpenGLES,
-  {$ELSE}
   dglOpenGL,
-  {$ENDIF}
   UGraphic,
   ULog;
 
