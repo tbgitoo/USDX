@@ -612,7 +612,10 @@ begin
   Flush();
   SDL_DestroyMutex(Mutex);
   Mutex:=nil;
+
   SDL_DestroyCond(Condition);
+
+
   inherited;
 end;
 

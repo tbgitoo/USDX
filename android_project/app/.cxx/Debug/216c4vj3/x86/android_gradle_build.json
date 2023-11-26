@@ -33,7 +33,9 @@
         "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libavformat.so",
         "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libavcodec.so",
         "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libavutil.so",
-        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libswresample.so"
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libswresample.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libfreetype.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libswscale.so"
       ]
     }
   },

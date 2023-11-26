@@ -219,11 +219,75 @@ const
    {$I sdl.inc}
 
 
+ function SDL_ConvertAudio(cvt: PSDL_AudioCVT): Integer;
 
+  procedure SDL_CloseAudio();
 
+  function SDL_BuildAudioCVT(cvt: PSDL_AudioCVT;
+                           src_format: TSDL_AudioFormat;
+                           src_channels: UInt8;
+                           src_rate: Integer;
+                           dst_format: TSDL_AudioFormat;
+                           dst_channels: UInt8;
+                           dst_rate: Integer): Integer;
 
+  procedure SDL_DestroyCond(cond: PSDL_Cond);
+
+  function SDL_CreateCond: PSDL_Cond;
+
+   procedure SDL_PauseAudio(pause_on: Integer);
 
 implementation
+
+procedure SDL_PauseAudio(pause_on: Integer);
+begin
+
+end;
+
+procedure SDL_DestroyCond(cond: PSDL_Cond);
+begin
+   SDL_DestroyCondition(cond);
+end;
+
+
+function SDL_CreateCond: PSDL_Cond;
+begin
+   SDL_CreateCond:=SDL_CreateCondition();
+end;
+
+function SDL_ConvertAudio(cvt: PSDL_AudioCVT): Integer;
+begin
+
+
+  // To do, ConvertAudio has been removed from SDL3
+
+  //Uint8 *dst_data = NULL;
+  //  int dst_len = 0;
+  //  const SDL_AudioSpec src_spec = { src_format, src_channels, src_rate };
+  //  const SDL_AudioSpec dst_spec = { dst_format, dst_channels, dst_rate };
+  //  if (SDL_ConvertAudioSamples(&src_spec, src_data, src_len, &dst_spec, &dst_data, &dst_len) < 0) {
+  //      /* error */
+  //  }
+  //  do_something(dst_data, dst_len);
+  //  SDL_free(dst_data);
+end;
+
+procedure SDL_CloseAudio();
+begin
+
+end;
+
+// Basically, one needs to store this separately because the audiocvt object was discontinued
+function SDL_BuildAudioCVT(cvt: PSDL_AudioCVT;
+                           src_format: TSDL_AudioFormat;
+                           src_channels: UInt8;
+                           src_rate: Integer;
+                           dst_format: TSDL_AudioFormat;
+                           dst_channels: UInt8;
+                           dst_rate: Integer): Integer;
+begin
+   SDL_BuildAudioCVT:=-1;
+end;
 
 //from "sdl_version.h"
 procedure SDL_VERSION(Out x: TSDL_Version);

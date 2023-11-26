@@ -36,9 +36,9 @@ interface
 uses
   UMusic,
   {$IFDEF UseSDL3}
-  sdl3;
-  {$ELSE}
   sdl2;
+  {$ELSE}
+  sdl3;
   {$ENDIF}
 
 function ConvertAudioFormatToSDL(Format: TAudioSampleFormat; out SDLFormat: UInt16): boolean;

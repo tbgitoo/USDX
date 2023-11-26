@@ -19,11 +19,7 @@ uses
 implementation
 
 uses
-  {$IFDEF UseSDL3}
-  sdl3,
-  {$ELSE}
   sdl2,
-  {$ENDIF}
   ctypes,
   math,
   UIni,

@@ -36,11 +36,7 @@ interface
 uses
   UTexture,
   UMenuInteract,
-  {$IFDEF UseOpenGLES}
-  dglOpenGLES;
-  {$ELSE}
   dglOpenGL;
-  {$ENDIF}
 
 type
   TStaticList = class

@@ -312,7 +312,7 @@ function SDL_GetAudioDeviceStatus(dev: TSDL_AudioDeviceID): TSDL_AudioStatus cde
    *  Silence will be written to the audio device during the pause.
    *}
 
-procedure SDL_PauseAudio(pause_on: Integer) cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_PauseAudio' {$ENDIF} {$ENDIF};
+//procedure SDL_PauseAudio(pause_on: Integer) cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_PauseAudio' {$ENDIF} {$ENDIF};
 procedure SDL_PauseAudioDevice(dev: TSDL_AudioDeviceID; pause_on: Integer) cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_PauseAudioDevice' {$ENDIF} {$ENDIF};
   {*Pause audio functions*}
 
@@ -358,13 +358,13 @@ function SDL_LoadWAV_RW(src: PSDL_RWops; freesrc: Integer; spec: PSDL_AudioSpec;
    *   -1 if the format conversion is not supported, 0 if there's
    *  no conversion needed, or 1 if the audio filter is set up.
    *}
-function SDL_BuildAudioCVT(cvt: PSDL_AudioCVT;
-                           src_format: TSDL_AudioFormat;
-                           src_channels: UInt8;
-                           src_rate: Integer;
-                           dst_format: TSDL_AudioFormat;
-                           dst_channels: UInt8;
-                           dst_rate: Integer): Integer cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_BuildAudioCVT' {$ENDIF} {$ENDIF};
+//function SDL_BuildAudioCVT(cvt: PSDL_AudioCVT;
+//                           src_format: TSDL_AudioFormat;
+//                           src_channels: UInt8;
+//                           src_rate: Integer;
+//                           dst_format: TSDL_AudioFormat;
+//                           dst_channels: UInt8;
+//                           dst_rate: Integer): Integer cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_BuildAudioCVT' {$ENDIF} {$ENDIF};
 
 {**
  *  Once you have initialized the cvt structure using SDL_BuildAudioCVT(),
@@ -376,7 +376,11 @@ function SDL_BuildAudioCVT(cvt: PSDL_AudioCVT;
  *  cvt->buf should be allocated after the cvt structure is initialized by
  *  SDL_BuildAudioCVT(), and should be cvt->len*cvt->len_mult bytes long.
  *}
-function SDL_ConvertAudio(cvt: PSDL_AudioCVT): Integer cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_ConvertAudio' {$ENDIF} {$ENDIF};
+//function SDL_ConvertAudio(cvt: PSDL_AudioCVT): Integer cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_ConvertAudio' {$ENDIF} {$ENDIF};
+
+function SDL_ConvertAudioSamples(src_spec: PSDL_AudioSpec; 
+                                                    src_data: PUInt8; src_len: UInt32; dst_spec: PSDL_AudioSpec; 
+                                                   dst_data: PPUInt8; dst_len: PUint32): Integer cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_ConvertAudioSamples' {$ENDIF} {$ENDIF};
 
 const
   SDL_MIX_MAXVOLUME = 128;
@@ -558,7 +562,7 @@ procedure SDL_UnlockAudioDevice(dev: TSDL_AudioDeviceID) cdecl; external SDL_Lib
   {**
    *  This function shuts down audio processing and closes the audio device.
    *}
-procedure SDL_CloseAudio cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_CloseAudio' {$ENDIF} {$ENDIF};
+//procedure SDL_CloseAudio cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_CloseAudio' {$ENDIF} {$ENDIF};
 procedure SDL_CloseAudioDevice(dev: TSDL_AudioDeviceID) cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_CloseAudioDevice' {$ENDIF} {$ENDIF};
 
   {**

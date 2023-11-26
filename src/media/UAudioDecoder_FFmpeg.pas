@@ -56,7 +56,11 @@ interface
 implementation
 
 uses
-  sdl2, // SDL redefines some base types -> include before SysUtils to ignore them
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
+  sdl2,
+  {$ENDIF}  // SDL redefines some base types -> include before SysUtils to ignore them
   Classes,
   Math,
   SysUtils,
@@ -310,12 +314,15 @@ begin
 
   SDL_DestroyMutex(fStateLock);
   fStateLock:=nil;
+
   SDL_DestroyCond(fParserUnlockedCond);
   SDL_DestroyCond(fParserResumeCond);
   SDL_DestroyCond(fParserIdleCond);
   SDL_DestroyCond(SeekFinishedCond);
   SDL_DestroyCond(fDecoderUnlockedCond);
   SDL_DestroyCond(fDecoderResumeCond);
+
+
 
   {$IFDEF UseFrameDecoderAPI}
     {$IF LIBAVUTIL_VERSION >= 52019101}

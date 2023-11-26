@@ -65,6 +65,16 @@ set_target_properties (swresample
         PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libswresample.so)
 
+add_library (freetype SHARED IMPORTED)
+set_target_properties (freetype
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libfreetype.so)
+
+add_library (swscale SHARED IMPORTED)
+set_target_properties (swscale
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libswscale.so)
+
 
 
 add_library(gl2jni SHARED
@@ -86,5 +96,7 @@ target_link_libraries(gl2jni
                       avformat
                       avcodec
                       avutil
-                      swresample)
+                      swresample
+                      freetype
+                      swscale)
 

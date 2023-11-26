@@ -151,12 +151,13 @@ type
    *  In general it'_S safer to signal the condition variable while the
    *  mutex is locked.
    *}
-function SDL_CreateCond: PSDL_Cond cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_CreateCond' {$ENDIF} {$ENDIF};
+function SDL_CreateCondition: PSDL_Cond cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_CreateCondition' {$ENDIF} {$ENDIF};
 
   {**
-   *  Destroy a condition variable.
+   *  Destroy a condition variable. Old name: SDL_DestroyCond
    *}
-procedure SDL_DestroyCond(cond: PSDL_Cond) cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name '_SDL_DestroyCond' {$ENDIF} {$ENDIF};
+procedure SDL_DestroyCondition(cond: PSDL_Cond) cdecl; external SDL_LibName {$IFDEF DELPHI} {$IFDEF MACOS} name 'SDL_DestroyCondition' {$ENDIF} {$ENDIF};
+
 
   {**
    *  Restart one of the threads that are waiting on the condition variable.
