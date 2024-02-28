@@ -152,6 +152,27 @@ If you want to use the script at https://github.com/AlexanderAgd/SDL2-Android/, 
 ./build_SDL2.sh  --api=29 --arch=x86
 ./build_SDL2.sh  --api=29 --arch=x86_64
 
+
+
+SDL2 official version:  git clone --branch SDL2 https://github.com/libsdl-org/SDL
+
+Set the following in your your .bash profile
+PATH=$PATH:~/Library/Android/sdk/ndk/25.2.9519653
+PATH=$PATH:~/Library/Android/sdk/tools
+export ANDROID_NDK_HOME=~/Library/Android/sdk/ndk/25.2.9519653
+
+git clone --branch SDL2 https://github.com/libsdl-org/SDL
+
+in the SDL folder created, execute build-scripts/android-prefab.sh and find libSDL2.so for each architecture, along with the includes and .pc files
+
+git clone --branch SDL2 https://github.com/libsdl-org/SDL_image
+
+in the SDL_image folder created, execute build-scripts/android-prefab.sh, find libSL2_image.so for each architecture along the includes and .pc files. There may be some issues that you need to debug in the script itself, for example setting an sdl_build_root variable in the script so that it points to the build-android-prefab in the SLD folder from above, and also checking whether the script can find SDL_image.h, it may be in the include. Also, you need to run the download.sh script in the external folder to get the necessary libraries
+
+
+
+
+
 SDL3 is also available from https://github.com/libsdl-org/SDL/ build-scripts/android-prefab.sh, find libSDL3.so for each architecture, along with the includes and .pc files
 
 SDL3_image is also available from https://github.com/libsdl-org/SDL_image/ build-scripts/android-prefab.sh, find libSL3_image.so for each architecture along the includes and .pc files 
@@ -263,6 +284,13 @@ and build_all_android.sh
 copy libfluidsynth.so as well as the include
 
 ligbles, ligEGL: From ndk (sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/29 and correspondingly)
+
+libpng: git clone https://github.com/julienr/libpng-android.git
+To create dynamic libraries, change the android.mk file (i.e uncomment include $(BUILD_SHARED_LIBRARY) and comment the corresponding static library)
+Also, there may be an issue with dynamic linking aginst zlib, use LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -lz to mitigate; finally, in Application.mk, add x86 for building
+
+Copy the corresponding libpng.so files to the architectures in the dist folder
+
 
 #USDX
 

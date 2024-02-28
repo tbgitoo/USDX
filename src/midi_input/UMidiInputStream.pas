@@ -44,7 +44,7 @@ uses
   Amidi,
   {$ENDIF}
 
-  sysutils,CTypes, UCommon, UTextEncoding,UMidiTransfer;
+  sysutils,CTypes, UCommon, UTextEncoding,UMidiTransfer,SyncObjs;
 
 
 type
@@ -99,10 +99,12 @@ TIntArray = array of Integer;
 TMidiKeyboardPressedStream = class(TMidiInputStream)
     public
     keyBoardPressed: array[0..127] of Boolean;
+
     constructor Create;
     procedure ResetKeyBoardPressed;
     procedure processEvents (midiEvents: array of PmEvent);
     function key_currently_pressed: TIntArray;
+
 
 end;
 

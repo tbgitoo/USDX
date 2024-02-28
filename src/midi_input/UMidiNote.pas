@@ -138,7 +138,7 @@ end;
 
 procedure handleMidiNotes(Screen: TScreenSingController;CP: integer );
    var
-       NotesAvailable: array of PLineFragment; // contains the presently playing midi notes
+       NotesAvailable: array of TLineFragment; // contains the presently playing midi notes
        TonesAvailable: array of Integer;
        countNotesAvailable: integer;
        ActualBeat:          integer;
@@ -160,7 +160,6 @@ procedure handleMidiNotes(Screen: TScreenSingController;CP: integer );
 begin
 
   setLength(NotesAvailable,0);
-
   SentenceDetected:=0;
   countNotesAvailable:=0;
   if CurrentSong.freestyleMidi then begin // We only do something when the song is configured for this
@@ -189,14 +188,25 @@ begin
           begin
             CurrentLineFragment := @Line.Notes[LineFragmentIndex];
             // check if line is active and freestyle (for which we analyze midi here
-            if (CurrentLineFragment.StartBeat <= ActualBeat) and
-              (CurrentLineFragment.StartBeat + CurrentLineFragment.Duration-1 >= ActualBeat) and
-              (CurrentLineFragment.NoteType = ntFreestyle) and // If beat mode is on, rap notes are handled separately
-              (CurrentLineFragment.Duration > 0) then                   // and make sure the note length is at least 1
+            if (CurrentLineFragment^.StartBeat <= ActualBeat) and
+              (CurrentLineFragment^.StartBeat + CurrentLineFragment^.Duration-1 >= ActualBeat) and
+              (CurrentLineFragment^.NoteType = ntFreestyle) and // If beat mode is on, rap notes are handled separately
+              (CurrentLineFragment^.Duration > 0) then                   // and make sure the note length is at least 1
             begin
 
-              setLength(NotesAvailable, High(NotesAvailable)-Low(NotesAvailable)+2);
-               NotesAvailable[countNotesAvailable]:=CurrentLineFragment;
+              setLength(NotesAvailable, length(NotesAvailable)+1);
+
+
+               NotesAvailable[countNotesAvailable].StartBeat:=CurrentLineFragment^.StartBeat;
+               NotesAvailable[countNotesAvailable].Duration:=CurrentLineFragment^.Duration;
+               NotesAvailable[countNotesAvailable].Tone:=CurrentLineFragment^.Tone;
+               NotesAvailable[countNotesAvailable].Text:=CurrentLineFragment^.Text;
+               NotesAvailable[countNotesAvailable].NoteType:=CurrentLineFragment^.NoteType;
+               NotesAvailable[countNotesAvailable].IsMedley:=CurrentLineFragment^.IsMedley;
+               NotesAvailable[countNotesAvailable].IsStartPreview:=CurrentLineFragment^.IsStartPreview;
+
+
+
                SentenceDetected:= SentenceIndex;
                countNotesAvailable:=countNotesAvailable+1;
             end;
@@ -206,13 +216,15 @@ begin
         // We should now know all the notes that are supposed to be played on the current beat
 
         setLength(TonesAvailable,0);
-
-        for countTones:=low(NotesAvailable) to high(NotesAvailable) do begin
-          if (not noteHit(TonesAvailable, NotesAvailable[countTones].Tone)) then
-          begin
-            setLength(TonesAvailable,High(TonesAvailable)-Low(TonesAvailable)+2);
-            TonesAvailable[High(TonesAvailable)]:= NotesAvailable[countTones].Tone;
+        if(Length(NotesAvailable)>0) then begin
+          for countTones:=low(NotesAvailable) to high(NotesAvailable) do begin
+            if (not noteHit(TonesAvailable, NotesAvailable[countTones].Tone)) then
+            begin
+              setLength(TonesAvailable,length(TonesAvailable)+1);
+              TonesAvailable[High(TonesAvailable)]:= NotesAvailable[countTones].Tone;
+            end;
           end;
+
         end;
 
 
@@ -252,14 +264,19 @@ begin
 
                   // There is still some cases where we need to start a new note
                   // first, if a note had been on spot, but is prolonged beyond the end of the actual note
+
                   if (CurrentPlayer.Note[countNotesPlayer].Hit) and (not noteHit(TonesAvailable, KeysCurrentlyPlayed[countKeysPlayed]))
                   then
-                      NewNote := true
+                      begin NewNote := true;  end
                   else if( not (CurrentPlayer.Note[countNotesPlayer].Hit)) and (noteHit(TonesAvailable, KeysCurrentlyPlayed[countKeysPlayed]))
-                  then
+                  then begin
                       NewNote := true
+                  end
                   else // no specific issue, we can continue
+                      begin
                       NewNote := false;
+
+                      end;
                 end;
 
             // Also, if on the tone on which we are a new note starts
@@ -293,7 +310,10 @@ begin
                 Duration := 1;
                 Tone     := KeysCurrentlyPlayed[countKeysPlayed]; // Tone || ToneAbs
                 //Detect := LyricsState.MidBeat; // Not used!
-                Hit      := noteHit(TonesAvailable, KeysCurrentlyPlayed[countKeysPlayed]);
+                if (length(TonesAvailable)>0) and (countKeysPlayed >= low(KeysCurrentlyPlayed)) and (countKeysPlayed<=high(KeysCurrentlyPlayed)) then
+                Hit      := noteHit(TonesAvailable, KeysCurrentlyPlayed[countKeysPlayed]) else
+                Hit      := False;
+
                 NoteType := ntFreestyle;
               end;
           end;
