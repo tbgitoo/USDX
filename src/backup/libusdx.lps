@@ -8,8 +8,7 @@
         <Filename Value="libusdx.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="USDX"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="82"/>
+        <TopLine Value="44"/>
         <CursorPos X="11" Y="60"/>
         <UsageCount Value="119"/>
         <Loaded Value="True"/>
@@ -27,14 +26,14 @@
         <UnitName Value="SDL3"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="219"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="lib/dglOpenGL/dglOpenGLES.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="531"/>
         <CursorPos Y="555"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="base/UTexture.pas"/>
@@ -49,31 +48,31 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="90"/>
         <CursorPos X="108" Y="108"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="lib/ffmpeg-6.0/avutil.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="152"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="lib/ffmpeg-5.0/avutil.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="162"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="lib/ffmpeg-6.0/avio.pas"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="lib/ffmpeg-6.0/avcodec.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="233"/>
         <CursorPos X="54" Y="243"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="../../../Android Docs/libusdx.pas"/>
@@ -81,7 +80,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="427"/>
         <CursorPos X="58" Y="440"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="base/UPath.pas"/>
@@ -201,7 +200,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="658"/>
         <CursorPos X="113" Y="678"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="menu/UMenuText.pas"/>
@@ -344,14 +343,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="46"/>
         <CursorPos X="11" Y="69"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="media/UMediaCore_FFmpeg.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="27"/>
         <CursorPos X="11" Y="43"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="0"/>
       </Unit>
       <Unit>
         <Filename Value="screens/UScreenJukebox.pas"/>
@@ -1238,6 +1237,7 @@
       <Unit>
         <Filename Value="midi_input/UMidiNote.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <TopLine Value="139"/>
         <CursorPos X="34" Y="141"/>
