@@ -406,6 +406,7 @@ begin
         begin
           Value := false;
           Visible := false;
+          StopTextInput;
           Result := false;
         end;
 
@@ -438,6 +439,7 @@ begin
           Value := (Interaction = 2);
           if (Interaction = 3) then
             Visible := false;
+            StopTextInput;
           Result := false;
         end;
 
@@ -506,6 +508,7 @@ procedure TScreenPopupInsertUser.ShowPopup(const Title: UTF8String; Msg: UTF8Str
 begin
 
   Visible := true;  //Set Visible
+  StartTextInput;
   fHandler := Handler;
   fHandlerData := HandlerData;
 
@@ -566,6 +569,7 @@ begin
         begin
           Value := 0;
           Visible := false;
+          StopTextInput;
           Result := false;
         end;
 
@@ -591,6 +595,7 @@ begin
           begin
             Value := 0;
             Visible := false;
+            StopTextInput;
             Result := false;
           end;
         end;
@@ -602,12 +607,14 @@ begin
           begin
             Value := 1;
             Visible := false;
+            StopTextInput;
           end;
 
           if (Interaction = 6) then
           begin
             Value := 2;
             Visible := false;
+            StopTextInput;
           end;
 
           Result := false;
@@ -800,6 +807,7 @@ var
 begin
 
   Visible := true;  //Set Visible
+  StartTextInput;
   fHandler := Handler;
   fHandlerData := HandlerData;
   Password := '';

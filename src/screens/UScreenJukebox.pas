@@ -286,6 +286,7 @@ uses
   UHelp,
   ULanguage,
   ULog,
+  UMain,
   UMenuButton,
   UMenuInteract,
   UNote,
@@ -471,6 +472,7 @@ begin
   end;
 end;
 
+// TODO: this function does nothing?
 procedure TScreenJukebox.GoToSongList(UpperLetter: UCS4Char);
 var
   SongDesc: UTF8String;
@@ -502,7 +504,6 @@ begin
   end;
 
   // page songsid
-  {
         SetLength(JukeboxSongsListCurrentPage, 0);
 
 
@@ -545,12 +546,12 @@ begin
 
   if (Filter <> '') then
   begin
-    Filter := GetStringWithNoAccents(UTF8Decode(UTF8LowerCase(Filter)));
+    Filter := LowerCase(TransliterateToASCII(UTF8Decode(Filter)));
 
     SetLength(JukeboxVisibleSongs, 0);
     for I := 0 to High(JukeboxSongsList) do
     begin
-      SongD := CatSongs.Song[JukeboxSongsList[I]].ArtistNoAccent + ' - ' + CatSongs.Song[JukeboxSongsList[I]].TitleNoAccent;
+      SongD := CatSongs.Song[JukeboxSongsList[I]].ArtistASCII + ' - ' + CatSongs.Song[JukeboxSongsList[I]].TitleASCII;
 
       if (UTF8ContainsStr(SongD, Filter)) then
       begin
@@ -700,6 +701,7 @@ begin
   Button[JukeboxRandomSongList].SetSelect(false);
   Button[JukeboxRepeatSongList].SetSelect(false);
   Button[JukeboxFindSong].SetSelect(false);
+  StopTextInput;
   Button[JukeboxPlayPause].SetSelect(false);
   Button[JukeboxFindSong].Text[0].Selected := false;
 end;
@@ -767,6 +769,7 @@ begin
 
   if (SongListVisible) then
   begin
+    // SetTextInput(Button[JukeboxFindSong].Selected);
 
     if (BtnDown) then //and (MouseButton = SDL_BUTTON_LEFT) then
     begin
@@ -976,6 +979,7 @@ begin
             end;
 
             Button[JukeboxFindSong].SetSelect(FindSongList);
+            SetTextInput(FindSongList);
 
             if not (FindSongList) and (Length(JukeboxSongsList) <> Length(JukeboxVisibleSongs)) then
             begin
@@ -998,6 +1002,7 @@ begin
           begin
             SongMenuVisible := false;
             SongListVisible := false;
+            StopTextInput;
 
             Button[JukeboxOptions].SetSelect(false);
             ScreenJukeboxOptions.Visible := true;
@@ -1106,9 +1111,15 @@ begin
         Button[JukeboxOptions].SetSelect(false);
 
       if InRegion(X, Y, Button[JukeboxFindSong].GetMouseOverArea) then
-        Button[JukeboxFindSong].SetSelect(true)
+      begin
+        Button[JukeboxFindSong].SetSelect(true);
+        StartTextInput;
+      end
       else
+      begin
         Button[JukeboxFindSong].SetSelect(FindSongList);
+        SetTextInput(FindSongList);
+      end;
 
     end;
   end;
@@ -1158,6 +1169,7 @@ begin
       begin
         SongMenuVisible := false;
         SongListVisible := false;
+        StopTextInput;
 
         Button[JukeboxSongMenuOptions].SetSelect(false);
 
@@ -1379,8 +1391,8 @@ begin
     end
     else
     begin
-      case UCS4UpperCase(CharCode) of
-        Ord('Q'):
+      case PressedKey of
+        SDLK_Q:
         begin
           // when not ask before exit then finish now
           if (Ini.AskbeforeDel <> 1) then
@@ -1394,7 +1406,7 @@ begin
         end;
 
         // show visualization
-        Ord('V'):
+        SDLK_V:
         begin
           if fShowWebcam then
           begin
@@ -1439,7 +1451,7 @@ begin
         end;
 
         // show Webcam
-      Ord('W'):
+      SDLK_W:
       begin
         if (fShowWebCam = false) then
         begin
@@ -1469,7 +1481,7 @@ begin
       end;
 
         // allow search for songs
-        Ord('J'):
+        SDLK_J:
         begin
           if (SongListVisible) then
           begin
@@ -1478,6 +1490,7 @@ begin
             if (Filter = '') and (FindSongList) then
                 Button[JukeboxFindSong].Text[0].Text := '';
             Button[JukeboxFindSong].SetSelect(FindSongList);
+            SetTextInput(FindSongList);
             if FindSongList then
               FilterSongList(Filter)
             else
@@ -1492,13 +1505,14 @@ begin
             if (Filter = '') then
                 Button[JukeboxFindSong].Text[0].Text := '';
             Button[JukeboxFindSong].SetSelect(FindSongList);
+            SetTextInput(FindSongList);
             FilterSongList(Filter);
             Exit;
           end;
         end;
 
         // skip intro
-        Ord('S'):
+        SDLK_S:
         begin
           if (AudioPlayback.Position < CurrentSong.gap / 1000 - 6) then
           begin
@@ -1510,13 +1524,13 @@ begin
         end;
 
         // pause
-        Ord('P'):
+        SDLK_P:
         begin
           Pause;
           Exit;
         end;
 
-        Ord('R'):
+        SDLK_R:
         begin
           if (SongListVisible) then
           begin
@@ -1525,7 +1539,7 @@ begin
         end;
 
         // toggle time display
-        Ord('T'):
+        SDLK_T:
         begin
           LastTick := SDL_GetTicks();
 
@@ -1626,6 +1640,7 @@ begin
             end;
 
             Button[JukeboxFindSong].SetSelect(FindSongList);
+            SetTextInput(FindSongList);
 
             if not (FindSongList) then
             begin
@@ -1669,6 +1684,7 @@ begin
             begin
               FindSongList:=false;
               Button[JukeboxFindSong].SetSelect(FindSongList);
+              SetTextInput(FindSongList);
               Exit;
             end;
             Button[JukeboxFindSong].Text[0].DeleteLastLetter();
@@ -1715,6 +1731,7 @@ begin
             begin
               FindSongList:=false;
               Button[JukeboxFindSong].SetSelect(FindSongList);
+              SetTextInput(FindSongList);
             end;
             if (High(JukeboxVisibleSongs) < 0) then
             begin
@@ -1972,7 +1989,7 @@ begin
   fMusicSync := TMusicSyncSource.Create();
 
   //Jukebox Items
-  JukeboxStaticTimeProgress       := AddStatic(Theme.Jukebox.StaticTimeProgress);
+  JukeboxStaticTimeProgress       := AddStaticColorRectangle(Theme.Jukebox.StaticTimeProgress);
   JukeboxStaticTimeBackground     := AddStatic(Theme.Jukebox.StaticTimeBackground);
   JukeboxStaticSongBackground     := AddStatic(Theme.Jukebox.StaticSongBackground);
   JukeboxStaticSongListBackground := AddStatic(Theme.Jukebox.StaticSongListBackground);
@@ -2022,7 +2039,7 @@ begin
   JukeboxListText  := AddText(Theme.Jukebox.TextListText);
   JukeboxCountText := AddText(Theme.Jukebox.TextCountText);
 
-  StaticCover := AddStatic(Theme.Jukebox.SongCover);
+  StaticCover := AddStaticPosition(Theme.Jukebox.SongCover);
 
   SetLength(JukeboxStaticActualSongStatic, Length(Theme.Jukebox.StaticActualSongStatics));
   for I := 0 to High(Theme.Jukebox.StaticActualSongStatics) do
@@ -2030,7 +2047,7 @@ begin
     JukeboxStaticActualSongStatic[I] := AddStatic(Theme.Jukebox.StaticActualSongStatics[i]);
   end;
 
-  JukeboxStaticActualSongCover := AddStatic(Theme.Jukebox.StaticActualSongCover);
+  JukeboxStaticActualSongCover := AddStaticPosition(Theme.Jukebox.StaticActualSongCover);
   JukeboxTextActualSongArtist := AddText(Theme.Jukebox.TextActualSongArtist);
   JukeboxTextActualSongTitle := AddText(Theme.Jukebox.TextActualSongTitle);
 
@@ -2050,7 +2067,7 @@ begin
   Button[JukeboxSongMenuPlaylist].Selectable := false;
   Button[JukeboxSongMenuOptions].Selectable := false;
 
-  JukeboxStaticSongMenuTimeProgress   := AddStatic(Theme.Jukebox.StaticSongMenuTimeProgress);
+  JukeboxStaticSongMenuTimeProgress   := AddStaticColorRectangle(Theme.Jukebox.StaticSongMenuTimeProgress);
   JukeboxStaticSongMenuTimeBackground := AddStatic(Theme.Jukebox.StaticSongMenuTimeBackground);
   JukeboxTextSongMenuTimeText         := AddText(Theme.Jukebox.SongMenuTextTime);
   JukeboxStaticSongMenuBackground     := AddStatic(Theme.Jukebox.StaticSongMenuBackground);
@@ -2573,11 +2590,7 @@ begin
 
   // FIXME: bad style, put the try-except into loadsong() and not here
   try
-    // check if file is xml
-    if CurrentSong.FileName.GetExtension.ToUTF8 = '.xml' then
-      success := CurrentSong.AnalyseXML and CurrentSong.LoadXMLSong()
-    else
-      success := CurrentSong.Analyse and CurrentSong.LoadSong(false);
+    success := CurrentSong.Analyse and CurrentSong.LoadSong(false);
   except
     success := false;
   end;

@@ -66,7 +66,6 @@ type
       Converter: TAudioConverter;
       Status:    TStreamStatus;
       InternalLock: PSDL_Mutex;
-      SoundEffects: TList;
       fVolume: single;
 
       FadeInStartTime, FadeInTime: cardinal;
@@ -76,7 +75,6 @@ type
 
       procedure Reset();
 
-      procedure ApplySoundEffects(Buffer: PByteArray; BufferSize: integer);
       function InitFormatConversion(): boolean;
       procedure FlushBuffers();
 
@@ -113,9 +111,6 @@ type
 
       function GetPCMData(var Data: TPCMData): cardinal; override;
       procedure GetFFTData(var Data: TFFTData);          override;
-
-      procedure AddSoundEffect(Effect: TSoundEffect);    override;
-      procedure RemoveSoundEffect(Effect: TSoundEffect); override;
   end;
 
   TAudioMixerStream = class
@@ -184,7 +179,7 @@ type
       function Open(ChannelMap: integer; FormatInfo: TAudioFormatInfo): boolean; override;
       procedure Close(); override;
       procedure WriteData(Buffer: PByteArray; BufferSize: integer); override;
-      function ReadData(Buffer: PByteArray; BufferSize: integer): integer; override;
+      function ReadData(Buffer: PByte; BufferSize: integer): integer; override;
       function IsEOF(): boolean; override;
       function IsError(): boolean; override;
   end;
@@ -350,7 +345,6 @@ begin
   inherited Create();
   Self.Engine := Engine;
   InternalLock := SDL_CreateMutex();
-  SoundEffects := TList.Create;
   Status := ssStopped;
   Reset();
 end;
@@ -363,7 +357,6 @@ begin
     SDL_DestroyMutex(InternalLock);
     InternalLock:=nil;
   end;
-  FreeAndNil(SoundEffects);
   inherited;
 end;
 
@@ -387,7 +380,6 @@ begin
   NeedsRewind := false;
 
   fVolume := 0;
-  SoundEffects.Clear;
   FadeInTime := 0;
 
   LastReadSize := 0;
@@ -453,6 +445,8 @@ begin
   Converter := TAudioConverter_FFmpeg.Create();
   {$ELSEIF Defined(UseSRCResample)}
   Converter := TAudioConverter_SRC.Create();
+  {$ELSEIF Defined(UseSWResample)}
+  Converter := TAudioConverter_SWResample.Create();
   {$ELSE}
   Converter := TAudioConverter_SDL.Create();
   {$IFEND}
@@ -578,19 +572,6 @@ begin
   SampleBufferPos := 0;
   SourceBufferCount := 0;
   LastReadSize := 0;
-end;
-
-procedure TGenericPlaybackStream.ApplySoundEffects(Buffer: PByteArray; BufferSize: integer);
-var
-  i: integer;
-begin
-  for i := 0 to SoundEffects.Count-1 do
-  begin
-    if (SoundEffects[i] <> nil) then
-    begin
-      TSoundEffect(SoundEffects[i]).Callback(Buffer, BufferSize);
-    end;
-  end;
 end;
 
 function TGenericPlaybackStream.ReadData(Buffer: PByteArray; BufferSize: integer): integer;
@@ -758,9 +739,6 @@ begin
       SourceBufferCount := SourceBufferCount - ConversionInputCount;
     end;
 
-    // apply effects
-    ApplySoundEffects(SampleBuffer, SampleBufferCount);
-
     // copy data to result buffer
     CopyCount := Min(BytesNeeded, SampleBufferCount);
     Move(SampleBuffer[0], Buffer[BufferSize - BytesNeeded], CopyCount);
@@ -860,25 +838,6 @@ begin
   begin
     Data[i] := Sqrt(Data[i]) / 100;
   end;
-end;
-
-procedure TGenericPlaybackStream.AddSoundEffect(Effect: TSoundEffect);
-begin
-  if (not assigned(Effect)) then
-    Exit;
-
-  LockSampleBuffer();
-  // check if effect is already in list to avoid duplicates
-  if (SoundEffects.IndexOf(Pointer(Effect)) = -1) then
-    SoundEffects.Add(Pointer(Effect));
-  UnlockSampleBuffer();
-end;
-
-procedure TGenericPlaybackStream.RemoveSoundEffect(Effect: TSoundEffect);
-begin
-  LockSampleBuffer();
-  SoundEffects.Remove(Effect);
-  UnlockSampleBuffer();
 end;
 
 {**
@@ -1071,7 +1030,7 @@ begin
   end;
 end;
 
-function TGenericVoiceStream.ReadData(Buffer: PByteArray; BufferSize: integer): integer;
+function TGenericVoiceStream.ReadData(Buffer: PByte; BufferSize: integer): integer;
 begin
   Result := -1;
 
@@ -1105,15 +1064,21 @@ function TAudioPlayback_SoftMixer.InitializePlayback: boolean;
 begin
   Result := false;
 
-  //Log.LogStatus('InitializePlayback', 'UAudioPlayback_SoftMixer');
-
   if (not InitializeAudioPlaybackEngine()) then
+  begin
+    Log.LogError('Could not initialize audio playback engine', 'UAudioPlayback_SoftMixer.InitializePlayback');
     Exit;
+  end;
 
   MixerStream := TAudioMixerStream.Create(Self);
 
   if (not StartAudioPlaybackEngine()) then
+  begin
+    Log.LogError('Could not start audio playback engine', 'UAudioPlayback_SoftMixer.InitializePlayback');
     Exit;
+  end;
+
+  Log.LogStatus('Opened audio device', 'UAudioPlayback_SoftMixer.InitializePlayback');
 
   Result := true;
 end;

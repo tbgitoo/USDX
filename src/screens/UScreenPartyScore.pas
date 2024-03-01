@@ -102,8 +102,8 @@ begin
   if (PressedDown) then
   begin // Key Down
     // check normal keys
-    case UCS4UpperCase(CharCode) of
-      Ord('Q'):
+    case PressedKey of
+      SDLK_Q:
         begin
           Result := false;
           Exit;

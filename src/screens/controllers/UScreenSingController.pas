@@ -83,12 +83,12 @@ type
 type
   TScreenSingController = class(TMenu)
   private
-
     StartNote, EndNote:     TPos;
 
     procedure LoadNextSong();
-
     procedure SongError();
+    procedure ResetLinesAndLyrics();
+    procedure ClearLyricEngines();
   public
     CheckPlayerConfigOnNextSong: boolean;
     eSongLoaded: THookableEvent; //< event is called after lyrics of a song are loaded on OnShow
@@ -250,8 +250,8 @@ begin
     + KMOD_LCTRL + KMOD_RCTRL + KMOD_LALT  + KMOD_RALT);
 
     // check normal keys
-    case UCS4UpperCase(CharCode) of
-      Ord('Q'):
+    case PressedKey of
+      SDLK_Q:
       begin
         // when not ask before exit then finish now
         if (Ini.AskbeforeDel <> 1) then
@@ -264,8 +264,8 @@ begin
         Exit;
       end;
 
-      //Restart and pause song
-      Ord('R'):
+      // restart song
+      SDLK_R:
       begin
         if ScreenSong.Mode = smMedley then Exit;
         for i1 := 0 to High(Player) do
@@ -300,13 +300,18 @@ begin
         begin
           Scores.AddPlayer(Tex_ScoreBG[i1], Color);
         end;
+
         LyricsState.SetCurrentTime(CurrentSong.Start);
+        LyricsState.UpdateBeats();
+        ClearLyricEngines;
+        ResetLinesAndLyrics;
+
         Scores.Init;
         Exit;
       end;
 
       // show visualization
-      Ord('V'):
+      SDLK_V:
       begin
         if fShowWebcam then
         begin
@@ -357,7 +362,7 @@ begin
       end;
 
       // show Webcam
-      Ord('W'):
+      SDLK_W:
       begin
         if (fShowWebCam = false) then
         begin
@@ -387,14 +392,14 @@ begin
       end;
 
       // pause
-      Ord('P'):
+      SDLK_P:
       begin
         Pause;
         Exit;
       end;
 
       // toggle time display: running time/remaining time/total time / SHIFT: show/hide time bar
-      Ord('T'):
+      SDLK_T:
       begin
         if (SDL_ModState = KMOD_LSHIFT) then
         begin
@@ -418,7 +423,7 @@ begin
       end;
 
       // skip intro / SHIFT: show/hide score display
-      Ord('S'):
+      SDLK_S:
       begin
         if (SDL_ModState = KMOD_LSHIFT) then
         begin
@@ -430,12 +435,15 @@ begin
         end
         else
         begin
-          if (AudioPlayback.Position < CurrentSong.gap / 1000 - 6) then
+          if (not CurrentSong.isDuet and (GetTimeFromBeat(Lyrics.GetUpperLine().StartNote) - AudioPlayback.Position > 6)) then
           begin
-            AudioPlayback.SetPosition(CurrentSong.gap / 1000.0 - 5.0);
-            MidiPlayback.SetPosition(CurrentSong.gap / 1000.0 - 5.0);
-              if (Assigned(fCurrentVideo)) then
-                 fCurrentVideo.Position := CurrentSong.VideoGAP + CurrentSong.Start + (CurrentSong.gap / 1000.0 - 5.0);
+
+            AudioPlayback.SetPosition(GetTimeFromBeat(Lyrics.GetUpperLine().StartNote) - 5);
+            MidiPlayback.SetPosition(GetTimeFromBeat(Lyrics.GetUpperLine().StartNote) - 5);
+          end
+          else if (CurrentSong.isDuet and (GetTimeFromBeat(min(LyricsDuetP1.GetUpperLine().StartNote, LyricsDuetP2.GetUpperLine().StartNote)) - AudioPlayback.Position > 6)) then
+          begin
+            AudioPlayback.SetPosition(GetTimeFromBeat(min(LyricsDuetP1.GetUpperLine().StartNote, LyricsDuetP2.GetUpperLine().StartNote)) - 5);
           end;
           if (AudioPlayback.Position = 0) then
           begin
@@ -453,7 +461,7 @@ begin
       end;
 
       // SHIFT: show/hide oscilloscope
-      Ord('O'):
+      SDLK_O:
       begin
         if (SDL_ModState = KMOD_LSHIFT) then
         begin
@@ -466,7 +474,7 @@ begin
       end;
 
       // SHIFT: show/hide notes
-      Ord('N'):
+      SDLK_N:
       begin
         if (SDL_ModState = KMOD_LSHIFT) then
         begin
@@ -479,7 +487,7 @@ begin
       end;
 
       // SHIFT: show/hide notes
-      Ord('L'):
+      SDLK_L:
       begin
         if (SDL_ModState = KMOD_LSHIFT) then
         begin
@@ -492,7 +500,7 @@ begin
       end;
 
       // SHIFT: show/hide avatars and player names
-      Ord('A'):
+      SDLK_A:
       begin
         if (SDL_ModState = KMOD_LSHIFT) then
         begin
@@ -513,7 +521,7 @@ begin
       end;
 
       // SHIFT: show/hide microphone input/sung notes
-      Ord('I'):
+      SDLK_I:
       begin
         if (SDL_ModState = KMOD_LSHIFT) then
         begin
@@ -526,7 +534,7 @@ begin
       end;
 
       // SHIFT: show/hide (toggle) all display elements
-      Ord('H'):
+      SDLK_H:
       begin
         if (SDL_ModState = KMOD_LSHIFT) then
         begin
@@ -569,9 +577,13 @@ begin
       SDLK_RIGHT:
       begin
         if (SDL_ModState = KMOD_LCTRL) then // seek 5 seconds forward
+<<<<<<< HEAD
         AudioPlayback.SetPosition(AudioPlayback.Position + 5.0);
         MidiPlayback.SetPosition(MidiPlayback.Position + 5.0);
 
+=======
+          AudioPlayback.SetPosition(AudioPlayback.Position + 5.0);
+>>>>>>> upstream/master
         if (Assigned(fCurrentVideo)) then
           fCurrentVideo.Position := AudioPlayback.Position + 5.0;
           if AudioPlayback.Position = 0 then
@@ -581,9 +593,15 @@ begin
       SDLK_LEFT:
       begin
         if (SDL_ModState = KMOD_LCTRL) then // seek 5 seconds backward and reset scores to avoid cheating
+<<<<<<< HEAD
 	begin
 	if (AudioPlayback.Position < 20.0) and (MidiPlayback.Position < 20.0) then
 	  exit;
+=======
+        begin
+          if (AudioPlayback.Position < 20.0) then
+          exit;
+>>>>>>> upstream/master
         for i1 := 0 to High(Player) do
         with Player[i1] do
         begin
@@ -608,13 +626,19 @@ begin
         begin
           Scores.AddPlayer(Tex_ScoreBG[i1], Color);
         end;
-	Scores.Init;
+        Scores.Init;
 
         AudioPlayback.SetPosition(AudioPlayback.Position - 5.0);
+<<<<<<< HEAD
         MidiPlayback.SetPosition(AudioPlayback.Position);
 	LyricsState.SetCurrentTime(AudioPlayback.Position - 5.0);
 	Lyrics.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
 	LyricsState.UpdateBeats();
+=======
+        LyricsState.SetCurrentTime(AudioPlayback.Position - 5.0);
+        ClearLyricEngines;
+        LyricsState.UpdateBeats();
+>>>>>>> upstream/master
         if (Assigned(fCurrentVideo)) then
           fCurrentVideo.Position := AudioPlayback.Position - 5.0;
         end;
@@ -1094,11 +1118,7 @@ begin
   success := false;
   // FIXME: bad style, put the try-except into loadsong() and not here
   try
-    // check if file is xml
-    if CurrentSong.FileName.GetExtension.ToUTF8 = '.xml' then
-      success := CurrentSong.AnalyseXML and CurrentSong.LoadXMLSong()
-    else
-      success := CurrentSong.Analyse(false, ScreenSong.DuetChange); // and CurrentSong.LoadSong();
+    success := CurrentSong.Analyse(false, ScreenSong.DuetChange); // and CurrentSong.LoadSong();
   except
     on E: EInOutError do Log.LogWarn(E.Message, 'TScreenSing.LoadNextSong');
   end;
@@ -1155,10 +1175,10 @@ begin
   if (Ini.VideoEnabled = 1) and CurrentSong.Video.IsSet() and VideoFile.IsFile then
   begin
     fVideoClip := VideoPlayback.Open(VideoFile);
-    fCurrentVideo := fVideoClip;
-    fCurrentVideo.SetAspectCorrection(BackgroundAspectCorrection);
     if (fVideoClip <> nil) then
     begin
+      fCurrentVideo := fVideoClip;
+      fCurrentVideo.SetAspectCorrection(BackgroundAspectCorrection);
       fShowVisualization := false;
       if ScreenSong.Mode = smMedley then
         fCurrentVideo.Position := CurrentSong.VideoGAP + MedleyStart
@@ -1247,9 +1267,7 @@ begin
   AudioInput.CaptureStart;
 
   // main text
-  Lyrics.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
-  LyricsDuetP1.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
-  LyricsDuetP2.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
+  ClearLyricEngines;
 
   if (CurrentSong.isDuet) and (PlayersPlay <> 1) then
   begin
@@ -1314,6 +1332,26 @@ begin
 
   if (ScreenSong.Mode = smMedley) and (PlaylistMedley.CurrentMedleySong>1) then
     onShowFinish;
+end;
+
+// Forces the notes (lines) and lyrics to reset to the start of the song
+procedure TScreenSingController.ResetLinesAndLyrics();
+var
+  i1: integer;
+
+begin
+  for i1 := 0 to PlayersPlay - 1 do
+  begin
+    Tracks[i1].CurrentLine := 0;
+    OnSentenceChange(i1, 0);
+  end;
+end;
+
+procedure TScreenSingController.ClearLyricEngines();
+begin
+    Lyrics.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
+    LyricsDuetP1.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
+    LyricsDuetP2.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
 end;
 
 procedure TScreenSingController.ClearSettings;

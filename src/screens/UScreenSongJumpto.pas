@@ -200,6 +200,7 @@ begin
   if (fVisible = false) and (Value = true) then
     OnShow;
 
+  SetTextInput(Value);
   fVisible := Value;
 end;
 
