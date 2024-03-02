@@ -7,7 +7,7 @@ test -n "$srcdir" && cd "$srcdir"
 
 echo "Updating build configuration files for USDX, please wait..."
 
-autoreconf --verbose --install --symlink --force
+autoreconf --verbose --install --force
 if ! [ -e dists/autogen/config.sub ] ; then
 	# autoreconf < 2.70 relied on automake to install aux files
 	# but didn't run it in projects that don't use automake macros

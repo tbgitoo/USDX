@@ -577,13 +577,13 @@ begin
       SDLK_RIGHT:
       begin
         if (SDL_ModState = KMOD_LCTRL) then // seek 5 seconds forward
-<<<<<<< HEAD
+        begin
         AudioPlayback.SetPosition(AudioPlayback.Position + 5.0);
         MidiPlayback.SetPosition(MidiPlayback.Position + 5.0);
 
-=======
-          AudioPlayback.SetPosition(AudioPlayback.Position + 5.0);
->>>>>>> upstream/master
+        end;
+
+
         if (Assigned(fCurrentVideo)) then
           fCurrentVideo.Position := AudioPlayback.Position + 5.0;
           if AudioPlayback.Position = 0 then
@@ -593,15 +593,11 @@ begin
       SDLK_LEFT:
       begin
         if (SDL_ModState = KMOD_LCTRL) then // seek 5 seconds backward and reset scores to avoid cheating
-<<<<<<< HEAD
+
 	begin
 	if (AudioPlayback.Position < 20.0) and (MidiPlayback.Position < 20.0) then
 	  exit;
-=======
-        begin
-          if (AudioPlayback.Position < 20.0) then
-          exit;
->>>>>>> upstream/master
+
         for i1 := 0 to High(Player) do
         with Player[i1] do
         begin
@@ -629,16 +625,10 @@ begin
         Scores.Init;
 
         AudioPlayback.SetPosition(AudioPlayback.Position - 5.0);
-<<<<<<< HEAD
-        MidiPlayback.SetPosition(AudioPlayback.Position);
-	LyricsState.SetCurrentTime(AudioPlayback.Position - 5.0);
-	Lyrics.Clear(CurrentSong.BPM[0].BPM, CurrentSong.Resolution);
-	LyricsState.UpdateBeats();
-=======
+        MidiPlayback.SetPosition(AudioPlayback.Position-5.0);
         LyricsState.SetCurrentTime(AudioPlayback.Position - 5.0);
         ClearLyricEngines;
         LyricsState.UpdateBeats();
->>>>>>> upstream/master
         if (Assigned(fCurrentVideo)) then
           fCurrentVideo.Position := AudioPlayback.Position - 5.0;
         end;
