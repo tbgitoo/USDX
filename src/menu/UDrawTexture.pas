@@ -167,7 +167,7 @@ begin
       glTexCoord2f(TexX2*TexW, TexY1*TexH); glVertex3f(x4, y4, z);
     glEnd;
     }
-    Log.logStatus('UDrawTexture','DrawTexture2');
+    //Log.logStatus('UDrawTexture','DrawTexture2');
     glBegin(GL_QUADS);
       glTexCoord2f(TexX1*TexW, TexY1*TexH);
       glVertex3f(x1, y1 + (y2 - (LeftScale * (y2))), z);

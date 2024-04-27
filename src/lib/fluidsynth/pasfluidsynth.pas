@@ -610,19 +610,31 @@ begin
 	settings := NIL;
 	synth := NIL;
 	libname := 'libfluidsynth.' + SharedSuffix;
+        Log.LogStatus('pasfluidsynth', 'Loading '+libname);
 	lib := SafeLoadLibrary(libname);
+        Log.LogStatus('pasfluidsynth', 'Loading '+libname+' 1 attempt');
 	if lib = 0 then begin
 		libname := 'libfluidsynth-3.' + SharedSuffix;
 		lib := SafeLoadLibrary(libname);
+                Log.LogStatus('pasfluidsynth', 'Loading '+libname+' 2 attempts');
+                if lib = 0 then begin
+                    libname := 'libfluidsynth.3.'+SharedSuffix;
+			lib := SafeLoadLibrary(libname);
+                        Log.LogStatus('pasfluidsynth', 'Loading '+libname+' 3.5 attempts');
+
+
     	if lib = 0 then begin
 			libname := 'libfluidsynth.' + SharedSuffix + '.3';
 			lib := SafeLoadLibrary(libname);
+                        Log.LogStatus('pasfluidsynth', 'Loading '+libname+' 3 attempts');
 	    	if lib = 0 then begin
 				libname := 'libfluidsynth-2.' + SharedSuffix;
 				lib := SafeLoadLibrary(libname);
+                                Log.LogStatus('pasfluidsynth', 'Loading '+libname+' 4 attempts');
 				if lib = 0 then begin
 					libname := 'libfluidsynth.' + SharedSuffix + '.2';
 					lib := SafeLoadLibrary(libname);
+                                        Log.LogStatus('pasfluidsynth', 'Loading '+libname+' 5 attempts');
 					if lib = 0 then begin
 						libname := 'fluidsynth.' + SharedSuffix;
 						lib := SafeLoadLibrary(libname);
@@ -635,7 +647,9 @@ begin
 			end;
 		end;
 	end;
-	status := 'Loaded ' + libname;
+
+        end;
+        status := 'Loaded ' + libname;
         Log.LogStatus('pasfluidsynth', status);
 
         _GetFuncs();

@@ -277,7 +277,7 @@ begin
     Exit;
 
   GLFont := @Fonts[CurrentFont.FontFamily][CurrentFont.FontStyle];
-  Log.logStatus('TextGL','glPrint');
+  //Log.logStatus('TextGL','glPrint');
   {$IFDEF UseOpenGLES}
   {$ELSE}
   glPushMatrix();

@@ -1457,6 +1457,7 @@ var
   IntensityDropAfterPeak: integer;
   IntensityTestTimeAfterPeakChannel: integer;
 begin
+  Log.LogStatus('UIni', 'InputdeviceConfigs: '+IntToStr(High(InputDeviceConfig)));
   for DeviceIndex := 0 to High(InputDeviceConfig) do
   begin
     // DeviceName and DeviceInput

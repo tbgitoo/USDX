@@ -267,7 +267,7 @@ end;
  begin
    midi_port_name:='fluidsynth_ultrastar_midi_port';
    presentSoundFontID:=-1;
-
+   Log.LogStatus('UFluidSynth', 'Call to TFluidSynth.Create');
    fluidsynth := TFluidSynth.Create();
    fluidsynth.settings := fluidsynth.new_fluid_settings();
    if(fluidsynth.settings=nil) then Log.LogStatus('UFluidSynth', 'Could not create settings');
@@ -275,7 +275,7 @@ end;
    // with libfluidsynth, only the executable), but anyways, we need to treat the midi messages
    // to get the keys being hit, and so we need to shuffle the midi messages to
    // fluidsynth AND analyse them.
-   Log.LogStatus('UFluidSynthAndroid', 'settings created');
+   Log.LogStatus('UFluidSynth', 'settings created');
 
    fluidsynth.fluid_settings_setstr(fluidsynth.settings,'midi.portname',midi_port_name);
 
@@ -691,7 +691,7 @@ end;
     channel:=fluidsynth.fluid_midi_event_get_channel(midiEvent);  // midi channel, from 0 to 15, 9 is percussion
     eventType:=fluidsynth.fluid_midi_event_get_type(midiEvent);
 
-    ConsoleWriteln(IntToStr(eventType));
+    //ConsoleWriteln(IntToStr(eventType));
     result:=0;
   end;
 
