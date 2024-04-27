@@ -113,7 +113,6 @@ type
     procedure FindFilesByExtension(const Dir: IPath; const Ext: IPath; Recursive: Boolean; var Files: TPathDynArray);
     procedure BrowseDir(Dir: IPath); // should return number of songs in the future
     procedure BrowseTXTFiles(Dir: IPath);
-    procedure BrowseXMLFiles(Dir: IPath);
     procedure Sort(Order: TSortingType);
     property  Processing: boolean read fProcessing;
   end;
@@ -267,7 +266,6 @@ end;
 procedure TSongs.BrowseDir(Dir: IPath);
 begin
   BrowseTXTFiles(Dir);
-  BrowseXMLFiles(Dir);
 end;
 
 procedure TSongs.FindFilesByExtension(const Dir: IPath; const Ext: IPath; Recursive: Boolean; var Files: TPathDynArray);
@@ -316,33 +314,6 @@ begin
     Song := TSong.Create(Files[I]);
 
     if Song.Analyse then
-      SongList.Add(Song)
-    else
-    begin
-      Log.LogError('AnalyseFile failed for "' + Files[I].ToNative + '".');
-      FreeAndNil(Song);
-    end;
-  end;
-
-  SetLength(Files, 0);
-end;
-
-procedure TSongs.BrowseXMLFiles(Dir: IPath);
-var
-  I: integer;
-  Files: TPathDynArray;
-  Song: TSong;
-  Extension: IPath;
-begin
-  SetLength(Files, 0);
-  Extension := Path('.xml');
-  FindFilesByExtension(Dir, Extension, true, Files);
-
-  for I := 0 to High(Files) do
-  begin
-    Song := TSong.Create(Files[I]);
-
-    if Song.AnalyseXML then
       SongList.Add(Song)
     else
     begin
@@ -903,8 +874,7 @@ var
   WordArray: array of UTF8String;
 begin
 
-  FilterStr := Trim(LowerCase(FilterStr));
-  FilterStr := GetStringWithNoAccents(FilterStr);
+  FilterStr := Trim(LowerCase(TransliterateToASCII(FilterStr)));
 
   if (FilterStr <> '') then
   begin
@@ -933,21 +903,21 @@ begin
       begin
         case Filter of
           fltAll:
-            TmpString := Song[I].ArtistNoAccent + ' ' + Song[i].TitleNoAccent + ' ' + Song[i].LanguageNoAccent + ' ' + Song[i].EditionNoAccent + ' ' + Song[i].GenreNoAccent + ' ' + IntToStr(Song[i].Year) + ' ' + Song[i].CreatorNoAccent; //+ ' ' + Song[i].Folder;
+            TmpString := Song[I].ArtistASCII + ' ' + Song[i].TitleASCII + ' ' + Song[i].LanguageASCII + ' ' + Song[i].EditionASCII + ' ' + Song[i].GenreASCII + ' ' + IntToStr(Song[i].Year) + ' ' + Song[i].CreatorASCII; //+ ' ' + Song[i].Folder;
           fltTitle:
-            TmpString := Song[I].TitleNoAccent;
+            TmpString := Song[I].TitleASCII;
           fltArtist:
-            TmpString := Song[I].ArtistNoAccent;
+            TmpString := Song[I].ArtistASCII;
           fltLanguage:
-            TmpString := Song[I].LanguageNoAccent;
+            TmpString := Song[I].LanguageASCII;
           fltEdition:
-            TmpString := Song[I].EditionNoAccent;
+            TmpString := Song[I].EditionASCII;
           fltGenre:
-            TmpString := Song[I].GenreNoAccent;
+            TmpString := Song[I].GenreASCII;
           fltYear:
             TmpString := IntToStr(Song[I].Year);
           fltCreator:
-            TmpString := Song[I].CreatorNoAccent;
+            TmpString := Song[I].CreatorASCII;
         end;
         Song[i].Visible := true;
         // Look for every searched word

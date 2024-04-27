@@ -39,6 +39,7 @@ uses
   UFilesystem,
   UGraphicClasses,
   UIni,
+  UMain,
   UMenu,
   UMenuText,
   UMusic,
@@ -1469,6 +1470,7 @@ begin
           TextPosition := LengthUTF8(BackupEditText);
           editLengthText := LengthUTF8(BackupEditText);
           TextEditMode := true;
+          StartTextInput;
         end;
 
       SDLK_F5:
@@ -1480,6 +1482,7 @@ begin
           TextPosition := LengthUTF8(BackupEditText);
           editLengthText := LengthUTF8(BackupEditText);
           BPMEditMode := true;
+          StartTextInput;
         end;
 
       SDLK_SPACE:
@@ -1534,6 +1537,7 @@ begin
              CurrentSlideId := TitleSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              TitleEditMode := true;
+             StartTextInput;
            end;
 
            if Interaction = ArtistSlideId then
@@ -1544,6 +1548,7 @@ begin
              CurrentSlideId := ArtistSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              ArtistEditMode := true;
+             StartTextInput;
            end;
 
            if Interaction = LanguageSlideId then
@@ -1554,6 +1559,7 @@ begin
              CurrentSlideId := LanguageSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              LanguageEditMode := true;
+             StartTextInput;
            end;
 
            if Interaction = EditionSlideId then
@@ -1564,6 +1570,7 @@ begin
              CurrentSlideId := EditionSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              EditionEditMode := true;
+             StartTextInput;
            end;
 
            if Interaction = GenreSlideId then
@@ -1574,6 +1581,7 @@ begin
              CurrentSlideId := GenreSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              GenreEditMode := true;
+             StartTextInput;
            end;
 
            if Interaction = YearSlideId then
@@ -1584,6 +1592,7 @@ begin
              CurrentSlideId := YearSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              YearEditMode := true;
+             StartTextInput;
            end;
 
            if Interaction = CreatorSlideId then
@@ -1594,6 +1603,7 @@ begin
              CurrentSlideId := CreatorSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              CreatorEditMode := true;
+             StartTextInput;
            end;
 
            // Interaction = 7 // Mp3SlideId
@@ -1610,6 +1620,7 @@ begin
              CurrentSlideId := BPMSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              BPMEditMode := true;
+             StartTextInput;
            end;
 
            // Interaction = 13 // GAPSlideId
@@ -1626,6 +1637,7 @@ begin
              CurrentSlideId := MedleyStartSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              P1EditMode := true;
+             StartTextInput;
            end;
 
            if Interaction = MedleyEndSlideId then
@@ -1636,6 +1648,7 @@ begin
              CurrentSlideId := MedleyEndSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              P2EditMode := true;
+             StartTextInput;
            end;
 
            // Interaction = 20 // StartSlideId
@@ -1650,6 +1663,7 @@ begin
              CurrentSlideId := LyricSlideId;
              TextPosition := LengthUTF8(BackupEditText);
              TextEditMode := true;
+             StartTextInput;
            end;
 
            if Interaction = 29 then // UndoButtonId
@@ -2236,6 +2250,7 @@ begin
           CreatorEditMode := false;
           P1EditMode := false;
           P2EditMode := false;
+          StopTextInput;
           editLengthText := 0;
           TextPosition := -1;
         end;
@@ -2355,6 +2370,7 @@ begin
           P1EditMode := false;
           P2EditMode := false;
           TextEditMode := false;
+          StopTextInput;
           editLengthText := 0;
           TextPosition := -1;
           CurrentSlideId := -1;
@@ -2414,6 +2430,7 @@ begin
             // divide note
             DivideNote(false);
             TextEditMode := false;
+            StopTextInput;
             EditorLyrics[CurrentTrack].AddLine(CurrentTrack, Tracks[CurrentTrack].CurrentLine);
             EditorLyrics[CurrentTrack].Selected := CurrentNote[CurrentTrack];
             GoldenRec.KillAll;
@@ -2455,6 +2472,7 @@ begin
           // exit BPM edit mode, restore previous BPM value
           SelectsS[CurrentSlideId].TextOpt[0].Text := FloatToStr(CurrentSong.BPM[0].BPM / 4);
           BPMEditMode := false;
+          StopTextInput;
           editLengthText := 0;
           TextPosition := -1;
         end;
@@ -2478,6 +2496,7 @@ begin
           end;
 
           BPMEditMode := false;
+          StopTextInput;
           editLengthText := 0;
           TextPosition := -1;
           CurrentSlideId := -1;
@@ -4617,19 +4636,12 @@ begin
   SetLength(Undoheader, 0);
 
   try
-    //Check if File is XML
-    FileExt := CurrentSong.FileName.GetExtension;
-    if FileExt.ToUTF8 = '.xml' then
-      Error := not CurrentSong.LoadXMLSong()
-    else
-    begin
-      // reread header with custom tags
-      Error := not CurrentSong.Analyse(true, false);
+    // reread header with custom tags
+    Error := not CurrentSong.Analyse(true, false);
 
-      // with the duet/medley code, TSong.Analyse is already loading the song
-      //if not Error then
-      //  Error := not CurrentSong.LoadSong(false);
-    end;
+    // with the duet/medley code, TSong.Analyse is already loading the song
+    //if not Error then
+    //  Error := not CurrentSong.LoadSong(false);
   except
     Error := true;
   end;
@@ -5007,6 +5019,7 @@ begin
   P1EditMode := false;
   P2EditMode := false;
   BPMEditMode := false;
+  StopTextInput;
 
   editLengthText := 0;
   TextPosition := -1;

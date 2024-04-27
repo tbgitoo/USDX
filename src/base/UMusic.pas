@@ -231,17 +231,6 @@ type
   end;
 
 type
-  TSoundEffect = class
-    public
-      EngineData: Pointer; // can be used for engine-specific data
-      procedure Callback(Buffer: PByteArray; BufSize: integer); virtual; abstract;
-  end;
-
-  TVoiceRemoval = class(TSoundEffect)
-    public
-      procedure Callback(Buffer: PByteArray; BufSize: integer); override;
-  end;
-
   TSoundFX = class
     public
       EngineData: Pointer; // can be used for engine-specific data
@@ -297,7 +286,7 @@ type
       function IsEOF(): boolean;            virtual; abstract;
       function IsError(): boolean;          virtual; abstract;
     public
-      function ReadData(Buffer: PByteArray; BufferSize: integer): integer; virtual; abstract;
+      function ReadData(Buffer: PByte; BufferSize: integer): integer; virtual; abstract;
 
       property EOF: boolean read IsEOF;
       property Error: boolean read IsError;
@@ -347,9 +336,6 @@ type
 
       procedure GetFFTData(var data: TFFTData);          virtual; abstract;
       function GetPCMData(var data: TPCMData): Cardinal; virtual; abstract;
-
-      procedure AddSoundEffect(Effect: TSoundEffect);    virtual; abstract;
-      procedure RemoveSoundEffect(Effect: TSoundEffect); virtual; abstract;
 
       procedure AddSoundFX(FX: TSoundFX);    virtual; abstract;
       procedure RemoveSoundFX(FX: TSoundFX); virtual; abstract;
@@ -806,7 +792,7 @@ begin
     CurrentAudioDecoder := InterfaceList[i] as IAudioDecoder;
     if (not CurrentAudioDecoder.InitializeDecoder()) then
     begin
-      Log.LogError('Initialize failed, Removing - '+ CurrentAudioDecoder.GetName);
+      Log.LogError('Initialize failed, Removing decoder: '+ CurrentAudioDecoder.GetName);
       MediaManager.Remove(CurrentAudioDecoder);
     end;
   end;
@@ -826,7 +812,7 @@ begin
       DefaultAudioPlayback := CurrentAudioPlayback;
       break;
     end;
-    Log.LogError('Initialize failed, Removing - '+ CurrentAudioPlayback.GetName);
+    Log.LogError('Initialize failed, Removing playback: '+ CurrentAudioPlayback.GetName);
     MediaManager.Remove(CurrentAudioPlayback);
   end;
 
@@ -841,7 +827,7 @@ begin
       DefaultAudioInput := CurrentAudioInput;
       break;
     end;
-    Log.LogError('Initialize failed, Removing - '+ CurrentAudioInput.GetName);
+    Log.LogError('Initialize failed, Removing input: '+ CurrentAudioInput.GetName);
     MediaManager.Remove(CurrentAudioInput);
   end;
 
@@ -1055,33 +1041,6 @@ begin
   If (Soundlib.BGMusic <> nil) then
   begin
     Soundlib.BGMusic.Pause;
-  end;
-end;
-
-{ TVoiceRemoval }
-
-procedure TVoiceRemoval.Callback(Buffer: PByteArray; BufSize: integer);
-var
-  FrameIndex, FrameSize: integer;
-  Value: integer;
-  Sample: PPCMStereoSample;
-begin
-  FrameSize := 2 * SizeOf(SmallInt);
-  for FrameIndex := 0 to (BufSize div FrameSize)-1 do
-  begin
-    Sample := PPCMStereoSample(Buffer);
-    // channel difference
-    Value := Sample[0] - Sample[1];
-    // clip
-    if (Value > High(SmallInt)) then
-      Value := High(SmallInt)
-    else if (Value < Low(SmallInt)) then
-      Value := Low(SmallInt);
-    // assign result
-    Sample[0] := Value;
-    Sample[1] := Value;
-    // increase to next frame
-    Inc(PByte(Buffer), FrameSize);
   end;
 end;
 

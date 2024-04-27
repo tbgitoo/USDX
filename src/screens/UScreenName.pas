@@ -131,6 +131,7 @@ uses
   UHelp,
   ULanguage,
   ULog,
+  UMain,
   UMenuButton,
   UPath,
   USkins,
@@ -147,6 +148,7 @@ begin
   Result := true;
 
   inherited ParseMouse(MouseButton, BtnDown, X, Y);
+  SetTextInput(Button[PlayerName].Selected);
 
   // transfer mousecords to the 800x600 raster we use to draw
   X := Round((X / (ScreenW / Screens)) * RenderW);
@@ -294,8 +296,8 @@ begin
     if (not Button[PlayerName].Selected) then
     begin
       // check normal keys
-      case UCS4UpperCase(CharCode) of
-        Ord('Q'):
+      case PressedKey of
+        SDLK_Q:
           begin
             Result := false;
             Exit;
@@ -347,6 +349,7 @@ begin
 
       SDLK_ESCAPE :
         begin
+          StopTextInput;
           Ini.SaveNames;
           AudioPlayback.PlaySound(SoundLib.Back);
           if GoTo_SingScreen then
@@ -357,6 +360,7 @@ begin
 
       SDLK_RETURN:
         begin
+          StopTextInput;
           Ini.Players := CountIndex;
           PlayersPlay:= UIni.IPlayersVals[CountIndex];
 
@@ -409,6 +413,8 @@ begin
 
           if GoTo_SingScreen then
           begin
+            // if we've been in the player screen, we need to show the warning again
+            ScreenSing.CheckPlayerConfigOnNextSong := true;
             FadeTo(@ScreenSing);
             GoTo_SingScreen := false;
           end
@@ -425,11 +431,13 @@ begin
       SDLK_DOWN:
       begin
         InteractNext;
+        SetTextInput(Button[PlayerName].Selected);
       end;
 
       SDLK_UP:
       begin
         InteractPrev;
+        SetTextInput(Button[PlayerName].Selected);
       end;
 
       SDLK_RIGHT:
@@ -798,7 +806,7 @@ begin
 
   for I := 0 to UIni.IMaxPlayerCount -1 do
   begin
-    PlayerCurrentAvatar[I] := AddStatic(Theme.Name.PlayerSelectAvatar[I]);
+    PlayerCurrentAvatar[I] := AddStaticRectangle(Theme.Name.PlayerSelectAvatar[I]);
     PlayerCurrent[I] := AddStatic(Theme.Name.PlayerSelect[I]);
     PlayerCurrentText[I] := AddText(Theme.Name.PlayerSelectText[I]);
   end;
