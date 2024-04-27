@@ -693,8 +693,12 @@ begin
   inherited Create;
   ScreenSing := self;
   screenSingViewRef := TScreenSingView.Create();
+<<<<<<< HEAD
 
+
+=======
   CheckPlayerConfigOnNextSong := true;
+>>>>>>> upstream/master
   // for now: default to letterbox but preserve aspect between songs
   BackgroundAspectCorrection := acoLetterBox;
 
