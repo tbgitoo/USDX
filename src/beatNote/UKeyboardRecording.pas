@@ -40,7 +40,8 @@ uses
   UCommon,
   UUnicodeUtils,
   UMusic,
-  UIni;
+  UIni,
+  sysutils;
 
 // Class for recording keyboard events relevant
 //for beat note playing with keyboard keys
@@ -107,12 +108,17 @@ var
 begin
    for count:= 0 to high(IKeyPlayLetters) do
    begin
-
-      if UCS4UpperCase(CharCode)=Ord(keysRecorded[count]) then
+      if Ord(UpCase(Chr(PressedKey)))=Ord(keysRecorded[count]) then
          if PressedDown then
             if not statePressed[count] then // Newly detected, set time as well
+               begin
                statePressed[count] :=true;
                beatRecorded[count] :=LyricsState.MidBeatD;
+
+
+               end;
+
+
    end;
 
 
