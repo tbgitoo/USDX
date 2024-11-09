@@ -252,7 +252,7 @@ Project_IS_TOP_LEVEL:STATIC=ON
 Project_SOURCE_DIR:STATIC=/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/src/main/cpp
 
 //Dependencies for the target
-gl2jni_LIB_DEPENDS:STATIC=general;test;general;android;general;log;general;EGL;general;GLESv2;general;SDL3;general;sdl3_image;
+gl2jni_LIB_DEPENDS:STATIC=general;USDX;general;android;general;log;general;EGL;general;GLESv3;general;SDL3;general;sdl3_image;general;sqlite3;general;lua;general;fluidsynth;general;cplusplus;general;avformat;general;avcodec;general;avutil;general;swresample;general;freetype;general;swscale;
 
 
 ########################

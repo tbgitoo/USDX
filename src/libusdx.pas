@@ -215,7 +215,6 @@ uses
   URecord           in 'base\URecord.pas',
   UTime             in 'base\UTime.pas',
   USong             in 'base\USong.pas',
-  UXMLSong          in 'base\UXMLSong.pas',
   USongs            in 'base\USongs.pas',
   UIni              in 'base\UIni.pas',
   UImage            in 'base\UImage.pas',
@@ -441,6 +440,10 @@ UPlatformAndroid   in 'base\UPlatformAndroid.pas',
 
 
   UScreenAbout            in 'screens\UScreenAbout.pas',
+
+  // Third partie libraries
+
+  AnyAscii               in 'lib\anyascii\anyascii.pas',
 
   SysUtils;
 

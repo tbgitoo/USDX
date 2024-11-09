@@ -1,5 +1,5 @@
 {***************************************************************** 
- * Configuration file for ultrastardx 2023.6.0+dev
+ * Configuration file for ultrastardx 2024.3.0+dev
  * src/config-android.inc.  Generated from config.inc.in by configure.
  *****************************************************************}
 

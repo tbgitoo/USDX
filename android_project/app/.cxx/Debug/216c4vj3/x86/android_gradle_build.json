@@ -24,8 +24,8 @@
       "output": "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/build/intermediates/cxx/Debug/216c4vj3/obj/x86/libgl2jni.so",
       "runtimeFiles": [
         "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libUSDX.so",
-        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libSDL3.so",
-        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libSDL3_image.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libSDL2.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libSDL2_image.so",
         "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libsqlite3.so",
         "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/liblua5.4.6.so",
         "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/x86/libfluidsynth.so",

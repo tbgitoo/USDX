@@ -13,15 +13,15 @@ set_target_properties (USDX
         PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libUSDX.so)
 
-add_library (SDL3 SHARED IMPORTED)
-set_target_properties (SDL3
+add_library (SDL2 SHARED IMPORTED)
+set_target_properties (SDL2
         PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libSDL3.so)
+        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libSDL2.so)
 
-add_library (sdl3_image SHARED IMPORTED)
-set_target_properties (sdl3_image
+add_library (sdl2_image SHARED IMPORTED)
+set_target_properties (sdl2_image
         PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libSDL3_image.so)
+        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libSDL2_image.so)
 
 add_library (sqlite3 SHARED IMPORTED)
 set_target_properties (sqlite3
@@ -87,8 +87,8 @@ target_link_libraries(gl2jni
                       log 
                       EGL
                       GLESv3
-                      SDL3
-                      sdl3_image
+                      SDL2
+                      sdl2_image
                       sqlite3
                       lua
                       fluidsynth

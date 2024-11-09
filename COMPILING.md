@@ -169,7 +169,12 @@ in the SDL folder created, execute build-scripts/android-prefab.sh and find libS
 
 git clone --branch SDL2 https://github.com/libsdl-org/SDL_image
 
-in the SDL_image folder created, execute build-scripts/android-prefab.sh, find libSL2_image.so for each architecture along the includes and .pc files. There may be some issues that you need to debug in the script itself, for example setting an sdl_build_root variable in the script so that it points to the build-android-prefab in the SLD folder from above, and also checking whether the script can find SDL_image.h, it may be in the include. Also, you need to run the download.sh script in the external folder to get the necessary libraries
+in the SDL_image folder created, execute build-scripts/android-prefab.sh, find libSL2_image.so for each architecture along the includes and .pc files. There may be some issues that you need to debug in the script itself, for example setting an sdl_build_root variable in the script so that it points to the build-android-prefab in the SLD folder from above, and also checking whether the script can find SDL_image.h, it may be in the include. Also, you need to run the download.sh script in the external folder to get the necessary libraries.
+
+More in detail:
+
+ add a line sdl_build_root="<SDL2 path>/build-android-prefab" where the SDL path is the absolute path to the SDL2 source library, to android-prefab.sh
+ and possibly correct the location of SDL_image.h, by finding expressions of the type "${sdlimage_root}/SDL_image.h" and replacing them with "${sdlimage_root}/include/SDL_image.h"
 
 
 

@@ -23,9 +23,19 @@
       "artifactName": "gl2jni",
       "output": "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/build/intermediates/cxx/Debug/216c4vj3/obj/arm64-v8a/libgl2jni.so",
       "runtimeFiles": [
-        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libtest.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libUSDX.so",
         "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libSDL3.so",
-        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libSDL3_image.so"
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libSDL3_image.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libsqlite3.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/liblua5.4.6.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libfluidsynth.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/lib/libc++_shared.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libavformat.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libavcodec.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libavutil.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libswresample.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libfreetype.so",
+        "/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/libs/arm64-v8a/libswscale.so"
       ]
     }
   },
