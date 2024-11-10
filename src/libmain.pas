@@ -460,7 +460,6 @@ UPlatformAndroid   in 'base\UPlatformAndroid.pas',
 function SDL_main(argc: integer; argv: PPChar): integer;
 begin
 
-
    if not setupGraphicsAndroid then exit(1);
 
 
