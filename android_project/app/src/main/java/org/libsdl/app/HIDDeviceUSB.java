@@ -124,16 +124,16 @@ class HIDDeviceUSB implements HIDDevice {
         for (int j = 0; j < iface.getEndpointCount(); j++) {
             UsbEndpoint endpt = iface.getEndpoint(j);
             switch (endpt.getDirection()) {
-            case UsbConstants.USB_DIR_IN:
-                if (mInputEndpoint == null) {
-                    mInputEndpoint = endpt;
-                }
-                break;
-            case UsbConstants.USB_DIR_OUT:
-                if (mOutputEndpoint == null) {
-                    mOutputEndpoint = endpt;
-                }
-                break;
+                case UsbConstants.USB_DIR_IN:
+                    if (mInputEndpoint == null) {
+                        mInputEndpoint = endpt;
+                    }
+                    break;
+                case UsbConstants.USB_DIR_OUT:
+                    if (mOutputEndpoint == null) {
+                        mOutputEndpoint = endpt;
+                    }
+                    break;
             }
         }
 
@@ -153,21 +153,20 @@ class HIDDeviceUSB implements HIDDevice {
     }
 
     @Override
-    public int writeReport(byte[] report, boolean feature) {
-        if (feature) {
-            int res = -1;
-            int offset = 0;
-            int length = report.length;
-            boolean skipped_report_id = false;
-            byte report_number = report[0];
+    public int sendFeatureReport(byte[] report) {
+        int res = -1;
+        int offset = 0;
+        int length = report.length;
+        boolean skipped_report_id = false;
+        byte report_number = report[0];
 
-            if (report_number == 0x0) {
-                ++offset;
-                --length;
-                skipped_report_id = true;
-            }
+        if (report_number == 0x0) {
+            ++offset;
+            --length;
+            skipped_report_id = true;
+        }
 
-            res = mConnection.controlTransfer(
+        res = mConnection.controlTransfer(
                 UsbConstants.USB_TYPE_CLASS | 0x01 /*RECIPIENT_INTERFACE*/ | UsbConstants.USB_DIR_OUT,
                 0x09/*HID set_report*/,
                 (3/*HID feature*/ << 8) | report_number,
@@ -175,26 +174,28 @@ class HIDDeviceUSB implements HIDDevice {
                 report, offset, length,
                 1000/*timeout millis*/);
 
-            if (res < 0) {
-                Log.w(TAG, "writeFeatureReport() returned " + res + " on device " + getDeviceName());
-                return -1;
-            }
-
-            if (skipped_report_id) {
-                ++length;
-            }
-            return length;
-        } else {
-            int res = mConnection.bulkTransfer(mOutputEndpoint, report, report.length, 1000);
-            if (res != report.length) {
-                Log.w(TAG, "writeOutputReport() returned " + res + " on device " + getDeviceName());
-            }
-            return res;
+        if (res < 0) {
+            Log.w(TAG, "sendFeatureReport() returned " + res + " on device " + getDeviceName());
+            return -1;
         }
+
+        if (skipped_report_id) {
+            ++length;
+        }
+        return length;
     }
 
     @Override
-    public boolean readReport(byte[] report, boolean feature) {
+    public int sendOutputReport(byte[] report) {
+        int r = mConnection.bulkTransfer(mOutputEndpoint, report, report.length, 1000);
+        if (r != report.length) {
+            Log.w(TAG, "sendOutputReport() returned " + r + " on device " + getDeviceName());
+        }
+        return r;
+    }
+
+    @Override
+    public boolean getFeatureReport(byte[] report) {
         int res = -1;
         int offset = 0;
         int length = report.length;
@@ -210,12 +211,12 @@ class HIDDeviceUSB implements HIDDevice {
         }
 
         res = mConnection.controlTransfer(
-            UsbConstants.USB_TYPE_CLASS | 0x01 /*RECIPIENT_INTERFACE*/ | UsbConstants.USB_DIR_IN,
-            0x01/*HID get_report*/,
-            ((feature ? 3/*HID feature*/ : 1/*HID Input*/) << 8) | report_number,
-            mInterface,
-            report, offset, length,
-            1000/*timeout millis*/);
+                UsbConstants.USB_TYPE_CLASS | 0x01 /*RECIPIENT_INTERFACE*/ | UsbConstants.USB_DIR_IN,
+                0x01/*HID get_report*/,
+                (3/*HID feature*/ << 8) | report_number,
+                mInterface,
+                report, offset, length,
+                1000/*timeout millis*/);
 
         if (res < 0) {
             Log.w(TAG, "getFeatureReport() returned " + res + " on device " + getDeviceName());
@@ -233,7 +234,7 @@ class HIDDeviceUSB implements HIDDevice {
         } else {
             data = Arrays.copyOfRange(report, 0, res);
         }
-        mManager.HIDDeviceReportResponse(mDeviceId, data);
+        mManager.HIDDeviceFeatureReport(mDeviceId, data);
 
         return true;
     }

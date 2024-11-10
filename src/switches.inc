@@ -73,7 +73,7 @@
   
  {$IF Defined(ANDROID)}
  {$I config-android.inc}
- {$DEFINE UseSDL3}
+ {$DEFINE UseSDL2}
  {$DEFINE UseOpenGLES}
  {$IFEND}
 

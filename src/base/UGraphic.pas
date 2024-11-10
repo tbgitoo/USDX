@@ -822,7 +822,11 @@ begin
     Mode_Fullscreen:
     begin
       {$IFDEF UseOpenGLES}
+      {$IFDEF UseSDL3}
        Disp:=SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay())^;
+      {$ELSE}
+       SDL_GetCurrentDisplayMode(0,@Disp);
+      {$ENDIF}
       {$ELSE}
       SDL_GetWindowDisplayMode(screen, @Disp); // TODO: verify if not failed
       {$ENDIF}
@@ -872,7 +876,11 @@ begin
   begin
     Mode := Mode and not Mode_Borderless;
     {$IFDEF UseOpenGLES}
+       {$IFDEF UseSDL3}
        Disp:=SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay())^;
+      {$ELSE}
+       SDL_GetCurrentDisplayMode(0,@Disp);
+      {$ENDIF}
       {$ELSE}
       SDL_GetWindowDisplayMode(screen, @Disp); // TODO: verify if not failed
       {$ENDIF}

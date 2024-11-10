@@ -1,13 +1,14 @@
-# sdl image pkg-config source file
-
-prefix=dists/android/external/arm64-v8a
+prefix=/Users/thomasbraschler/git/sdl2_image/SDL_image/build-android-prefab/build_x86/prefix
 exec_prefix=${prefix}
-libdir=${prefix}/lib
-includedir=dists/android/external/include
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
 
-Name: sdl2_image
-Description: This is a simple library to load images of various formats as SDL surfaces.
-It can load BMP, GIF, JPEG, LBM, PCX, PNG, PNM (PPM/PGM/PBM), QOI, TGA, XCF, XPM, and simple SVG format images.
-Version: SDL_image-2.0
-Libs: -L${libdir}
-Cflags: 
+Name: SDL2_image
+Description: image loading library for Simple DirectMedia Layer
+Version: 2.9.0
+Requires: sdl2 >= 2.0.9
+Libs: -L${libdir} -lSDL2_image
+Requires.private: 
+Libs.private: 
+Cflags: -I${includedir}/SDL2
+

@@ -227,38 +227,38 @@ public class HIDDeviceManager {
         final int XB360_IFACE_PROTOCOL = 1; // Wired
         final int XB360W_IFACE_PROTOCOL = 129; // Wireless
         final int[] SUPPORTED_VENDORS = {
-            0x0079, // GPD Win 2
-            0x044f, // Thrustmaster
-            0x045e, // Microsoft
-            0x046d, // Logitech
-            0x056e, // Elecom
-            0x06a3, // Saitek
-            0x0738, // Mad Catz
-            0x07ff, // Mad Catz
-            0x0e6f, // PDP
-            0x0f0d, // Hori
-            0x1038, // SteelSeries
-            0x11c9, // Nacon
-            0x12ab, // Unknown
-            0x1430, // RedOctane
-            0x146b, // BigBen
-            0x1532, // Razer Sabertooth
-            0x15e4, // Numark
-            0x162e, // Joytech
-            0x1689, // Razer Onza
-            0x1949, // Lab126, Inc.
-            0x1bad, // Harmonix
-            0x20d6, // PowerA
-            0x24c6, // PowerA
-            0x2c22, // Qanba
-            0x2dc8, // 8BitDo
-            0x9886, // ASTRO Gaming
+                0x0079, // GPD Win 2
+                0x044f, // Thrustmaster
+                0x045e, // Microsoft
+                0x046d, // Logitech
+                0x056e, // Elecom
+                0x06a3, // Saitek
+                0x0738, // Mad Catz
+                0x07ff, // Mad Catz
+                0x0e6f, // PDP
+                0x0f0d, // Hori
+                0x1038, // SteelSeries
+                0x11c9, // Nacon
+                0x12ab, // Unknown
+                0x1430, // RedOctane
+                0x146b, // BigBen
+                0x1532, // Razer Sabertooth
+                0x15e4, // Numark
+                0x162e, // Joytech
+                0x1689, // Razer Onza
+                0x1949, // Lab126, Inc.
+                0x1bad, // Harmonix
+                0x20d6, // PowerA
+                0x24c6, // PowerA
+                0x2c22, // Qanba
+                0x2dc8, // 8BitDo
+                0x9886, // ASTRO Gaming
         };
 
         if (usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC &&
-            usbInterface.getInterfaceSubclass() == XB360_IFACE_SUBCLASS &&
-            (usbInterface.getInterfaceProtocol() == XB360_IFACE_PROTOCOL ||
-             usbInterface.getInterfaceProtocol() == XB360W_IFACE_PROTOCOL)) {
+                usbInterface.getInterfaceSubclass() == XB360_IFACE_SUBCLASS &&
+                (usbInterface.getInterfaceProtocol() == XB360_IFACE_PROTOCOL ||
+                        usbInterface.getInterfaceProtocol() == XB360W_IFACE_PROTOCOL)) {
             int vendor_id = usbDevice.getVendorId();
             for (int supportedVid : SUPPORTED_VENDORS) {
                 if (vendor_id == supportedVid) {
@@ -273,24 +273,23 @@ public class HIDDeviceManager {
         final int XB1_IFACE_SUBCLASS = 71;
         final int XB1_IFACE_PROTOCOL = 208;
         final int[] SUPPORTED_VENDORS = {
-            0x044f, // Thrustmaster
-            0x045e, // Microsoft
-            0x0738, // Mad Catz
-            0x0e6f, // PDP
-            0x0f0d, // Hori
-            0x10f5, // Turtle Beach
-            0x1532, // Razer Wildcat
-            0x20d6, // PowerA
-            0x24c6, // PowerA
-            0x2dc8, // 8BitDo
-            0x2e24, // Hyperkin
-            0x3537, // GameSir
+                0x044f, // Thrustmaster
+                0x045e, // Microsoft
+                0x0738, // Mad Catz
+                0x0e6f, // PDP
+                0x0f0d, // Hori
+                0x10f5, // Turtle Beach
+                0x1532, // Razer Wildcat
+                0x20d6, // PowerA
+                0x24c6, // PowerA
+                0x2dc8, // 8BitDo
+                0x2e24, // Hyperkin
         };
 
         if (usbInterface.getId() == 0 &&
-            usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC &&
-            usbInterface.getInterfaceSubclass() == XB1_IFACE_SUBCLASS &&
-            usbInterface.getInterfaceProtocol() == XB1_IFACE_PROTOCOL) {
+                usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC &&
+                usbInterface.getInterfaceSubclass() == XB1_IFACE_SUBCLASS &&
+                usbInterface.getInterfaceProtocol() == XB1_IFACE_PROTOCOL) {
             int vendor_id = usbDevice.getVendorId();
             for (int supportedVid : SUPPORTED_VENDORS) {
                 if (vendor_id == supportedVid) {
@@ -359,7 +358,7 @@ public class HIDDeviceManager {
         Log.d(TAG, "Initializing Bluetooth");
 
         if (Build.VERSION.SDK_INT <= 30 /* Android 11.0 (R) */ &&
-            mContext.getPackageManager().checkPermission(android.Manifest.permission.BLUETOOTH, mContext.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
+                mContext.getPackageManager().checkPermission(android.Manifest.permission.BLUETOOTH, mContext.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Couldn't initialize Bluetooth, missing android.permission.BLUETOOTH");
             return;
         }
@@ -599,9 +598,9 @@ public class HIDDeviceManager {
         return false;
     }
 
-    public int writeReport(int deviceID, byte[] report, boolean feature) {
+    public int sendOutputReport(int deviceID, byte[] report) {
         try {
-            //Log.v(TAG, "writeReport deviceID=" + deviceID + " length=" + report.length);
+            //Log.v(TAG, "sendOutputReport deviceID=" + deviceID + " length=" + report.length);
             HIDDevice device;
             device = getDevice(deviceID);
             if (device == null) {
@@ -609,16 +608,33 @@ public class HIDDeviceManager {
                 return -1;
             }
 
-            return device.writeReport(report, feature);
+            return device.sendOutputReport(report);
         } catch (Exception e) {
             Log.e(TAG, "Got exception: " + Log.getStackTraceString(e));
         }
         return -1;
     }
 
-    public boolean readReport(int deviceID, byte[] report, boolean feature) {
+    public int sendFeatureReport(int deviceID, byte[] report) {
         try {
-            //Log.v(TAG, "readReport deviceID=" + deviceID);
+            //Log.v(TAG, "sendFeatureReport deviceID=" + deviceID + " length=" + report.length);
+            HIDDevice device;
+            device = getDevice(deviceID);
+            if (device == null) {
+                HIDDeviceDisconnected(deviceID);
+                return -1;
+            }
+
+            return device.sendFeatureReport(report);
+        } catch (Exception e) {
+            Log.e(TAG, "Got exception: " + Log.getStackTraceString(e));
+        }
+        return -1;
+    }
+
+    public boolean getFeatureReport(int deviceID, byte[] report) {
+        try {
+            //Log.v(TAG, "getFeatureReport deviceID=" + deviceID);
             HIDDevice device;
             device = getDevice(deviceID);
             if (device == null) {
@@ -626,7 +642,7 @@ public class HIDDeviceManager {
                 return false;
             }
 
-            return device.readReport(report, feature);
+            return device.getFeatureReport(report);
         } catch (Exception e) {
             Log.e(TAG, "Got exception: " + Log.getStackTraceString(e));
         }
@@ -663,5 +679,5 @@ public class HIDDeviceManager {
     native void HIDDeviceDisconnected(int deviceID);
 
     native void HIDDeviceInputReport(int deviceID, byte[] report);
-    native void HIDDeviceReportResponse(int deviceID, byte[] report);
+    native void HIDDeviceFeatureReport(int deviceID, byte[] report);
 }
