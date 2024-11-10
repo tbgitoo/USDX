@@ -9,7 +9,13 @@ interface
 
 uses
     // LoadLibrary functions
-  SysUtils,SDL3;
+  SysUtils,
+  {$IFDEF UseSDL3}
+  SDL3;
+
+  {$ELSE}
+  sdl2;
+  {$ENDIF}
 
 {$IFDEF FPC}
 {$PACKRECORDS C}
@@ -20,7 +26,7 @@ uses
         // Proper opengles constants
         gles_lib = 'libGLESv3.so';
 
-        GL_DEPTH_BUFFER_BIT               = $00000100;
+GL_DEPTH_BUFFER_BIT               = $00000100;
 GL_STENCIL_BUFFER_BIT             = $00000400;
 GL_COLOR_BUFFER_BIT               = $00004000;
 GL_FALSE                          = 0;
@@ -1748,16 +1754,24 @@ begin
    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
 
+   {$IFDEF UseSDL3}
    displayID:=SDL_GetPrimaryDisplay();
    displayMode:=SDL_GetCurrentDisplayMode(displayID)^;
-
+   {$ELSE}
+   displayID:=0;
+   SDL_GetCurrentDisplayMode(displayID,@displayID);
+   {$ENDIF}
 
 
    debug_message_to_android('Detected display w='+IntToStr(displayMode.w)+' h='+IntToStr(displayMode.h));
 
 
     // Create our window centered at display resolution
+     {$IFDEF UseSDL3}
     Screen := SDL_CreateWindow('title',displayMode.w, displayMode.h, SDL_WINDOW_OPENGL or SDL_WINDOW_SHOWN or SDL_WINDOW_FULLSCREEN);
+      {$ELSE}
+     Screen := SDL_CreateWindow('title',0,0,displayMode.w, displayMode.h, SDL_WINDOW_OPENGL or SDL_WINDOW_SHOWN or SDL_WINDOW_FULLSCREEN);
+      {$ENDIF}
     if Screen=nil then begin
         debug_message_to_android('Could not create window.');
         exit(false);

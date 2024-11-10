@@ -12,6 +12,9 @@
    *   SDL_GetWindowDisplayMode()
    *}
 
+// for partial forward compatibility with sdl3
+ TSDL_DisplayID= UInt32;
+
   PSDL_DisplayMode = ^TSDL_DisplayMode;
   TSDL_DisplayMode = record
     format: UInt32;              {**< pixel format *}
