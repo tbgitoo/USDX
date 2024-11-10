@@ -502,9 +502,9 @@ clean-macosx-dmg:
 
 .PHONY: android
 android:
-	@echo "Building Android libusdx.so"
-	$(MAKE) -C $(USDX_SRC_DIR) $@
-	cp src/libusdx/include/usdx.h android_project/app/src/main/cpp/libusdx/include/usdx.h
+	@echo "Building Android libmain.so"
+	$(MAKE) -C $(USDX_SRC_DIR) $@ 
+	cp src/libmain/include/main.h android_project/app/src/main/cpp/libmain/include/main.h
 	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/libs/  || :
 	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/libs/  || :
 	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/libs/  || :
@@ -543,7 +543,7 @@ android-install:
 	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/libs/ || :
 	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/libs/ || :
 	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/libs/ || :
-	cp src/libusdx/include/usdx.h android_project/app/src/main/cpp/libusdx/include/usdx.h
+	cp src/libmain/include/main.h android_project/app/src/main/cpp/libmain/include/main.h
 	cp -r dists/android/external/arm64-v8a android_project/app/libs/
 	cp -r dists/android/external/armeabi-v7a android_project/app/libs/
 	cp -r dists/android/external/x86 android_project/app/libs/
@@ -553,7 +553,7 @@ android-install:
 
 .PHONY: android-so
 android-so:
-	cp src/libusdx/include/usdx.h android_project/app/src/main/cpp/libusdx/include/usdx.h
+	cp src/libmain/include/main.h android_project/app/src/main/cpp/libmain/include/main.h
 	cp -r build/arm64-v8a android_project/app/libs/
 	cp -r build/armeabi-v7a android_project/app/libs/
 	cp -r build/x86 android_project/app/libs/
@@ -562,7 +562,7 @@ android-so:
 .PHONY: android_test
 android_test:
 	$(MAKE) -C $(USDX_SRC_DIR) $@
-	cp src/libusdx/include/test.h android_project/app/src/main/cpp/libusdx/include/test.h
+	cp src/libmain/include/test.h android_project/app/src/main/cpp/libmain/include/test.h
 	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/libs/ || :
 	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/libs/ || :
 	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/libs/ || :

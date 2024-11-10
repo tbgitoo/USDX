@@ -11,7 +11,7 @@ add_library (USDX SHARED IMPORTED)
 
 set_target_properties (USDX
         PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libUSDX.so)
+        ${CMAKE_SOURCE_DIR}/../../../libs/${CMAKE_ANDROID_ARCH_ABI}/libmain.so)
 
 add_library (SDL2 SHARED IMPORTED)
 set_target_properties (SDL2
