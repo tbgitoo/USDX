@@ -1770,11 +1770,14 @@ begin
      {$IFDEF UseSDL3}
     Screen := SDL_CreateWindow('title',displayMode.w, displayMode.h, SDL_WINDOW_OPENGL or SDL_WINDOW_SHOWN or SDL_WINDOW_FULLSCREEN);
       {$ELSE}
-     Screen := SDL_CreateWindow('title',0,0,displayMode.w, displayMode.h, SDL_WINDOW_OPENGL or SDL_WINDOW_SHOWN or SDL_WINDOW_FULLSCREEN);
+     Screen := SDL_CreateWindow('title',SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,displayMode.w, displayMode.h, SDL_WINDOW_OPENGL);
       {$ENDIF}
     if Screen=nil then begin
         debug_message_to_android('Could not create window.');
         exit(false);
+        end else begin
+        debug_message_to_android('Window created');
+
         end;
 
     actualScreen:=Screen^;

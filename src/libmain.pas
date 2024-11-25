@@ -463,18 +463,15 @@ begin
    if not setupGraphicsAndroid then exit(1);
 
 
-   openGLESexampleProgram;
+   //openGLESexampleProgram;
 
 
 
-    while (true)  do begin
+   SDL_FillRect( SDL_GetWindowSurface( Screen ) , nil, SDL_MapRGB(SDL_GetWindowSurface( Screen )^.format, $FF, $FF, $FF));
+  SDL_UpdateWindowSurface(Screen);
+  SDL_Delay(2000);
 
 
-
-       openGLESexampleProgramRenderFrame();
-
-       SDL_GL_SwapWindow(Screen);
-    end;
 
 
 
