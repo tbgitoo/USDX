@@ -7,6 +7,9 @@ includedir=dists/android/external/include
 
 Name: sdl2
 Description: Simple DirectMedia Layer is a cross-platform multimedia library designed to provide low level access to audio, keyboard, mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.
-Version: SDL2-2.28.2
-Libs: -L${prefix}
-Cflags: 
+Version: 2.30.9
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}   -lSDL2 
+#Libs.private:  -lSDL2  -lm -lOpenSLES -ldl -llog -landroid -lGLESv1_CM -lGLESv2
+Cflags: -I${includedir}/SDL2/x86_64
