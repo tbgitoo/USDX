@@ -1,1 +1,0 @@
-/Users/thomasbraschler/Documents/Pascal_Workspace/USDX/android_project/app/build/intermediates/cxx/Debug/506o3d23/obj/arm64-v8a

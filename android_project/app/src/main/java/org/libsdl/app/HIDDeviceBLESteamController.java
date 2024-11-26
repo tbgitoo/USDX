@@ -186,7 +186,7 @@ class HIDDeviceBLESteamController extends BluetoothGattCallback implements HIDDe
     // Because on Chromebooks we show up as a dual-mode device, it will attempt to connect TRANSPORT_AUTO, which will use TRANSPORT_BREDR instead
     // of TRANSPORT_LE.  Let's force ourselves to connect low energy.
     private BluetoothGatt connectGatt(boolean managed) {
-        if (Build.VERSION.SDK_INT >= 23 /* Android 6.0 (M) */) {
+        if (Build.VERSION.SDK_INT >= 23) {
             try {
                 return mDevice.connectGatt(mManager.getContext(), managed, this, TRANSPORT_LE);
             } catch (Exception e) {
@@ -429,7 +429,7 @@ class HIDDeviceBLESteamController extends BluetoothGattCallback implements HIDDe
                     }
                 });
             }
-        }
+        } 
         else if (newState == 0) {
             mIsConnected = false;
         }
@@ -479,7 +479,7 @@ class HIDDeviceBLESteamController extends BluetoothGattCallback implements HIDDe
     }
 
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-        // Enable this for verbose logging of controller input reports
+    // Enable this for verbose logging of controller input reports
         //Log.v(TAG, "onCharacteristicChanged uuid=" + characteristic.getUuid() + " data=" + HexDump.dumpHexString(characteristic.getValue()));
 
         if (characteristic.getUuid().equals(inputCharacteristic) && !mFrozen) {
@@ -564,10 +564,10 @@ class HIDDeviceBLESteamController extends BluetoothGattCallback implements HIDDe
         return "Steam Controller";
     }
 
-    @Override
+	@Override
     public UsbDevice getDevice() {
-        return null;
-    }
+		return null;
+	}
 
     @Override
     public boolean open() {
@@ -647,3 +647,4 @@ class HIDDeviceBLESteamController extends BluetoothGattCallback implements HIDDe
     }
 
 }
+
