@@ -1,0 +1,12 @@
+prefix=dists/android/external/armeabi-v7a
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=dists/android/external/include/fluidsynth
+
+Name: FluidSynth
+Description: Software SoundFont synth
+Version: 2.3.3
+#Requires.private: glib-2.0 gthread-2.0 sndfile libinstpatch-1.0
+Libs: -L${libdir} -lfluidsynth
+Libs.private: -lm -lomp
+Cflags: -I${includedir}

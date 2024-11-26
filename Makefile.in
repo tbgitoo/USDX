@@ -553,6 +553,8 @@ android-install:
 
 .PHONY: android-so
 android-so:
+	MKDIR -p $(top_srcdir)/android_project/app/src/main/cpp/libmain
+	MKDIR -p $(top_srcdir)/android_project/app/src/main/cpp/libmain/include
 	cp src/libmain/include/main.h android_project/app/src/main/cpp/libmain/include/main.h
 	cp -r build/arm64-v8a android_project/app/libs/
 	cp -r build/armeabi-v7a android_project/app/libs/

@@ -1,0 +1,14 @@
+prefix=dists/android/external/x86
+exec_prefix=${prefix}
+libdir=${prefix}
+includedir=dists/android/external/include/ffmpeg
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 58.2.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil 
+Libs.private: -pthread -lm -latomic
+Cflags: -I${includedir}

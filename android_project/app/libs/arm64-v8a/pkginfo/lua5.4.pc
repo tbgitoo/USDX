@@ -1,0 +1,13 @@
+# lua5.4.6 pkg-config source file
+
+prefix=dists/android/external/arm64-v8a
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=dists/android/external/include/lua
+
+Name: lua
+Description: Lua is a powerful, efficient, lightweight, embeddable scripting language. It supports procedural programming, object-oriented programming, functional programming, data-driven programming, and data description. 
+Version: 5.4.6
+Requires: 
+Libs: -L${libdir} -llua5.4
+Cflags: -I${includedir}

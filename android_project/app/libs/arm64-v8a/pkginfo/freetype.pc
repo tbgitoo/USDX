@@ -1,0 +1,15 @@
+# freetype pkg-config source file
+
+prefix=dists/android/external/arm64-v8a
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=dists/android/external/include/freetype
+
+Name: freetype
+Description: A free, high-quality, and portable font engine.
+Version: 2.4.4
+Requires: 
+Requires.private: zlib, libpng
+Libs: -L${libdir} -lfreetype
+Libs.private: -lbz2
+Cflags: -I${includedir}

@@ -9,14 +9,20 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project("sdl2_native")
 
-set(SOURCE_FILES ${CMAKE_SOURCE_DIR}/main.cpp ${CMAKE_SOURCE_DIR}/glad/glad.c)
+# If you want to change this, also make sure that in
+# SDLActivity, you indicate the c_test library in the
+# library listing function String[] getLibraries()
+# Otherwise, SDL will not find the main file at
+# runtime
 
-add_library( main SHARED ${SOURCE_FILES} )
+set(SOURCE_FILES ${CMAKE_SOURCE_DIR}/c_test.cpp ${CMAKE_SOURCE_DIR}/glad/glad.c)
+
+add_library( c_test SHARED ${SOURCE_FILES} )
 
 
 
 target_include_directories(
-        main PUBLIC
+        c_test PUBLIC
         ${CMAKE_SOURCE_DIR}/../../../libs/include/SDL2/${ANDROID_ABI}
         ${CMAKE_SOURCE_DIR}/../../../libs/include/SDL2_image/${ANDROID_ABI}
 )
@@ -70,7 +76,7 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-        main
+        c_test
 
         # Links the target library to the log library
         # included in the NDK.

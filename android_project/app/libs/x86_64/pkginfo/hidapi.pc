@@ -1,0 +1,10 @@
+prefix=dists/android/external/x86_64
+exec_prefix=${prefix}
+libdir=${prefix}
+includedir=dists/android/external/include
+
+Name: hidapi
+Description: C Library for USB/Bluetooth HID device access from Linux, Mac OS X, FreeBSD, and Windows.
+Version: v1.0
+Libs: -L${libdir} -lhidapi
+Cflags: -I${includedir}/hidapi

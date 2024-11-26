@@ -1,0 +1,9 @@
+prefix=dists/android/external/armeabi-v7a/lib
+exec_prefix=${prefix}
+libdir=${prefix}
+includedir=dists/android/external/include
+
+Name: libusb-1.0
+Description: C API for USB device access from Linux, Mac OS X, Windows, OpenBSD/NetBSD and Solaris userspace
+Version: v1.0
+Libs: -L${libdir} -lusb-1.0
