@@ -505,10 +505,10 @@ android:
 	@echo "Building Android libmain.so"
 	$(MAKE) -C $(USDX_SRC_DIR) $@ 
 	cp src/libmain/include/main.h android_project/app/src/main/cpp/libmain/include/main.h
-	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/libs/  || :
-	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/libs/  || :
-	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/libs/  || :
-	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/libs/  || :
+	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/src/main/jniLibs  || :
+	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/src/main/jniLibs  || :
+	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/src/main/jniLibs  || :
+	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/src/main/jniLibs  || :
 
 
 .PHONY: android-install
@@ -539,35 +539,38 @@ android-install:
 	cp  $(top_srcdir)/game/LICENSE.tiff.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_tiff.txt
 	cp  $(top_srcdir)/game/LICENSE.webp.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_webp.txt
 	cp  $(top_srcdir)/game/LICENSE.zlib.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_zlib.txt
-	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/libs/ || :
-	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/libs/ || :
-	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/libs/ || :
-	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/libs/ || :
+	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/src/main/jniLibs || :
+	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/src/main/jniLibs || :
+	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/src/main/jniLibs || :
+	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/src/main/jniLibs || :
 	cp src/libmain/include/main.h android_project/app/src/main/cpp/libmain/include/main.h
-	cp -r dists/android/external/arm64-v8a android_project/app/libs/
-	cp -r dists/android/external/armeabi-v7a android_project/app/libs/
-	cp -r dists/android/external/x86 android_project/app/libs/
-	cp -r dists/android/external/x86_64 android_project/app/libs/
-	cp -r dists/android/external/licenses android_project/app/libs/
-	cp -r dists/android/external/include android_project/app/libs/
+	MKDIR -p $(top_srcdir)/android_project/app/src/main/jniLibs
+	cp -r dists/android/external/arm64-v8a android_project/app/src/main/jniLibs
+	cp -r dists/android/external/armeabi-v7a android_project/app/src/main/jniLibs
+	cp -r dists/android/external/x86 android_project/app/src/main/jniLibs
+	cp -r dists/android/external/x86_64 android_project/app/src/main/jniLibs
+	cp -r dists/android/external/licenses android_project/app/src/main/jniLibs
+	cp -r dists/android/external/include android_project/app/src/main/jniLibs
 
 .PHONY: android-so
 android-so:
 	MKDIR -p $(top_srcdir)/android_project/app/src/main/cpp/libmain
 	MKDIR -p $(top_srcdir)/android_project/app/src/main/cpp/libmain/include
+	MKDIR -p $(top_srcdir)/android_project/app/src/main/jniLibs
 	cp src/libmain/include/main.h android_project/app/src/main/cpp/libmain/include/main.h
-	cp -r build/arm64-v8a android_project/app/libs/
-	cp -r build/armeabi-v7a android_project/app/libs/
-	cp -r build/x86 android_project/app/libs/
-	cp -r build/x86_64 android_project/app/libs/
+	cp -r build/arm64-v8a android_project/app/src/main/jniLibs
+	cp -r build/armeabi-v7a android_project/app/src/main/jniLibs
+	cp -r build/x86 android_project/app/src/main/jniLibs
+	cp -r build/x86_64 android_project/app/src/main/jniLibs
 
 .PHONY: android_test
 android_test:
 	$(MAKE) -C $(USDX_SRC_DIR) $@
 	cp src/libmain/include/test.h android_project/app/src/main/cpp/libmain/include/test.h
-	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/libs/ || :
-	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/libs/ || :
-	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/libs/ || :
-	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/libs/ || :
+	MKDIR -p $(top_srcdir)/android_project/app/src/main/jniLibs
+	[[ -e build/arm64-v8a ]] && cp -r build/arm64-v8a android_project/app/src/main/jniLibs || :
+	[[ -e build/armeabi-v7a ]] && cp -r build/armeabi-v7a android_project/app/src/main/jniLibs || :
+	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/src/main/jniLibs || :
+	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/src/main/jniLibs || :
 
 

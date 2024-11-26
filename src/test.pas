@@ -43,38 +43,25 @@ uses
 
   SysUtils,
 
-  dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
+  //glad_gl in 'lib\glad\glad_gl.pas';
 
-  SDL3 in 'lib\SDL3\sdl3.pas';
+  //dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
+
+  SDL2 in 'lib\SDL2\sdl2.pas';
 
 
 
 
 
 function SDL_main(argc: integer; argv: PPChar): integer;
+
 begin
+      if SDL_Init(SDL_INIT_VIDEO)<0 then debug_message_to_android('SDL not loaded');
+      while(true) do
+      begin
 
+      end;
 
-   if not setupGraphicsAndroid then exit(1);
-
-
-   openGLESexampleProgram;
-
-
-
-    while (true)  do begin
-
-
-
-       openGLESexampleProgramRenderFrame();
-
-       SDL_GL_SwapWindow(Screen);
-    end;
-
-
-
-
-  SDL_Quit();
 
 end;
 

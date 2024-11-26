@@ -15,22 +15,31 @@ project("sdl2_native")
 # Otherwise, SDL will not find the main file at
 # runtime
 
-set(SOURCE_FILES ${CMAKE_SOURCE_DIR}/c_test.cpp ${CMAKE_SOURCE_DIR}/glad/glad.c)
+#set(SOURCE_FILES ${CMAKE_SOURCE_DIR}/c_test.cpp ${CMAKE_SOURCE_DIR}/glad/glad.c)
 
-add_library( c_test SHARED ${SOURCE_FILES} )
+#add_library( c_test SHARED ${SOURCE_FILES} )
 
 
 
-target_include_directories(
-        c_test PUBLIC
-        ${CMAKE_SOURCE_DIR}/../../../libs/include/SDL2/${ANDROID_ABI}
-        ${CMAKE_SOURCE_DIR}/../../../libs/include/SDL2_image/${ANDROID_ABI}
-)
+#target_include_directories(
+#        c_test PUBLIC
+#        ${CMAKE_SOURCE_DIR}/../../../libs/include/SDL2/${ANDROID_ABI}
+#        ${CMAKE_SOURCE_DIR}/../../../libs/include/SDL2_image/${ANDROID_ABI}
+#s)
+
+add_library (test SHARED IMPORTED)
+set_target_properties (test
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libtest.so)
+
+
 
 add_library (SDL2 SHARED IMPORTED)
 set_target_properties (SDL2
         PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libSDL2.so)
+
+
 
 add_library (SDL2_IMAGE SHARED IMPORTED)
 set_target_properties (SDL2_IMAGE
@@ -40,17 +49,17 @@ set_target_properties (SDL2_IMAGE
 add_library (HIDAPI SHARED IMPORTED)
 set_target_properties (HIDAPI
         PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libhidapi.so)
+        ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libhidapi.so)
 
 add_library (USB SHARED IMPORTED)
 set_target_properties (USB
         PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/libusb1.0.so)
+        ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libusb1.0.so)
 
 add_library (LUA SHARED IMPORTED)
 set_target_properties (LUA
         PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/../../../libs/${ANDROID_ABI}/liblua.so)
+        ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/liblua.so)
 
 
 
@@ -76,7 +85,7 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 
 target_link_libraries( # Specifies the target library.
-        c_test
+         test INTERFACE
 
         # Links the target library to the log library
         # included in the NDK.

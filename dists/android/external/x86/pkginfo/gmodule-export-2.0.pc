@@ -1,5 +1,5 @@
 prefix=dists/android/external/x86
-libdir=${prefix}/lib
+libdir=${prefix}
 includedir=dists/android/external/include/fluidsynth
 
 gmodule_supported=true

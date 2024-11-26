@@ -43,71 +43,25 @@ uses
 
   SysUtils,
 
-  dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
+  //glad_gl in 'lib\glad\glad_gl.pas';
 
-  SDL3 in 'lib\SDL3\sdl3.pas';
+  //dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
 
-
-
-
-
-var
+  SDL2 in 'lib\SDL2\sdl2.pas';
 
 
 
-
-
-
-
-
-procedure renderFrame();
-begin
-  grey := grey+0.01;
-  if grey > 1 then grey:=0;
-
-  glClearColor(grey, grey, grey, 1.0);
-  checkGlError('glClearColor');
-  glClear(GL_DEPTH_BUFFER_BIT + GL_COLOR_BUFFER_BIT);
-  checkGlError('glClear');
-  glUseProgram(gProgram);
-  checkGlError('glUseProgram');
-
-  glVertexAttribPointer(gvPositionHandle, 2, GL_FLOAT, Bytebool(GL_FALSE), 0,
-                        @gTriangleVertices[0]);
-  checkGlError('glVertexAttribPointer');
-  glEnableVertexAttribArray(gvPositionHandle);
-  checkGlError('glEnableVertexAttribArray');
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-  checkGlError('glDrawArrays');
-end;
 
 
 function SDL_main(argc: integer; argv: PPChar): integer;
 
-
 begin
+       debug_message_to_android('coucou');
+      while(true) do
+      begin
 
+      end;
 
-   if not setupGraphicsAndroid then exit(1);
-
-
-   openGLESexampleProgram;
-
-
-
-    while (true)  do begin
-
-
-
-       openGLESexampleProgramRenderFrame();
-
-       SDL_GL_SwapWindow(Screen);
-    end;
-
-
-
-
-  SDL_Quit();
 
 end;
 
