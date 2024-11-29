@@ -5767,13 +5767,26 @@ end;
 
 
 function hasExt(ext: PAnsiChar): boolean;
+var index : integer;
 begin
   hasExt:=false;
+  if High(gl_exts_i)-Low(gl_exts_i) > 0 then begin
+     for index:=Low(gl_exts_i) to High(gl_exts_i) do
+     begin
+        if strcomp(ext,gl_exts_i[index])=0 then begin
+           hasExt:=true;
+
+        end;
+
+     end;
+
+  end;
 
 end;
 
 procedure findExtensionsGLES2();
 begin
+  get_exts();
   GLAD_GL_AMD_compressed_3DC_texture := hasExt('GL_AMD_compressed_3DC_texture');
   GLAD_GL_AMD_compressed_ATC_texture := hasExt('GL_AMD_compressed_ATC_texture');
   GLAD_GL_AMD_framebuffer_multisample_advanced := hasExt('GL_AMD_framebuffer_multisample_advanced');
