@@ -344,7 +344,7 @@ unit glad_gl;
 interface
 
 uses
-  SysUtils, StrUtils;
+  SysUtils, StrUtils,cmem;
 
 var
   glVersionMajor, glVersionMinor: integer;
@@ -4238,6 +4238,15 @@ type
 function gladLoadGLES2(load: TLoadProc): boolean;
 
 
+var gl_exts_i : array of PAnsiChar;
+    gl_num_exts_i: GLint;
+
+// The idea here is to run through all the extensions and record their
+// name in gl_exts_i
+procedure get_exts();
+
+
+
 implementation
 
 procedure load_GL_ES_VERSION_2_0(load: TLoadProc);
@@ -5755,6 +5764,14 @@ begin
   glEndTilingQCOM := load('glEndTilingQCOM');
 end;
 
+
+
+function hasExt(ext: PAnsiChar): boolean;
+begin
+  hasExt:=false;
+
+end;
+
 procedure findExtensionsGLES2();
 begin
   GLAD_GL_AMD_compressed_3DC_texture := hasExt('GL_AMD_compressed_3DC_texture');
@@ -6106,6 +6123,8 @@ begin
   GLAD_GL_ES_VERSION_3_0 := ((major = 3) and (minor >= 0)) or (major > 3);
 end;
 
+
+
 function gladLoadGLES2(load: TLoadProc): boolean;
 var
   glVersion: PAnsiChar;
@@ -6256,5 +6275,32 @@ begin
 
   result := (glVersionMajor <> 0) or (glVersionMinor <> 0);
 end;
+
+
+
+
+procedure get_exts();
+var index: GLint;
+    temp_from_gl: PChar;
+    l:sizeint;
+begin
+   glGetIntegerv(GL_NUM_EXTENSIONS, @gl_num_exts_i);
+   setLength(gl_exts_i,gl_num_exts_i);
+
+   if gl_num_exts_i>0 then begin
+     for index:=Low(gl_exts_i) to High(gl_exts_i) do
+     begin
+       temp_from_gl:=PChar(glGetStringi(GL_EXTENSIONS, index));
+       l:=strlen(temp_from_gl);
+       gl_exts_i[index]:=PAnsiChar(malloc(l+1));
+       Move(temp_from_gl^,gl_exts_i[index]^,(l+1));
+     end;
+
+   end;
+
+
+end;
+
+
 
 end.
