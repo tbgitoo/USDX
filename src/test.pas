@@ -44,9 +44,7 @@ uses
 
   SysUtils,
 
-  glad_gl in 'lib\glad\glad_gl.pas',
-
-  //dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
+  dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
 
   SDL2 in 'lib\SDL2\sdl2.pas';
 

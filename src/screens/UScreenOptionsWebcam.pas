@@ -80,7 +80,7 @@ uses
   ULog,
   UUnicodeUtils,
   UWebcam,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,

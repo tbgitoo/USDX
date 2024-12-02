@@ -41,7 +41,7 @@ uses
   {$ELSE}
   sdl2,
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,

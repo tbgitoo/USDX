@@ -134,11 +134,7 @@ begin
     cvReleaseMat(@YUV2BGR);
     cvReleaseMat(@BGR2YUV);
   end;
-  {$IFDEF UseSDL3}
-  SDL_DestroyCondition(StopCond);
-  {$ELSE}
   SDL_DestroyCond(StopCond);
-  {$ENDIF}
   SDL_DestroyMutex(Mutex);
   inherited;
 end;

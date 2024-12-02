@@ -62,7 +62,7 @@ uses
   {$IFDEF UseSWScale}
   swscale,
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,

@@ -42,7 +42,7 @@ uses
   sdl2,
   {$ENDIF}
   //new work on current OpenGL implementation
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
    dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -256,7 +256,7 @@ begin
     glBindTexture(GL_TEXTURE_2D, FadeTex[i]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, TexW, TexH, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
     {$ELSE}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, TexW, TexH, 0, GL_RGB, GL_UNSIGNED_BYTE, nil);
@@ -414,7 +414,7 @@ begin
           // TODO: check if glTexEnvi() gives any speed improvement
           //glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-          {$IFDEF UseOpenGLES}
+          {$IFDEF UseOpenGLES3}
           {$ELSE}
 
           glColor4f(1, 1, 1, 1-FadeStateSquare);
@@ -635,7 +635,7 @@ begin
       DrawX := Cursor_X;
       if (ScreenAct = 2) then
         DrawX := DrawX - RenderW;
-      {$IFDEF UseOpenGLES}
+      {$IFDEF UseOpenGLES3}
       {$ELSE}
       glColor4f(1, 1, 1, Alpha);
       {$ENDIF}
@@ -648,7 +648,7 @@ begin
       else
         glBindTexture(GL_TEXTURE_2D, Tex_Cursor_Unpressed.TexNum);
 
-      {$IFDEF UseOpenGLES}
+      {$IFDEF UseOpenGLES3}
       {$ELSE}
       glBegin(GL_QUADS);
         glTexCoord2f(0, 0);
@@ -805,7 +805,7 @@ begin
 
   GetMem(ScreenData, RowSize * ScreenH);
 
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
     glReadPixels(0, 0, ScreenW, ScreenH, GL_RGBA, GL_UNSIGNED_BYTE, ScreenData);
     {$ELSE}
     glReadPixels(0, 0, ScreenW, ScreenH, GL_RGB, GL_UNSIGNED_BYTE, ScreenData);
@@ -842,7 +842,7 @@ begin
   // Some White Background for information
   glEnable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 0.5);
   glBegin(GL_QUADS);
@@ -859,7 +859,7 @@ begin
   SetFontStyle(ftRegular);
   SetFontSize(21);
   SetFontItalic(false);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(0, 0, 0, 1);
   {$ENDIF}
@@ -883,12 +883,12 @@ begin
 
   // muffins
   SetFontPos(695, 13);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(0.8, 0.5, 0.2, 1);
   {$ENDIF};
   glPrint ('Muffins!');
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}
@@ -959,7 +959,7 @@ begin
   // Some black background
   glEnable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(0, 0, 0, 0.85);
   glBegin(GL_QUADS);
@@ -983,7 +983,7 @@ begin
   SetFontSize(FontSize);
   SetFontItalic(false);
   SetFontReflection(false, 0);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}
@@ -1012,7 +1012,7 @@ begin
   // draw scoll bar
   glEnable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(0.33, 0.33, 0.33, 1);
   glBegin(GL_QUADS);
@@ -1027,7 +1027,7 @@ begin
   YOffset := H * ((1.0*LineCount)/(1.0*Log.ConsoleCount));
   PosY := 0;
   if I > 0 then PosY := (H-2.0*ScrollPad) * Max(0.0, I)/(1.0*Log.ConsoleCount);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   glBegin(GL_QUADS);
@@ -1040,7 +1040,7 @@ begin
   glDisable(GL_BLEND);
 
   Fonts[CurrentFont.FontFamily][CurrentFont.FontStyle].Font.Stretch := OldStretch;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}

@@ -65,8 +65,16 @@ const
 
 implementation
 uses
+  {$IFDEF UseSDL3}
+  sdl3,
+  {$ELSE}
   sdl2,
+  {$ENDIF}
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   USkins,
   UGraphic;
 

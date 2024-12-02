@@ -44,9 +44,9 @@ uses
 
   SysUtils,
 
-  glad_gl in 'lib\glad\glad_gl.pas',
+  //glad_gl in 'lib\glad\glad_gl.pas',
 
-  //dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
+  dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
 
   SDL2 in 'lib\SDL2\sdl2.pas';
 
@@ -259,7 +259,7 @@ procedure Input();
 var e: TSDL_Event;
 begin
     while SDL_PollEvent( @e) <> 0 do begin
-        if e.type_ = SDL_QUIT then begin
+        if e.type_ = SDL_QUITEV  then begin
            gQuit:=true;
         end;
 

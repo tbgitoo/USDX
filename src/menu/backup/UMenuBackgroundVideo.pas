@@ -102,7 +102,11 @@ const
 implementation
 
 uses
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   SysUtils,
   UTime,
   USkins,

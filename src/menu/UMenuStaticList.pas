@@ -36,7 +36,7 @@ interface
 uses
   UTexture,
   UMenuInteract,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES;
   {$ELSE}
   dglOpenGL;

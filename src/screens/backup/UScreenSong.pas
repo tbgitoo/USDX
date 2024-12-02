@@ -334,7 +334,11 @@ uses
   UScreenSongMenu,
   USkins,
   UUnicodeUtils,
+  {$IFDEF UseOpenGLES}
+   dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   Math;
 
 const
@@ -782,24 +786,14 @@ begin
     // **********************
 
     // check normal keys
-    case UCS4UpperCase(CharCode) of
-      Ord('Q'):
+    case PressedKey of
+      SDLK_Q:
         begin
           Result := false;
           Exit;
         end;
 
-      Ord('K'):
-        begin
-          UAudioPlaybackBase.ToggleVoiceRemoval();
-          StopVideoPreview();
-          StopMusicPreview();
-          StartMusicPreview();
-          StartVideoPreview();
-          Exit;
-        end;
-
-      Ord('F'):
+      SDLK_F:
         begin
           if (Mode = smNormal) and (SDL_ModState = KMOD_LSHIFT) and MakeMedley then
           begin
@@ -819,7 +813,7 @@ begin
           end;
         end;
 
-      Ord('M'): //Show SongMenu
+      SDLK_M: //Show SongMenu
         begin
           if (Songs.SongList.Count > 0) then
           begin
@@ -876,7 +870,7 @@ begin
           Exit;
         end;
 
-      Ord('P'): //Show Playlist Menu
+      SDLK_P: //Show Playlist Menu
         begin
           if (Songs.SongList.Count > 0) and (FreeListMode) then
           begin
@@ -886,7 +880,7 @@ begin
           Exit;
         end;
 
-      Ord('J'): //Show Jumpto Menu
+      SDLK_J: //Show Jumpto Menu
         begin
           if (Songs.SongList.Count > 0) and (FreeListMode) then
           begin
@@ -895,13 +889,13 @@ begin
           Exit;
         end;
 
-      Ord('E'):
+      SDLK_E:
         begin
           OpenEditor;
           Exit;
         end;
 
-      Ord('S'):
+      SDLK_S:
         begin
           if not (SDL_ModState = KMOD_LSHIFT) and (CatSongs.Song[Interaction].Medley.Source>=msTag)
             and not MakeMedley and (Mode = smNormal) then
@@ -912,7 +906,7 @@ begin
             StartMedley(0, msCalculated);
         end;
 
-      Ord('D'):
+      SDLK_D:
         begin
           if not (SDL_ModState = KMOD_LSHIFT) and (Mode = smNormal) and
             (Length(getVisibleMedleyArr(msTag)) > 0) and not MakeMedley then
@@ -922,7 +916,7 @@ begin
             StartMedley(5, msCalculated);
         end;
 
-      Ord('R'):
+      SDLK_R:
         begin
           Randomize;
           if (Songs.SongList.Count > 0) and
@@ -1001,7 +995,7 @@ begin
           Exit;
         end;
 
-      Ord('W'):
+      SDLK_W:
         begin
 
           if not CatSongs.Song[Interaction].Main then

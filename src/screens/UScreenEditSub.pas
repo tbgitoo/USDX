@@ -50,7 +50,7 @@ uses
   UTexture,
   UThemes,
   UTime,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -4009,7 +4009,7 @@ var
   X1:      real;
   X2:      real;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor3f(1, 1, 1);
   {$ENDIF}
@@ -4040,7 +4040,7 @@ begin
 
   Rec.Top := 410 - (CurrentTone - 12*scale - Tracks[CurrentTrack].Lines[Tracks[CurrentTrack].CurrentLine].BaseNote) * Space/2 - H1;
   Rec.Bottom := Rec.Top + 2 * H1;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor3f(1, 1, 1);
   glBindTexture(GL_TEXTURE_2D, Tex_Lyric_Help_Bar.TexNum);
@@ -4055,7 +4055,7 @@ begin
   // draw currently recorded tone
   SetFontPos(Theme.EditSub.TextCurrentTone.X, Theme.EditSub.TextCurrentTone.Y);
   SetFontSize(Theme.EditSub.TextCurrentTone.Size);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(Theme.EditSub.TextCurrentTone.ColR, Theme.EditSub.TextCurrentTone.ColG, Theme.EditSub.TextCurrentTone.ColB, 1);
   {$ENDIF}
@@ -4154,7 +4154,7 @@ begin
   begin
     if (LineIndex = Tracks[Track].CurrentLine) and not (PlaySentence or PlaySentenceMidi or PlayOne) then
     begin
-      {$IFDEF UseOpenGLES}
+      {$IFDEF UseOpenGLES3}
       {$ELSE}
       glColor4f(1, 0.6, 0, 1) // currently selected line in orange
       {$ENDIF}
@@ -4165,7 +4165,7 @@ begin
          (LineIndex >= MedleyNotes.start.line) and (LineIndex <= MedleyNotes.end_.line) then
         // medley section in green
          begin
-           {$IFDEF UseOpenGLES}
+           {$IFDEF UseOpenGLES3}
            {$ELSE}
              glColor4f(0.15, 0.75, 0.15, 1)
            {$ENDIF}
@@ -4176,7 +4176,7 @@ begin
         if (Track = CurrentTrack) then
         begin
           Color := GetPlayerColor(Ini.SingColor[CurrentTrack]);
-          {$IFDEF UseOpenGLES}
+          {$IFDEF UseOpenGLES3}
           {$ELSE}
           glColor4f(Color.R, Color.G, Color.B, 1)
           {$ENDIF}

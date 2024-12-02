@@ -44,7 +44,7 @@ procedure DrawTexture(Texture: TTexture);
 implementation
 
 uses
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES;
   {$ELSE}
   dglOpenGL;
@@ -52,7 +52,7 @@ uses
 
 procedure DrawLine(X1, Y1, X2, Y2, ColR, ColG, ColB: real);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor3f(ColR, ColG, ColB);
   glBegin(GL_LINES);
@@ -64,7 +64,7 @@ end;
 
 procedure DrawQuad(X, Y, W, H, ColR, ColG, ColB: real);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor3f(ColR, ColG, ColB);
   glBegin(GL_QUADS);
@@ -85,14 +85,14 @@ var
 begin
   with Texture do
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glColor4f(ColR * Int, ColG * Int, ColB * Int, Alpha);
     {$ENDIF}
     glEnable(GL_TEXTURE_2D);
 
     glEnable(GL_BLEND);
-    {$ifdef UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     glDepthRangef(0, 10);
     {$else}
     glDepthRange(0, 10);
@@ -137,7 +137,7 @@ begin
       y4 := (y + h/2) + yt4 * cos(Rot) + xt4 * sin(Rot);
 
     end;
-    {$ifdef UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
        {draw_quads_opengles_z(
            x1, y1 + (y2 - (LeftScale * (y2))),
            x2, y2 - (y2 - (LeftScale * (y2))),

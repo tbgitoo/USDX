@@ -53,10 +53,9 @@ uses
   SDL2_image             in 'lib\SDL2\SDL2_image.pas',
   {$ENDIF}
   //new work on current OpenGL implementation
-  {$IFDEF UseOpenGLES}
-   dglOpenGLES   in 'lib\dglOpenGL\dglOpenGLES.pas',
-  {$ELSE}
-  dglOpenGL              in 'lib\dglOpenGL\dglOpenGL.pas',
+
+  {$IFDEF setup_OPENGLES_GLAD}
+  glad_gl in 'lib\glad\glad_gl.pas',
   {$ENDIF}
 
   UJniCallback            in 'jni\UJniCallback.pas',
@@ -460,23 +459,7 @@ UPlatformAndroid   in 'base\UPlatformAndroid.pas',
 function SDL_main(argc: integer; argv: PPChar): integer;
 begin
 
-   if not setupGraphicsAndroid then exit(1);
 
-
-   //openGLESexampleProgram;
-
-
-
-   SDL_FillRect( SDL_GetWindowSurface( Screen ) , nil, SDL_MapRGB(SDL_GetWindowSurface( Screen )^.format, $FF, $FF, $FF));
-  SDL_UpdateWindowSurface(Screen);
-  SDL_Delay(2000);
-
-
-
-
-
-
-  SDL_Quit();
 
 end;
 

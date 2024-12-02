@@ -34,7 +34,7 @@ interface
 {$I switches.inc}
 
 uses
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
    dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -361,7 +361,7 @@ begin
   end
   else //if Typ = TEXTURE_TYPE_PLAIN then
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, newWidth, newHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, TexSurface.pixels);
     {$ELSE}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, newWidth, newHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, TexSurface.pixels);
@@ -469,7 +469,7 @@ begin
 
   if SupportsNPOT or (((Width and (Width - 1)) = 0) and ((Height and (Height - 1)) = 0)) then
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, Data);
     {$ELSE}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, Data);
@@ -482,7 +482,7 @@ begin
   begin
     TexWidth := RoundPOT(Width);
     TexHeight := RoundPOT(Height);
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     glTexImage2D(GL_TEXTURE_2D, 0, 3, TexWidth, TexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nil);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, Data);
     {$ELSE}

@@ -260,7 +260,7 @@ var
 implementation
 
 uses
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -1299,7 +1299,7 @@ begin
 
   width  := Theme.ScoreDownloadPopup.DownloadProgressSong.W;
   height := Theme.ScoreDownloadPopup.DownloadProgressSong.H;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(Theme.ScoreDownloadPopup.DownloadProgressSong.ColR, Theme.ScoreDownloadPopup.DownloadProgressSong.ColG, Theme.ScoreDownloadPopup.DownloadProgressSong.ColB, 1); //Set Color
   {$ENDIF}
@@ -1307,7 +1307,7 @@ begin
   glEnable(GL_BLEND);
 
   glBindTexture(GL_TEXTURE_2D,  Texture_ProgressBar.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
@@ -1317,7 +1317,7 @@ begin
     if (CurProgress > 0) then
     begin
       Progress := CurProgress / Num_Songs;
-      {$IFDEF UseOpenGLES}
+      {$IFDEF UseOpenGLES3}
       {$ELSE}
       glTexCoord2f((width * Progress) / 8, 0);
       glVertex2f(x + width * Progress, y);
@@ -1326,7 +1326,7 @@ begin
       glVertex2f(x + width * Progress, y + height);
       {$ENDIF}
     end;
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glTexCoord2f(0, 1);
     glVertex2f(x, y + height);
@@ -1335,7 +1335,7 @@ begin
   {$ENDIF}
  glDisable(GL_TEXTURE_2D);
  glDisable(GL_BLEND);
- {$IFDEF UseOpenGLES}
+ {$IFDEF UseOpenGLES3}
  {$ELSE}
  glcolor4f(1, 0, 0, 1);
  {$ENDIF}
@@ -1354,7 +1354,7 @@ begin
 
   width  := Theme.ScoreDownloadPopup.DownloadProgressWeb.W;
   height := Theme.ScoreDownloadPopup.DownloadProgressWeb.H;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(Theme.ScoreDownloadPopup.DownloadProgressWeb.ColR, Theme.ScoreDownloadPopup.DownloadProgressWeb.ColG, Theme.ScoreDownloadPopup.DownloadProgressWeb.ColB, 1); //Set Color
   {$ENDIF}
@@ -1362,7 +1362,7 @@ begin
   glEnable(GL_BLEND);
 
   glBindTexture(GL_TEXTURE_2D, Texture_ProgressBar.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
@@ -1373,7 +1373,7 @@ begin
     if (CurProgress > 0) then
     begin
       Progress := CurProgress / (Num_Songs * Num_Webs);
-      {$IFDEF UseOpenGLES}
+      {$IFDEF UseOpenGLES3}
       {$ELSE}
       glTexCoord2f((width * Progress) / 8, 0);
       glVertex2f(x + width * Progress, y);
@@ -1382,7 +1382,7 @@ begin
       glVertex2f(x + width * Progress, y + height);
       {$ENDIF}
     end;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
     glTexCoord2f(0, 1);
     glVertex2f(x, y + height);
@@ -1391,7 +1391,7 @@ begin
 
  glDisable(GL_TEXTURE_2D);
  glDisable(GL_BLEND);
- {$IFDEF UseOpenGLES}
+ {$IFDEF UseOpenGLES3}
  {$ELSE}
  glcolor4f(1, 0, 0, 1);
  {$ENDIF}
@@ -1641,7 +1641,7 @@ begin
 
   //Background:
   glEnable(GL_BLEND);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glbegin(gl_quads);
     glColor4f(0.2, 0.2, 0.2, 0.8); glVertex2f(Rect.left-5, Rect.top-5);
@@ -2097,12 +2097,12 @@ end;
 
 procedure TScreenPopupHelp.DrawLine(line, index, Y: integer);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}
   glLineWidth(2);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(GL_LINES);
     glVertex2f(TextsGFX[line].lines[index].fX, TextsGFX[line].lines[index].fY - Y);
@@ -2113,7 +2113,7 @@ end;
 
 procedure TScreenPopupHelp.DrawText(line, index, Y: integer);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}
@@ -2129,13 +2129,13 @@ procedure TScreenPopupHelp.DrawScroll(X, Y, W, H: integer; pos, len: double);
 var
   fY, tY: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}
 
   glLineWidth(1);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(GL_LINE_LOOP);
     glVertex2f(X, Y);
@@ -2149,7 +2149,7 @@ begin
   tY := fY+H*len;
   if tY+0.001>=Y+H then
     tY := Y+H;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(GL_QUADS);
     glVertex2f(X, fY);

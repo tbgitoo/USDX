@@ -48,7 +48,6 @@
 
 
 ============================================================================== }
-
 {$define DGL_USE_SDL}
 {
   Load the OpenGL library and query its functions using SDL.
@@ -20882,4 +20881,13 @@ initialization
 finalization
 
 end.
+
+
+
+
+
+
+
+
+
 

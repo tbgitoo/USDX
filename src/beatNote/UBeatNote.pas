@@ -114,7 +114,7 @@ uses
   UNote,
   Math,
   UGraphic,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,

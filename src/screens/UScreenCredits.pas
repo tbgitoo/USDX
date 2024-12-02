@@ -42,7 +42,7 @@ uses
   UPath,
   UTexture,
   UThemes,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -541,12 +541,12 @@ begin
   { fade to white at end }
   if Ctime > Intro_FadeToWhite_Start then
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glColor4f(1, 1, 1, sqr(CTime - Intro_FadeToWhite_Start) * (CTime - Intro_FadeToWhite_Start) / sqr(Main_Start - Intro_FadeToWhite_Start));
     {$ENDIF}
     glEnable(GL_BLEND);
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glBegin(GL_QUADS);
       glVertex2f(  0,   0);
@@ -561,7 +561,7 @@ end;
 
 procedure Start3D;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glMatrixMode(GL_PROJECTION);
   glPushMatrix;
@@ -574,7 +574,7 @@ end;
 
 procedure End3D;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glMatrixMode(GL_PROJECTION);
   glPopMatrix;
@@ -587,14 +587,14 @@ procedure TScreenCredits.DrawLayeredLogo(Separation, Scale, AngleX, AngleY, Angl
     TotalAngle: single;
 begin
   Start3D;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPushMatrix;
   {$ENDIF}
   glEnable(GL_TEXTURE_2D);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glTranslatef(0, 0, -5 + 0.5 * Separation);
   {$ENDIF}
@@ -602,12 +602,12 @@ begin
   TotalAngle := Abs(AngleX) + Abs(AngleY) + Abs(AngleZ);
   if not isZero(TotalAngle) then
   begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
     glRotatef(TotalAngle, AngleX / TotalAngle, AngleY / TotalAngle, AngleZ / TotalAngle);
   {$ENDIF}
   end;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glScalef(Scale, Scale, 1);
 
@@ -616,7 +616,7 @@ begin
   {$ENDIF}
 
   glBindTexture(GL_TEXTURE_2D, intro_layer01.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, -0.4 * Separation);
@@ -627,7 +627,7 @@ begin
   {$ENDIF}
 
   glBindTexture(GL_TEXTURE_2D, intro_layer02.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, -0.3 * Separation);
@@ -638,7 +638,7 @@ begin
   {$ENDIF}
 
   glBindTexture(GL_TEXTURE_2D, intro_layer03.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, -0.2 * Separation);
@@ -649,7 +649,7 @@ begin
   {$ENDIF}
 
   glBindTexture(GL_TEXTURE_2D, intro_layer04.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, -0.1 * Separation);
@@ -660,7 +660,7 @@ begin
   {$ENDIF}
 
   glBindTexture(GL_TEXTURE_2D, intro_layer05.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, 0 * Separation);
@@ -671,7 +671,7 @@ begin
   {$ENDIF}
 
   glBindTexture(GL_TEXTURE_2D, intro_layer06.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, 0.1 * Separation);
@@ -682,7 +682,7 @@ begin
   {$ENDIF}
 
   glBindTexture(GL_TEXTURE_2D, intro_layer07.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, 0.2 * Separation);
@@ -693,7 +693,7 @@ begin
   {$ENDIF}
 
   glBindTexture(GL_TEXTURE_2D, intro_layer08.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, 0.3 * Separation);
@@ -703,7 +703,7 @@ begin
   glEnd;
   {$ENDIF}
   glBindTexture(GL_TEXTURE_2D, intro_layer09.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(0, 0); glVertex3f(-1, -1, 0.22 * Separation);
@@ -715,7 +715,7 @@ begin
 
   glDisable(Gl_Texture_2D);
   glDisable(GL_BLEND);
-   {$IFDEF UseOpenGLES}
+   {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPopMatrix;
    {$ENDIF}
@@ -733,12 +733,12 @@ begin
   // fade out at end of main part
   if (Ctime > Main_FadeOut_Start) then
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glColor4f(0, 0, 0, (CTime - Main_FadeOut_Start) / (Tune_End - Main_FadeOut_Start));
     {$ENDIF}
     glEnable(GL_BLEND);
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glBegin(GL_QUADS);
       glVertex2f(  0,   0);
@@ -756,12 +756,12 @@ begin
   glEnable(GL_TEXTURE_2D);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}
   glBindTexture(GL_TEXTURE_2D, credits_bg_tex.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(Gl_Quads);
     glTexCoord2f(       0,        0); glVertex2f(      0,       0);
@@ -808,7 +808,7 @@ begin
         A := Credits_X + X - 15
       else
         A := 0;
-      {$IFDEF UseOpenGLES}
+      {$IFDEF UseOpenGLES3}
       {$ELSE}
       glColor4f(230 / 255 - 40 / 255 + Y * (Credits_X + X)/  900,
                 200 / 255 - 30 / 255 + Y * (Credits_X + X)/ 1000,
@@ -889,7 +889,7 @@ begin
     end;
 
     { prepare drawing }
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glPushMatrix;
     glTranslatef(NameX, NameY, 0);
@@ -912,7 +912,7 @@ begin
 
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glPopMatrix;
     {$ENDIF}
@@ -924,12 +924,12 @@ begin
   glEnable(GL_TEXTURE_2D);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}
   glBindTexture(GL_TEXTURE_2D, credits_bg_ovl.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_Quads);
     glTexCoord2f(      0,        0); glVertex2f(800-393,   0);
@@ -999,12 +999,12 @@ begin
   glEnable(GL_TEXTURE_2D);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   {$ENDIF}
   glBindTexture(GL_TEXTURE_2D, outro_bg.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(gl_quads);
     glTexCoord2f(       0,        0); glVertex2f(  0,   0);
@@ -1014,12 +1014,12 @@ begin
   glEnd;
   {$ENDIF}
   // outro overlays
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, (2 + sin(CTime / 15)) / 3);
   {$ENDIF}
   glBindTexture(GL_TEXTURE_2D, outro_esc.TexNum);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glBegin(Gl_Quads);
     glTexCoord2f(      0,       0); glVertex2f(  0,   0);
@@ -1030,12 +1030,12 @@ begin
   {$ENDIF}
   if (RandomRange(0,20) <= 18) then
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glColor4f(1, 1, 1, 1);
     {$ENDIF}
     glBindTexture(GL_TEXTURE_2D, outro_exd.TexNum);
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glBegin(Gl_Quads);
       glTexCoord2f(      0,       0); glVertex2f(800-310, 600-247);
@@ -1057,7 +1057,7 @@ end;
 { effects are called with blending texture and matrix prepared }
 procedure Effect_Draw (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 1);
   glBegin(gl_Quads);
@@ -1080,7 +1080,7 @@ begin
   else
     Alpha := 1;
 
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Alpha);
   glBegin(gl_Quads);
@@ -1094,7 +1094,7 @@ end;
 
 procedure Effect_Rotate_Left_Top (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1113,7 +1113,7 @@ end;
 
 procedure Effect_Rotate_Right_Bot (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1132,7 +1132,7 @@ end;
 
 procedure Effect_ZoomIn_Rotate (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1152,7 +1152,7 @@ procedure Effect_ZoomOut_Shift (const Tex: TTexture; Progress: double);
   var
     X: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1172,7 +1172,7 @@ end;
 
 procedure Effect_Shift_Left (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1189,7 +1189,7 @@ end;
 
 procedure Effect_Shift_Right_Top (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1208,7 +1208,7 @@ procedure Effect_Flip_Bot (const Tex: TTexture; Progress: double);
   var
     X: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1227,7 +1227,7 @@ procedure Effect_Flip_Right_Top (const Tex: TTexture; Progress: double);
   var
     X: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1246,7 +1246,7 @@ procedure Effect_Flip_Right (const Tex: TTexture; Progress: double);
   var
     X: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1265,7 +1265,7 @@ procedure Effect_Flip_Right_Bot (const Tex: TTexture; Progress: double);
   var
     X: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1282,7 +1282,7 @@ end;
 
 procedure Effect_Rotate_Right_Top (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1303,7 +1303,7 @@ procedure Effect_Shift_Weird (const Tex: TTexture; Progress: double);
   var
     X: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1324,7 +1324,7 @@ end;
 
 procedure Effect_Shift_Right_Bot (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1341,7 +1341,7 @@ end;
 
 procedure Effect_Rotate_Right_Top2 (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1363,7 +1363,7 @@ procedure Effect_Flip_Left_Bot (const Tex: TTexture; Progress: double);
   var
     X: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1382,7 +1382,7 @@ procedure Effect_Flip_Right_Top2 (const Tex: TTexture; Progress: double);
   var
     X: double;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, Progress);
 
@@ -1399,7 +1399,7 @@ end;
 
 procedure Effect_Twinkle_Down     (const Tex: TTexture; Progress: double);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   // draw name
   glColor4f(1, 1, 1, 1);

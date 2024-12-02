@@ -334,7 +334,7 @@ uses
   UScreenSongMenu,
   USkins,
   UUnicodeUtils,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
    dglOpenGLES,
   {$ELSE}
   dglOpenGL,

@@ -43,7 +43,7 @@ uses
   UTexture,
   UThemes,
   UWebSDK,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,

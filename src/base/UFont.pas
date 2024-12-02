@@ -46,16 +46,8 @@ interface
 
 uses
   FreeType,
-  {$IFDEF UseOpenGLES}
-   dglOpenGLES,
-  {$ELSE}
   dglOpenGL,
-  {$ENDIF}
-  {$IFDEF UseSDL3}
-  SDL3,
-  {$ELSE}
   sdl2,
-  {$ENDIF}
   Math,
   Classes,
   SysUtils,
@@ -981,7 +973,7 @@ begin
   end;
 
   // store current color, enable-flags, matrix-mode
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPushAttrib(GL_CURRENT_BIT or GL_ENABLE_BIT or GL_TRANSFORM_BIT);
 
@@ -1009,7 +1001,7 @@ begin
   }
 
   {$IFDEF FLIP_YAXIS}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPushMatrix();
   glScalef(1, -1, 1);
@@ -1019,7 +1011,7 @@ begin
   // display text
   for LineIndex := 0 to High(Text) do
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glPushMatrix();
 
@@ -1034,7 +1026,7 @@ begin
       glEnable(GL_TEXTURE_2D);
     end;
 
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     // draw reflection
     if (ReflectionPass) then
@@ -1055,7 +1047,7 @@ begin
     // render text line
     Render(Text[LineIndex]);
 
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glPopMatrix();
     {$ENDIF}
@@ -1063,13 +1055,13 @@ begin
 
   // restore settings
   {$IFDEF FLIP_YAXIS}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
     {$ELSE}
   glPopMatrix();
 
   {$ENDIF}
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
    glPopAttrib();
   {$ENDIF}
@@ -1105,7 +1097,7 @@ begin
   UnderlineY1 := GetUnderlinePosition();
   UnderlineY2 := UnderlineY1 + GetUnderlineThickness();
   Bounds := BBox(Text, false);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glRectf(Bounds.Left, UnderlineY1, Bounds.Right, UnderlineY2);
   {$ENDIF}
@@ -1259,12 +1251,13 @@ end;
  *}
 function TScalableFont.GetMipmapLevel(): integer;
 var
-  {$IFDEF UseOpenGLES}
-  ModelMatrix, ProjMatrix: TGLMatrixf4;
+  {$IFDEF UseOpenGLES3}
+
   {$ELSE}
   ModelMatrix, ProjMatrix: TGLMatrixd4;
-  {$ENDIF}
   ViewPortArray: TGLVectori4;
+  {$ENDIF}
+
   Dist, Dist2, DistSum, PM15x2: double;
   WidthScale, HeightScale: double;
 const
@@ -1276,13 +1269,14 @@ const
 begin
 
   // 1. retrieve current transformation matrices for gluProject
-  {$IFDEF UseOpenGLES}
-
+  {$IFDEF UseOpenGLES3}
+  Result:=0;
   {$ELSE}
   glGetDoublev(GL_MODELVIEW_MATRIX, @ModelMatrix);
   glGetDoublev(GL_PROJECTION_MATRIX, @ProjMatrix);
-  {$ENDIF}
   glGetIntegerv(GL_VIEWPORT, @ViewPortArray);
+
+
 
   // See 6545ededd512ea7c7dc5c08a1ef96397afdcbe49 for the original
   // code using gluProject() that has been simplified.
@@ -1337,6 +1331,8 @@ begin
     Result := 0;
   if (Result > High(fMipmapFonts)) then
     Result := High(fMipmapFonts);
+
+  {$ENDIF}
 end;
 
 function TScalableFont.GetMipmapScale(Level: integer): single;
@@ -1378,7 +1374,7 @@ begin
   // since the mipmap font (if level > 0) is smaller than the base-font
   // we have to scale to get its size right.
   MipmapScale := fMipmapFonts[0].Height/Result.Height;
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glScalef(MipmapScale, MipmapScale, 0);
   {$ENDIF}
@@ -1386,7 +1382,7 @@ end;
 
 procedure TScalableFont.Print(const Text: TUCS4StringArray);
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPushMatrix();
 
@@ -1399,7 +1395,7 @@ begin
   else
     fBaseFont.Print(Text);
 
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPopMatrix();
   {$ENDIF}
@@ -1874,7 +1870,7 @@ begin
       begin
         FT_Get_Kerning(fFace.Data, PrevGlyph.CharIndex, Glyph.CharIndex,
                        FT_KERNING_UNSCALED, KernDelta);
-        {$IFDEF UseOpenGLES}
+        {$IFDEF UseOpenGLES3}
         {$ELSE}
         glTranslatef(KernDelta.x * fFace.FontUnitScale.X, 0, 0);
         {$ENDIF}
@@ -1890,7 +1886,7 @@ begin
 
         Glyph.Render(fUseDisplayLists);
         end;
-      {$IFDEF UseOpenGLES}
+      {$IFDEF UseOpenGLES3}
       {$ELSE}
       glTranslatef(Glyph.Advance.x + fGlyphSpacing, 0, 0);
       {$ENDIF}
@@ -2049,7 +2045,7 @@ var
   OutlineColor: TGLColor;
 begin
   // save current color
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glGetFloatv(GL_CURRENT_COLOR, @CurrentColor.vals);
   {$ENDIF}
@@ -2060,24 +2056,24 @@ begin
     OutlineColor.a := CurrentColor.a;
 
   // draw underline outline (in outline color)
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4fv(@OutlineColor.vals);
   {$ENDIF}
   fOutlineFont.DrawUnderline(Text);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4fv(@CurrentColor.vals);
   {$ENDIF}
 
   // draw underline inner part (in current color)
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPushMatrix();
   glTranslatef(fOutset, 0, 0);
   {$ENDIF}
   fInnerFont.DrawUnderline(Text);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPopMatrix();
   {$ENDIF}
@@ -2089,7 +2085,7 @@ var
   OutlineColor: TGLColor;
 begin
   // save current color
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glGetFloatv(GL_CURRENT_COLOR, @CurrentColor.vals);
   {$ENDIF}
@@ -2100,13 +2096,13 @@ begin
     OutlineColor.a := CurrentColor.a;
 
   { setup and render outline font }
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4fv(@OutlineColor.vals);
   glPushMatrix();
   {$ENDIF}
   fOutlineFont.Render(Text);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPopMatrix();
   glColor4fv(@CurrentColor.vals);
@@ -2117,7 +2113,7 @@ begin
   glTranslatef(fOutset, fOutset, 0);
   {$ENDIF}
   fInnerFont.Render(Text);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPopMatrix();
   {$ENDIF}
@@ -2614,7 +2610,7 @@ end;
 destructor TFTGlyph.Destroy;
 begin
   if (fDisplayList <> 0) then
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glDeleteLists(fDisplayList, 1);
    {$ENDIF}
@@ -2640,7 +2636,7 @@ begin
 
 
   glBindTexture(GL_TEXTURE_2D, fTexture);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPushMatrix();
 
@@ -2648,7 +2644,7 @@ begin
   glTranslatef(fBitmapCoords.Left, fBitmapCoords.Top, 0);
   {$ENDIF}
 
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
     //draw_rectangle_quads_opengles(0,0,fBitmapCoords.Width,-fBitmapCoords.Height,
     //0,0,fTexOffset.X, fTexOffset.Y,fTexture);
   {$ELSE}
@@ -2673,7 +2669,7 @@ begin
   glEnd();
 
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPopMatrix();
   {$ENDIF}
@@ -2689,12 +2685,12 @@ var
 const
   CutOff = 0.6;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPushMatrix();
   {$ENDIF}
   glBindTexture(GL_TEXTURE_2D, fTexture);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glGetFloatv(GL_CURRENT_COLOR, @Color.vals);
   // add extra space to the left of the glyph
@@ -2722,7 +2718,7 @@ begin
                     fBitmapCoords.Height + 1) * fTexOffset.Y;
 
   // draw glyph texture
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
       //draw_rectangle_quads_opengles_color(0, UpperPos, fBitmapCoords.Width,fFont.Descender,
       //    Color.r, Color.g, Color.b, 0,
       //    Color.r, Color.g, Color.b, 0,
@@ -2751,7 +2747,7 @@ begin
     glVertex2f(fBitmapCoords.Width, fFont.Descender);
   glEnd();
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPopMatrix();
 
@@ -3101,7 +3097,7 @@ begin
   
   if (not ReflectionPass) then
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(TexX, TexY); glVertex2f(PL, PT);
@@ -3113,14 +3109,14 @@ begin
   end
   else
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     glDepthRangef(0, 10);
     {$ELSE}
     glDepthRange(0, 10);
     {$ENDIF}
     glDepthFunc(GL_LEQUAL);
     glEnable(GL_DEPTH_TEST);
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(TexX, TexY); glVertex2f(PL, PT);
@@ -3172,7 +3168,7 @@ begin
     Exit;
 
   //Save the current color and alpha (for reflection)
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glGetFloatv(GL_CURRENT_COLOR, @fTempColor);
   {$ENDIF}

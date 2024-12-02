@@ -1448,7 +1448,7 @@ uses
   UPathUtils,
   UFileSystem,
   TextGL,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -1461,7 +1461,7 @@ uses
 //-----------
 procedure glColorRGB(Color: TRGB);  overload;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
 
   {$ELSE}
   glColor3f(Color.R, Color.G, Color.B);
@@ -1470,7 +1470,7 @@ end;
 
 procedure glColorRGB(Color: TRGB; Alpha: real);  overload;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
 
   {$ELSE}
   glColor4f(Color.R, Color.G, Color.B, Alpha);
@@ -1479,7 +1479,7 @@ end;
 
 procedure glColorRGB(Color: TRGBA); overload;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
 
   {$ELSE}
   glColor4f(Color.R, Color.G, Color.B, Color.A);
@@ -1488,7 +1488,7 @@ end;
 
 procedure glColorRGB(Color: TRGBA; Alpha: real); overload;
 begin
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
 
   {$ELSE}
   glColor4f(Color.R, Color.G, Color.B, Min(Color.A, Alpha));

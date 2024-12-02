@@ -537,7 +537,6 @@
         <Filename Value="lua/ULuaUsdx.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit125>
-<<<<<<< HEAD
       <Unit126>
         <Filename Value="lua/ULuaUtils.pas"/>
         <IsPartOfProject Value="True"/>
@@ -718,8 +717,6 @@
         <Filename Value="screens/UScreenAbout.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit170>
-=======
->>>>>>> upstream/master
     </Units>
   </ProjectOptions>
   <CompilerOptions>

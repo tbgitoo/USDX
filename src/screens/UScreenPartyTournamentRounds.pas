@@ -48,7 +48,7 @@ uses
   {$ELSE}
   sdl2,
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -977,7 +977,7 @@ begin
   SetFontStyle(FontResult);
   SetFontSize(SizeResult);
   SetFontItalic(false);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(ColorResult.R, ColorResult.G, ColorResult.B, 1);
   {$ENDIF}
@@ -1678,7 +1678,7 @@ end;
 procedure TScreenPartyTournamentRounds.DrawLine(X, Y, W, H: real);
 begin
   glEnable(GL_BLEND);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(1, 1, 1, 0.4);
   glbegin(gl_quads);
@@ -1709,7 +1709,7 @@ begin
   end;
 
   glEnable(GL_BLEND);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(R, G, B, 1);
   glbegin(gl_quads);
@@ -1740,7 +1740,7 @@ begin
   end;
 
   glEnable(GL_BLEND);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor4f(R, G, B, 1);
   glbegin(gl_quads);

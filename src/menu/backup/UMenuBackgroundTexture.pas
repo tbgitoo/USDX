@@ -61,7 +61,11 @@ implementation
 uses
   USkins,
   SysUtils,
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UGraphic,
   ULog;
 
@@ -97,7 +101,7 @@ var
   vertex_coords: array[0..7] of GLfloat;
   texcoords: array[0..7] of GLfloat;
 begin
-  Log.logStatus('TMenuBackgroundTexture','Draw');
+  //Log.logStatus('TMenuBackgroundTexture','Draw');
   If (ScreenAct = 1) then //Clear just once when in dual screen mode
     glClear(GL_DEPTH_BUFFER_BIT);
 

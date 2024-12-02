@@ -147,7 +147,7 @@ implementation
 uses
   SysUtils,
   Math,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,

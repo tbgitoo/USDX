@@ -196,7 +196,7 @@ uses
   USkins,
   UTextEncoding,
   UUnicodeUtils,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,

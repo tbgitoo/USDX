@@ -89,7 +89,7 @@ uses
   {$ELSE}
   sdl2,
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES;
   {$ELSE}
   dglOpenGL;
@@ -248,7 +248,7 @@ begin
       for J := 1 to BandData[I] do
       begin
         // Draw block
-        {$IFDEF UseSDL3}
+        {$IFDEF UseOpenGLES3}
         {$ELSE}
         glBegin(GL_QUADS);
           glVertex3f(PosX, PosY, Z);
@@ -264,7 +264,7 @@ begin
           //Draw Reflection
           if Direction then
           begin
-            {$IFDEF UseSDL3}
+            {$IFDEF UseOpenGLES3}
            {$ELSE}
             glBegin(GL_QUADS);
               glColorRGB(Color, GetAlpha(Diff));
@@ -282,7 +282,7 @@ begin
           end
           else
           begin
-            {$IFDEF UseSDL3}
+            {$IFDEF UseOpenGLES3}
             {$ELSE}
             glBegin(GL_QUADS);
               glColorRGB(Color, GetAlpha(Diff));

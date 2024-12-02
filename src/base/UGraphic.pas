@@ -39,7 +39,7 @@ uses
   {$ELSE}
   sdl2,
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
    dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -499,10 +499,7 @@ begin
   begin
     Log.LogCritical('SDL_Init Failed', 'UGraphic.Initialize3D');
   end;
-  {$IFDEF ANDROID}
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-  {$ENDIF}
+
   InitializeScreen;
   // load icon image (must be 32x32 for win32)
   Icon := LoadImage(ResourcesPath.Append(WINDOW_ICON));
@@ -590,7 +587,7 @@ end;
 procedure SwapBuffers;
 begin
   SDL_GL_SwapWindow(Screen);
-  {$IFNDEF UseOpenGLES}
+  {$IFNDEF UseOpenGLES3}
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity;
   glOrtho(0, RenderW, RenderH, 0, -1, 100);
@@ -821,7 +818,7 @@ begin
   case CurrentWindowMode of
     Mode_Fullscreen:
     begin
-      {$IFDEF UseOpenGLES}
+      {$IFDEF UseOpenGLES3}
       {$IFDEF UseSDL3}
        Disp:=SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay())^;
       {$ELSE}
@@ -875,7 +872,7 @@ begin
   if Mode >= Mode_Fullscreen then
   begin
     Mode := Mode and not Mode_Borderless;
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
        {$IFDEF UseSDL3}
        Disp:=SDL_GetCurrentDisplayMode(SDL_GetPrimaryDisplay())^;
       {$ELSE}

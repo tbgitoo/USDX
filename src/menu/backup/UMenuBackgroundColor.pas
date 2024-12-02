@@ -52,7 +52,11 @@ type
 
 implementation
 uses
+  {$IFDEF UseOpenGLES}
+  dglOpenGLES,
+  {$ELSE}
   dglOpenGL,
+  {$ENDIF}
   UGraphic;
 
 constructor TMenuBackgroundColor.Create(const ThemedSettings: TThemeBackground);

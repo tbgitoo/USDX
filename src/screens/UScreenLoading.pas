@@ -42,7 +42,7 @@ uses
   {$ENDIF}
   SysUtils,
   UThemes,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES;
   {$ELSE}
   dglOpenGL;

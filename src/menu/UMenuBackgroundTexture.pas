@@ -61,7 +61,7 @@ implementation
 uses
   USkins,
   SysUtils,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,

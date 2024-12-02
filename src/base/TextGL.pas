@@ -34,7 +34,7 @@ interface
 {$I switches.inc}
 
 uses
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
    dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -278,7 +278,7 @@ begin
 
   GLFont := @Fonts[CurrentFont.FontFamily][CurrentFont.FontStyle];
   //Log.logStatus('TextGL','glPrint');
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glPushMatrix();
 
@@ -286,7 +286,7 @@ begin
     glTranslatef(GLFont.X, GLFont.Y + GLFont.Font.Ascender, GLFont.Z);
     {$ENDIF}
     // draw string
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
   {$ELSE}
     GLFont.Font.Print(Text);
   glPopMatrix();

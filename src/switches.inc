@@ -74,7 +74,12 @@
  {$IF Defined(ANDROID)}
  {$I config-android.inc}
  {$DEFINE UseSDL2}
- {$DEFINE UseOpenGLES}
+ // This is special, rather than setting up separately the SDL2 and opengl like on the desktop applications
+ // it is required to load the opengl functions through the sdl2 function pointer retrieval on Android
+ // For this, the GLAD library is used
+ {$DEFINE setup_OPENGLES_GLAD}
+ // At present, opengles3 for Android
+ {$DEFINE UseOPENGLES3}
  {$IFEND}
 
   // use "configure --enable-debug", "make debug" or

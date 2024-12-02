@@ -102,7 +102,7 @@ uses
   ULog,
   UUnicodeUtils,
   SysUtils,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
