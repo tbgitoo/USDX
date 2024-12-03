@@ -70,7 +70,7 @@ uses
   {$ELSE}
   sdl2,
   {$ENDIF}
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -140,7 +140,8 @@ begin
 
     glColorRGB(Color, Progress);
     glBindTexture(GL_TEXTURE_2D, Tex.TexNum);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(Tex.TexX1*Tex.TexW, Tex.TexY1*Tex.TexH);
       glVertex2f(0, 0);
@@ -154,7 +155,7 @@ begin
       glTexCoord2f(Tex.TexX2*Tex.TexW, Tex.TexY1*Tex.TexH);
       glVertex2f(800, 0);
     glEnd;
-
+    {$ENDIF}
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
   end

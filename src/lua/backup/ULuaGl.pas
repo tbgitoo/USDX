@@ -35,7 +35,7 @@ interface
 
 uses
   SysUtils,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -154,8 +154,10 @@ begin
 
   if (e = ULuaGl_EnumERROR) then
     luaL_error(L, 'incorrect string argument to function ''gl.Begin''');
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(e);
+  {$ENDIF}
 
   result:=0; // number of results
 end;
@@ -213,10 +215,16 @@ begin
       lua_rawgeti(L,1,i);
 
   if (lua_istable(L, 1) and (lua_objlen(L,1) = 4)) or (lua_gettop(L) = 4) then
-    glClearAccum(lual_checknumber(L,-4),
+    begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
+        glClearAccum(lual_checknumber(L,-4),
                  lual_checknumber(L,-3),
                  lual_checknumber(L,-2),
                  lual_checknumber(L,-1))
+      {$ENDIF}
+    end
+
   else
     luaL_error(L, 'incorrect argument to function ''gl.ClearAccum''');
   result:=0; // number of results
@@ -249,14 +257,26 @@ begin
       lua_rawgeti(L,1,i);
 
   if (lua_istable(L, 1) and (lua_objlen(L,1) = 3)) or (lua_gettop(L) = 3) then
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3d(GLdouble(lual_checknumber(L,-3)),
               GLdouble(lual_checknumber(L,-2)),
-              GLdouble(lual_checknumber(L,-1)))
+              GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+
+    end
   else if (lua_istable(L, 1) and (lua_objlen(L,1) = 4)) or (lua_gettop(L) = 4) then
-    glColor4d(GLdouble(lual_checknumber(L,-4)),
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
+      glColor4d(GLdouble(lual_checknumber(L,-4)),
               GLdouble(lual_checknumber(L,-3)),
               GLdouble(lual_checknumber(L,-2)),
-              GLdouble(lual_checknumber(L,-1)))
+              GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+    end
+
   else
     luaL_error(L, 'incorrect argument to function ''gl.Color''');
   result:=0; // number of results
@@ -300,8 +320,14 @@ begin
 
   if  (lua_istable(L, 1) and (lua_objlen(L,1) = 2))
   or  (lua_gettop(L) = 2) then
-    glDepthRange(lual_checkinteger(L,-2),
-                 lual_checkinteger(L,-1))
+    begin
+     {$IFDEF UseOpenGLES3}
+    {$ELSE}
+      glDepthRange(lual_checkinteger(L,-2),
+                 lual_checkinteger(L,-1));
+     {$ENDIF}
+    end
+
   else
     luaL_error(L, 'incorrect argument to function ''gl.DepthRange''');
   result:=0; // number of results
@@ -329,8 +355,10 @@ begin
 
   if (e = ULuaGl_EnumERROR) then
     luaL_error(L, 'incorrect string argument to function ''gl.DisableClientState''');
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glDisableClientState(e);
+  {$ENDIF}
 
   result:=0; // number of results
 end;
@@ -343,8 +371,10 @@ begin
 
   if (e = ULuaGl_EnumERROR) then
     luaL_error(L, 'incorrect string argument to function ''gl.DrawBuffer''');
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glDrawBuffer(e);
+  {$ENDIF}
 
   result:=0; // number of results
 end;
@@ -371,20 +401,29 @@ begin
   if (e = ULuaGl_EnumERROR) then
     luaL_error(L, 'incorrect string argument to function ''gl.EnableClientState''');
 
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnableClientState(e);
+  {$ENDIF}
 
   result:=0; // number of results
 end;
 
 function ULuaGl_End(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnd();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
 function ULuaGl_EndList(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEndList();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
@@ -416,13 +455,19 @@ end;
 
 function ULuaGl_InitNames(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glInitNames();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
 function ULuaGl_LoadIdentity(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glLoadIdentity();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
@@ -435,7 +480,10 @@ begin
   if (e = ULuaGl_EnumERROR) then
     luaL_error(L, 'incorrect string argument to function ''gl.LogicOp''');
 
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glLogicOp(e);
+  {$ENDIF}
 
   result:=0; // number of results
 end;
@@ -449,7 +497,10 @@ begin
   if (e = ULuaGl_EnumERROR) then
     luaL_error(L, 'incorrect string argument to function ''gl.MatrixMode''');
 
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glMatrixMode(e);
+  {$ENDIF}
 
   result:=0; // number of results
 end;
@@ -457,13 +508,7 @@ end;
 function ULuaGl_Ortho(L: Plua_State): Integer; cdecl;
 begin
   if  (lua_gettop(L) = 6) then
-    {$IFDEF ANDROID}
-    glOrthof(lual_checkinteger(L,-6),
-            lual_checkinteger(L,-5),
-            lual_checkinteger(L,-4),
-            lual_checkinteger(L,-3),
-            lual_checkinteger(L,-2),
-            lual_checkinteger(L,-1))
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glOrtho(lual_checkinteger(L,-6),
             lual_checkinteger(L,-5),
@@ -480,31 +525,46 @@ end;
 
 function ULuaGl_PopAttrib(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glPopAttrib();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
 function ULuaGl_PopClientAttrib(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glPopClientAttrib();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
 function ULuaGl_PopMatrix(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glPopMatrix();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
 function ULuaGl_PopName(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glPopName();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
 function ULuaGl_PushMatrix(L: Plua_State): Integer; cdecl;
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glPopName();
+  {$ENDIF}
   result:=0; // number of results
 end;
 
@@ -517,17 +577,32 @@ begin
       lua_rawgeti(L,1,i);
 
   if (lua_istable(L, 1) and (lua_objlen(L,1) = 2)) or (lua_gettop(L) = 2) then
+  begin
+   {$IFDEF UseOpenGLES3}
+  {$ELSE}
     glRasterPos2d(GLdouble(lual_checknumber(L,-2)),
-                  GLdouble(lual_checknumber(L,-1)))
+                  GLdouble(lual_checknumber(L,-1)));
+   {$ENDIF}
+  end
   else if (lua_istable(L, 1) and (lua_objlen(L,1) = 3)) or (lua_gettop(L) = 3) then
+  begin
+   {$IFDEF UseOpenGLES3}
+   {$ELSE}
     glRasterPos3d(GLdouble(lual_checknumber(L,-3)),
                   GLdouble(lual_checknumber(L,-2)),
-                  GLdouble(lual_checknumber(L,-1)))
+                  GLdouble(lual_checknumber(L,-1)));
+   {$ENDIF}
+  end
   else if (lua_istable(L, 1) and (lua_objlen(L,1) = 4)) or (lua_gettop(L) = 4) then
+  begin
+   {$IFDEF UseOpenGLES3}
+  {$ELSE}
     glRasterPos4d(GLdouble(lual_checknumber(L,-4)),
                   GLdouble(lual_checknumber(L,-3)),
                   GLdouble(lual_checknumber(L,-2)),
-                  GLdouble(lual_checknumber(L,-1)))
+                  GLdouble(lual_checknumber(L,-1)));
+   {$ENDIF}
+  end
   else
     luaL_error(L, 'incorrect argument to function ''gl.RasterPos''');
   result:=0; // number of results
@@ -562,10 +637,15 @@ begin
   if  (lua_istable(L, 1) and (lua_objlen(L,1) = 2))
   and (lua_istable(L, 2) and (lua_objlen(L,2) = 2))
   or  (lua_gettop(L) = 4) then
+  begin
+   {$IFDEF UseOpenGLES3}
+   {$ELSE}
     glRectD(lual_checknumber(L,-4),
             lual_checknumber(L,-3),
             lual_checknumber(L,-2),
-            lual_checknumber(L,-1))
+            lual_checknumber(L,-1));
+   {$ENDIF}
+  end
   else
     luaL_error(L, 'incorrect argument to function ''gl.Rect''');
   result:=0; // number of results
@@ -574,10 +654,15 @@ end;
 function ULuaGl_Rotate(L: Plua_State): Integer; cdecl;
 begin
   if  (lua_gettop(L) = 3) then
+  begin
+   {$IFDEF UseOpenGLES3}
+   {$ELSE}
     glRotated(lual_checkinteger(L,-4),
               lual_checkinteger(L,-3),
               lual_checkinteger(L,-2),
-              lual_checkinteger(L,-1))
+              lual_checkinteger(L,-1));
+   {$ENDIF}
+  end
   else
     luaL_error(L, 'incorrect argument to function ''gl.Rotate''');
   result:=0; // number of results
@@ -586,9 +671,14 @@ end;
 function ULuaGl_Scale(L: Plua_State): Integer; cdecl;
 begin
   if  (lua_gettop(L) = 3) then
+  begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
     glScaled(lual_checkinteger(L,-3),
              lual_checkinteger(L,-2),
-             lual_checkinteger(L,-1))
+             lual_checkinteger(L,-1));
+  {$ENDIF}
+  end
   else
     luaL_error(L, 'incorrect argument to function ''gl.Scale''');
   result:=0; // number of results
@@ -602,8 +692,10 @@ begin
 
   if (e = ULuaGl_EnumERROR) then
     luaL_error(L, 'incorrect string argument to function ''gl.ShadeModel''');
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glShadeModel(e);
+  {$ENDIF}
 
   result:=0; // number of results
 end;
@@ -617,19 +709,41 @@ begin
       lua_rawgeti(L,1,i);
 
   if (lua_istable(L, 1) and (lua_objlen(L,1) = 1)) or (lua_gettop(L) = 1) then
-    glTexCoord1d(GLdouble(lual_checknumber(L,-1)))
+  begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
+    glTexCoord1d(GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+  end
   else if (lua_istable(L, 1) and (lua_objlen(L,1) = 2)) or (lua_gettop(L) = 2) then
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glTexCoord2d(GLdouble(lual_checknumber(L,-2)),
-                 GLdouble(lual_checknumber(L,-1)))
+                 GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+
+    end
   else if (lua_istable(L, 1) and (lua_objlen(L,1) = 3)) or (lua_gettop(L) = 3) then
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glTexCoord3d(GLdouble(lual_checknumber(L,-3)),
                  GLdouble(lual_checknumber(L,-2)),
-                 GLdouble(lual_checknumber(L,-1)))
+                 GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+
+    end
   else if (lua_istable(L, 1) and (lua_objlen(L,1) = 4)) or (lua_gettop(L) = 4) then
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glTexCoord4d(GLdouble(lual_checknumber(L,-4)),
                  GLdouble(lual_checknumber(L,-3)),
                  GLdouble(lual_checknumber(L,-2)),
-                 GLdouble(lual_checknumber(L,-1)))
+                 GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+    end
   else
     luaL_error(L, 'incorrect argument to function ''gl.TexCoord''');
   result:=0; // number of results
@@ -638,9 +752,15 @@ end;
 function ULuaGl_Translate(L: Plua_State): Integer; cdecl;
 begin
   if  (lua_gettop(L) = 3) then
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glTranslated(lual_checkinteger(L,-3),
                  lual_checkinteger(L,-2),
-                 lual_checkinteger(L,-1))
+                 lual_checkinteger(L,-1));
+    {$ENDIF}
+    end
+
   else
     luaL_error(L, 'incorrect argument to function ''gl.Translate''');
   result:=0; // number of results
@@ -655,17 +775,33 @@ begin
       lua_rawgeti(L,1,i);
 
   if (lua_istable(L, 1) and (lua_objlen(L,1) = 2)) or (lua_gettop(L) = 2) then
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glVertex2d(GLdouble(lual_checknumber(L,-2)),
-               GLdouble(lual_checknumber(L,-1)))
+               GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+
+    end
   else if (lua_istable(L, 1) and (lua_objlen(L,1) = 3)) or (lua_gettop(L) = 3) then
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glVertex3d(GLdouble(lual_checknumber(L,-3)),
                GLdouble(lual_checknumber(L,-2)),
-               GLdouble(lual_checknumber(L,-1)))
+               GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+    end
   else if (lua_istable(L, 1) and (lua_objlen(L,1) = 4)) or (lua_gettop(L) = 4) then
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glVertex4d(GLdouble(lual_checknumber(L,-4)),
                GLdouble(lual_checknumber(L,-3)),
                GLdouble(lual_checknumber(L,-2)),
-               GLdouble(lual_checknumber(L,-1)))
+               GLdouble(lual_checknumber(L,-1)));
+    {$ENDIF}
+    end
   else
     luaL_error(L, 'incorrect argument to function ''gl.Vertex''');
   result:=0; // number of results
@@ -899,12 +1035,15 @@ end;
 
   const
   ULuaGl_Enum: array [0..579] of TULuaGl_Enums = (
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_ACCUM';Value:GL_ACCUM),//(Text:'GL_VERSION_1_1';Value:GL_VERSION_1_1),
-    (Text:'GL_ACCUM';Value:GL_ACCUM),
+    //(Text:'GL_ACCUM';Value:GL_ACCUM),
     (Text:'GL_LOAD';Value:GL_LOAD),
     (Text:'GL_RETURN';Value:GL_RETURN),
     (Text:'GL_MULT';Value:GL_MULT),
     (Text:'GL_ADD';Value:GL_ADD),
+    {$ENDIF}
     (Text:'GL_NEVER';Value:GL_NEVER),
     (Text:'GL_LESS';Value:GL_LESS),
     (Text:'GL_EQUAL';Value:GL_EQUAL),
@@ -913,6 +1052,8 @@ end;
     (Text:'GL_NOTEQUAL';Value:GL_NOTEQUAL),
     (Text:'GL_GEQUAL';Value:GL_GEQUAL),
     (Text:'GL_ALWAYS';Value:GL_ALWAYS),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_CURRENT_BIT';Value:GL_CURRENT_BIT),
     (Text:'GL_POINT_BIT';Value:GL_POINT_BIT),
     (Text:'GL_LINE_BIT';Value:GL_LINE_BIT),
@@ -921,19 +1062,29 @@ end;
     (Text:'GL_PIXEL_MODE_BIT';Value:GL_PIXEL_MODE_BIT),
     (Text:'GL_LIGHTING_BIT';Value:GL_LIGHTING_BIT),
     (Text:'GL_FOG_BIT';Value:GL_FOG_BIT),
+    {$ENDIF}
     (Text:'GL_DEPTH_BUFFER_BIT';Value:GL_DEPTH_BUFFER_BIT),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_ACCUM_BUFFER_BIT';Value:GL_ACCUM_BUFFER_BIT),
+    {$ENDIF}
     (Text:'GL_STENCIL_BUFFER_BIT';Value:GL_STENCIL_BUFFER_BIT),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_VIEWPORT_BIT';Value:GL_VIEWPORT_BIT),
     (Text:'GL_TRANSFORM_BIT';Value:GL_TRANSFORM_BIT),
     (Text:'GL_ENABLE_BIT';Value:GL_ENABLE_BIT),
+    {$ENDIF}
     (Text:'GL_COLOR_BUFFER_BIT';Value:GL_COLOR_BUFFER_BIT),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_HINT_BIT';Value:GL_HINT_BIT),
     (Text:'GL_EVAL_BIT';Value:GL_EVAL_BIT),
     (Text:'GL_LIST_BIT';Value:GL_LIST_BIT),
     (Text:'GL_TEXTURE_BIT';Value:GL_TEXTURE_BIT),
     (Text:'GL_SCISSOR_BIT';Value:GL_SCISSOR_BIT),
     (Text:'GL_ALL_ATTRIB_BITS';Value:GL_ALL_ATTRIB_BITS),
+    {$ENDIF}
     (Text:'GL_POINTS';Value:GL_POINTS),
     (Text:'GL_LINES';Value:GL_LINES),
     (Text:'GL_LINE_LOOP';Value:GL_LINE_LOOP),
@@ -941,9 +1092,12 @@ end;
     (Text:'GL_TRIANGLES';Value:GL_TRIANGLES),
     (Text:'GL_TRIANGLE_STRIP';Value:GL_TRIANGLE_STRIP),
     (Text:'GL_TRIANGLE_FAN';Value:GL_TRIANGLE_FAN),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_QUADS';Value:GL_QUADS),
     (Text:'GL_QUAD_STRIP';Value:GL_QUAD_STRIP),
     (Text:'GL_POLYGON';Value:GL_POLYGON),
+    {$ENDIF}
     (Text:'GL_ZERO';Value:GL_ZERO),
     (Text:'GL_ONE';Value:GL_ONE),
     (Text:'GL_SRC_COLOR';Value:GL_SRC_COLOR),
@@ -955,6 +1109,8 @@ end;
     (Text:'GL_DST_COLOR';Value:GL_DST_COLOR),
     (Text:'GL_ONE_MINUS_DST_COLOR';Value:GL_ONE_MINUS_DST_COLOR),
     (Text:'GL_SRC_ALPHA_SATURATE';Value:GL_SRC_ALPHA_SATURATE),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_CLIP_PLANE0';Value:GL_CLIP_PLANE0),//(Text:'GL_TRUE';Value:GL_TRUE),
     (Text:'GL_CLIP_PLANE0';Value:GL_CLIP_PLANE0),//(Text:'GL_FALSE';Value:GL_FALSE),
     (Text:'GL_CLIP_PLANE0';Value:GL_CLIP_PLANE0),
@@ -963,6 +1119,7 @@ end;
     (Text:'GL_CLIP_PLANE3';Value:GL_CLIP_PLANE3),
     (Text:'GL_CLIP_PLANE4';Value:GL_CLIP_PLANE4),
     (Text:'GL_CLIP_PLANE5';Value:GL_CLIP_PLANE5),
+    {$ENDIF}
     (Text:'GL_BYTE';Value:GL_BYTE),
     (Text:'GL_UNSIGNED_BYTE';Value:GL_UNSIGNED_BYTE),
     (Text:'GL_SHORT';Value:GL_SHORT),
@@ -970,24 +1127,36 @@ end;
     (Text:'GL_INT';Value:GL_INT),
     (Text:'GL_UNSIGNED_INT';Value:GL_UNSIGNED_INT),
     (Text:'GL_FLOAT';Value:GL_FLOAT),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_2_BYTES';Value:GL_2_BYTES),
     (Text:'GL_3_BYTES';Value:GL_3_BYTES),
     (Text:'GL_4_BYTES';Value:GL_4_BYTES),
     (Text:'GL_DOUBLE';Value:GL_DOUBLE),
+    {$ENDIF}
     (Text:'GL_NONE';Value:GL_NONE),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_FRONT_LEFT';Value:GL_FRONT_LEFT),
     (Text:'GL_FRONT_RIGHT';Value:GL_FRONT_RIGHT),
     (Text:'GL_BACK_LEFT';Value:GL_BACK_LEFT),
     (Text:'GL_BACK_RIGHT';Value:GL_BACK_RIGHT),
+    {$ENDIF}
     (Text:'GL_FRONT';Value:GL_FRONT),
     (Text:'GL_BACK';Value:GL_BACK),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_LEFT';Value:GL_LEFT),
     (Text:'GL_RIGHT';Value:GL_RIGHT),
+    {$ENDIF}
     (Text:'GL_FRONT_AND_BACK';Value:GL_FRONT_AND_BACK),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_AUX0';Value:GL_AUX0),
     (Text:'GL_AUX1';Value:GL_AUX1),
     (Text:'GL_AUX2';Value:GL_AUX2),
     (Text:'GL_AUX3';Value:GL_AUX3),
+    {$ENDIF}
     (Text:'GL_NO_ERROR';Value:GL_NO_ERROR),
     (Text:'GL_INVALID_ENUM';Value:GL_INVALID_ENUM),
     (Text:'GL_INVALID_VALUE';Value:GL_INVALID_VALUE),
@@ -995,6 +1164,8 @@ end;
     (Text:'GL_STACK_OVERFLOW';Value:GL_STACK_OVERFLOW),
     (Text:'GL_STACK_UNDERFLOW';Value:GL_STACK_UNDERFLOW),
     (Text:'GL_OUT_OF_MEMORY';Value:GL_OUT_OF_MEMORY),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_2D';Value:GL_2D),
     (Text:'GL_3D';Value:GL_3D),
     (Text:'GL_3D_COLOR';Value:GL_3D_COLOR),
@@ -1044,9 +1215,12 @@ end;
     (Text:'GL_POLYGON_SMOOTH';Value:GL_POLYGON_SMOOTH),
     (Text:'GL_POLYGON_STIPPLE';Value:GL_POLYGON_STIPPLE),
     (Text:'GL_EDGE_FLAG';Value:GL_EDGE_FLAG),
+    {$ENDIF}
     (Text:'GL_CULL_FACE';Value:GL_CULL_FACE),
     (Text:'GL_CULL_FACE_MODE';Value:GL_CULL_FACE_MODE),
     (Text:'GL_FRONT_FACE';Value:GL_FRONT_FACE),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_LIGHTING';Value:GL_LIGHTING),
     (Text:'GL_LIGHT_MODEL_LOCAL_VIEWER';Value:GL_LIGHT_MODEL_LOCAL_VIEWER),
     (Text:'GL_LIGHT_MODEL_TWO_SIDE';Value:GL_LIGHT_MODEL_TWO_SIDE),
@@ -1062,12 +1236,16 @@ end;
     (Text:'GL_FOG_END';Value:GL_FOG_END),
     (Text:'GL_FOG_MODE';Value:GL_FOG_MODE),
     (Text:'GL_FOG_COLOR';Value:GL_FOG_COLOR),
+    {$ENDIF}
     (Text:'GL_DEPTH_RANGE';Value:GL_DEPTH_RANGE),
     (Text:'GL_DEPTH_TEST';Value:GL_DEPTH_TEST),
     (Text:'GL_DEPTH_WRITEMASK';Value:GL_DEPTH_WRITEMASK),
     (Text:'GL_DEPTH_CLEAR_VALUE';Value:GL_DEPTH_CLEAR_VALUE),
     (Text:'GL_DEPTH_FUNC';Value:GL_DEPTH_FUNC),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_ACCUM_CLEAR_VALUE';Value:GL_ACCUM_CLEAR_VALUE),
+    {$ENDIF}
     (Text:'GL_STENCIL_TEST';Value:GL_STENCIL_TEST),
     (Text:'GL_STENCIL_CLEAR_VALUE';Value:GL_STENCIL_CLEAR_VALUE),
     (Text:'GL_STENCIL_FUNC';Value:GL_STENCIL_FUNC),
@@ -1077,9 +1255,14 @@ end;
     (Text:'GL_STENCIL_PASS_DEPTH_PASS';Value:GL_STENCIL_PASS_DEPTH_PASS),
     (Text:'GL_STENCIL_REF';Value:GL_STENCIL_REF),
     (Text:'GL_STENCIL_WRITEMASK';Value:GL_STENCIL_WRITEMASK),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_MATRIX_MODE';Value:GL_MATRIX_MODE),
     (Text:'GL_NORMALIZE';Value:GL_NORMALIZE),
+    {$ENDIF}
     (Text:'GL_VIEWPORT';Value:GL_VIEWPORT),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_MODELVIEW_STACK_DEPTH';Value:GL_MODELVIEW_STACK_DEPTH),
     (Text:'GL_PROJECTION_STACK_DEPTH';Value:GL_PROJECTION_STACK_DEPTH),
     (Text:'GL_TEXTURE_STACK_DEPTH';Value:GL_TEXTURE_STACK_DEPTH),
@@ -1091,7 +1274,10 @@ end;
     (Text:'GL_ALPHA_TEST';Value:GL_ALPHA_TEST),
     (Text:'GL_ALPHA_TEST_FUNC';Value:GL_ALPHA_TEST_FUNC),
     (Text:'GL_ALPHA_TEST_REF';Value:GL_ALPHA_TEST_REF),
+    {$ENDIF}
     (Text:'GL_DITHER';Value:GL_DITHER),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_BLEND_DST';Value:GL_BLEND_DST),
     (Text:'GL_BLEND_SRC';Value:GL_BLEND_SRC),
     (Text:'GL_BLEND';Value:GL_BLEND),
@@ -1100,13 +1286,19 @@ end;
     (Text:'GL_COLOR_LOGIC_OP';Value:GL_COLOR_LOGIC_OP),
     (Text:'GL_AUX_BUFFERS';Value:GL_AUX_BUFFERS),
     (Text:'GL_DRAW_BUFFER';Value:GL_DRAW_BUFFER),
+    {$ENDIF}
     (Text:'GL_READ_BUFFER';Value:GL_READ_BUFFER),
     (Text:'GL_SCISSOR_BOX';Value:GL_SCISSOR_BOX),
     (Text:'GL_SCISSOR_TEST';Value:GL_SCISSOR_TEST),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_INDEX_CLEAR_VALUE';Value:GL_INDEX_CLEAR_VALUE),
     (Text:'GL_INDEX_WRITEMASK';Value:GL_INDEX_WRITEMASK),
+    {$ENDIF}
     (Text:'GL_COLOR_CLEAR_VALUE';Value:GL_COLOR_CLEAR_VALUE),
     (Text:'GL_COLOR_WRITEMASK';Value:GL_COLOR_WRITEMASK),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_INDEX_MODE';Value:GL_INDEX_MODE),
     (Text:'GL_RGBA_MODE';Value:GL_RGBA_MODE),
     (Text:'GL_DOUBLEBUFFER';Value:GL_DOUBLEBUFFER),
@@ -1181,14 +1373,20 @@ end;
     (Text:'GL_MAX_TEXTURE_STACK_DEPTH';Value:GL_MAX_TEXTURE_STACK_DEPTH),
     (Text:'GL_MAX_VIEWPORT_DIMS';Value:GL_MAX_VIEWPORT_DIMS),
     (Text:'GL_MAX_CLIENT_ATTRIB_STACK_DEPTH';Value:GL_MAX_CLIENT_ATTRIB_STACK_DEPTH),
+    {$ENDIF}
     (Text:'GL_SUBPIXEL_BITS';Value:GL_SUBPIXEL_BITS),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_INDEX_BITS';Value:GL_INDEX_BITS),
+    {$ENDIF}
     (Text:'GL_RED_BITS';Value:GL_RED_BITS),
     (Text:'GL_GREEN_BITS';Value:GL_GREEN_BITS),
     (Text:'GL_BLUE_BITS';Value:GL_BLUE_BITS),
     (Text:'GL_ALPHA_BITS';Value:GL_ALPHA_BITS),
     (Text:'GL_DEPTH_BITS';Value:GL_DEPTH_BITS),
     (Text:'GL_STENCIL_BITS';Value:GL_STENCIL_BITS),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_ACCUM_RED_BITS';Value:GL_ACCUM_RED_BITS),
     (Text:'GL_ACCUM_GREEN_BITS';Value:GL_ACCUM_GREEN_BITS),
     (Text:'GL_ACCUM_BLUE_BITS';Value:GL_ACCUM_BLUE_BITS),
@@ -1218,7 +1416,10 @@ end;
     (Text:'GL_MAP2_GRID_DOMAIN';Value:GL_MAP2_GRID_DOMAIN),
     (Text:'GL_MAP2_GRID_SEGMENTS';Value:GL_MAP2_GRID_SEGMENTS),
     (Text:'GL_TEXTURE_1D';Value:GL_TEXTURE_1D),
+    {$ENDIF}
     (Text:'GL_TEXTURE_2D';Value:GL_TEXTURE_2D),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_FEEDBACK_BUFFER_POINTER';Value:GL_FEEDBACK_BUFFER_POINTER),
     (Text:'GL_FEEDBACK_BUFFER_SIZE';Value:GL_FEEDBACK_BUFFER_SIZE),
     (Text:'GL_FEEDBACK_BUFFER_TYPE';Value:GL_FEEDBACK_BUFFER_TYPE),
@@ -1229,9 +1430,12 @@ end;
     (Text:'GL_TEXTURE_INTERNAL_FORMAT';Value:GL_TEXTURE_INTERNAL_FORMAT),
     (Text:'GL_TEXTURE_BORDER_COLOR';Value:GL_TEXTURE_BORDER_COLOR),
     (Text:'GL_TEXTURE_BORDER';Value:GL_TEXTURE_BORDER),
+    {$ENDIF}
     (Text:'GL_DONT_CARE';Value:GL_DONT_CARE),
     (Text:'GL_FASTEST';Value:GL_FASTEST),
     (Text:'GL_NICEST';Value:GL_NICEST),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_LIGHT0';Value:GL_LIGHT0),
     (Text:'GL_LIGHT1';Value:GL_LIGHT1),
     (Text:'GL_LIGHT2';Value:GL_LIGHT2),
@@ -1262,7 +1466,10 @@ end;
     (Text:'GL_OR';Value:GL_OR),
     (Text:'GL_NOR';Value:GL_NOR),
     (Text:'GL_EQUIV';Value:GL_EQUIV),
+    {$ENDIF}
     (Text:'GL_INVERT';Value:GL_INVERT),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_OR_REVERSE';Value:GL_OR_REVERSE),
     (Text:'GL_COPY_INVERTED';Value:GL_COPY_INVERTED),
     (Text:'GL_OR_INVERTED';Value:GL_OR_INVERTED),
@@ -1274,12 +1481,16 @@ end;
     (Text:'GL_COLOR_INDEXES';Value:GL_COLOR_INDEXES),
     (Text:'GL_MODELVIEW';Value:GL_MODELVIEW),
     (Text:'GL_PROJECTION';Value:GL_PROJECTION),
+    {$ENDIF}
     (Text:'GL_TEXTURE';Value:GL_TEXTURE),
     (Text:'GL_COLOR';Value:GL_COLOR),
     (Text:'GL_DEPTH';Value:GL_DEPTH),
     (Text:'GL_STENCIL';Value:GL_STENCIL),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_COLOR_INDEX';Value:GL_COLOR_INDEX),
     (Text:'GL_STENCIL_INDEX';Value:GL_STENCIL_INDEX),
+    {$ENDIF}
     (Text:'GL_DEPTH_COMPONENT';Value:GL_DEPTH_COMPONENT),
     (Text:'GL_RED';Value:GL_RED),
     (Text:'GL_GREEN';Value:GL_GREEN),
@@ -1289,6 +1500,8 @@ end;
     (Text:'GL_RGBA';Value:GL_RGBA),
     (Text:'GL_LUMINANCE';Value:GL_LUMINANCE),
     (Text:'GL_LUMINANCE_ALPHA';Value:GL_LUMINANCE_ALPHA),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_BITMAP';Value:GL_BITMAP),
     (Text:'GL_POINT';Value:GL_POINT),
     (Text:'GL_LINE';Value:GL_LINE),
@@ -1298,6 +1511,7 @@ end;
     (Text:'GL_SELECT';Value:GL_SELECT),
     (Text:'GL_FLAT';Value:GL_FLAT),
     (Text:'GL_SMOOTH';Value:GL_SMOOTH),
+    {$ENDIF}
     (Text:'GL_KEEP';Value:GL_KEEP),
     (Text:'GL_REPLACE';Value:GL_REPLACE),
     (Text:'GL_INCR';Value:GL_INCR),
@@ -1306,6 +1520,8 @@ end;
     (Text:'GL_RENDERER';Value:GL_RENDERER),
     (Text:'GL_VERSION';Value:GL_VERSION),
     (Text:'GL_EXTENSIONS';Value:GL_EXTENSIONS),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_S';Value:GL_S),
     (Text:'GL_T';Value:GL_T),
     (Text:'GL_R';Value:GL_R),
@@ -1321,6 +1537,7 @@ end;
     (Text:'GL_TEXTURE_GEN_MODE';Value:GL_TEXTURE_GEN_MODE),
     (Text:'GL_OBJECT_PLANE';Value:GL_OBJECT_PLANE),
     (Text:'GL_EYE_PLANE';Value:GL_EYE_PLANE),
+    {$ENDIF}
     (Text:'GL_NEAREST';Value:GL_NEAREST),
     (Text:'GL_LINEAR';Value:GL_LINEAR),
     (Text:'GL_NEAREST_MIPMAP_NEAREST';Value:GL_NEAREST_MIPMAP_NEAREST),
@@ -1331,8 +1548,13 @@ end;
     (Text:'GL_TEXTURE_MIN_FILTER';Value:GL_TEXTURE_MIN_FILTER),
     (Text:'GL_TEXTURE_WRAP_S';Value:GL_TEXTURE_WRAP_S),
     (Text:'GL_TEXTURE_WRAP_T';Value:GL_TEXTURE_WRAP_T),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_CLAMP';Value:GL_CLAMP),
+    {$ENDIF}
     (Text:'GL_REPEAT';Value:GL_REPEAT),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_CLIENT_PIXEL_STORE_BIT';Value:GL_CLIENT_PIXEL_STORE_BIT),
     (Text:'GL_CLIENT_VERTEX_ARRAY_BIT';Value:GL_CLIENT_VERTEX_ARRAY_BIT),
     (Text:'GL_CLIENT_ALL_ATTRIB_BITS';Value:GL_CLIENT_ALL_ATTRIB_BITS),
@@ -1386,7 +1608,10 @@ end;
     (Text:'GL_TEXTURE_RESIDENT';Value:GL_TEXTURE_RESIDENT),
     (Text:'GL_TEXTURE_BINDING_1D';Value:GL_TEXTURE_BINDING_1D),
     (Text:'GL_TEXTURE_BINDING_2D';Value:GL_TEXTURE_BINDING_2D),
+    {$ENDIF}
     (Text:'GL_VERTEX_ARRAY';Value:GL_VERTEX_ARRAY),
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     (Text:'GL_NORMAL_ARRAY';Value:GL_NORMAL_ARRAY),
     (Text:'GL_COLOR_ARRAY';Value:GL_COLOR_ARRAY),
     (Text:'GL_INDEX_ARRAY';Value:GL_INDEX_ARRAY),
@@ -1462,10 +1687,13 @@ end;
     (Text:'GL_INDEX_ARRAY_POINTER_EXT';Value:GL_INDEX_ARRAY_POINTER_EXT),
     (Text:'GL_TEXTURE_COORD_ARRAY_POINTER_EXT';Value:GL_TEXTURE_COORD_ARRAY_POINTER_EXT),
     (Text:'GL_EDGE_FLAG_ARRAY_POINTER_EXT';Value:GL_EDGE_FLAG_ARRAY_POINTER_EXT),
+    {$ENDIF}
     (Text:'GL_BGR_EXT';Value:GL_BGR_EXT),//(Text:'GL_DOUBLE_EXT';Value:GL_DOUBLE_EXT),
     (Text:'GL_BGR_EXT';Value:GL_BGR_EXT),
-    (Text:'GL_BGRA_EXT';Value:GL_BGRA_EXT),
-    (Text:'GL_COLOR_TABLE_FORMAT_EXT';Value:GL_COLOR_TABLE_FORMAT_EXT),
+    (Text:'GL_BGRA_EXT';Value:GL_BGRA_EXT)
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
+    ,(Text:'GL_COLOR_TABLE_FORMAT_EXT';Value:GL_COLOR_TABLE_FORMAT_EXT),
     (Text:'GL_COLOR_TABLE_WIDTH_EXT';Value:GL_COLOR_TABLE_WIDTH_EXT),
     (Text:'GL_COLOR_TABLE_RED_SIZE_EXT';Value:GL_COLOR_TABLE_RED_SIZE_EXT),
     (Text:'GL_COLOR_TABLE_GREEN_SIZE_EXT';Value:GL_COLOR_TABLE_GREEN_SIZE_EXT),
@@ -1479,6 +1707,7 @@ end;
     (Text:'GL_COLOR_INDEX8_EXT';Value:GL_COLOR_INDEX8_EXT),
     (Text:'GL_COLOR_INDEX12_EXT';Value:GL_COLOR_INDEX12_EXT),
     (Text:'GL_COLOR_INDEX16_EXT';Value:GL_COLOR_INDEX16_EXT)
+    {$ENDIF}
    );
 
 function ULuaGl_StringToEnum(Str: String): GLenum;

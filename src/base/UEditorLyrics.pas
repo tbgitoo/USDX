@@ -273,7 +273,10 @@ begin
     SetFontPos(Word[WordIndex].X + 10*ScreenX, Word[WordIndex].Y);
     SetFontSize(Word[WordIndex].Size);
     SetFontItalic(Word[WordIndex].Italic);
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(Word[WordIndex].ColR, Word[WordIndex].ColG, Word[WordIndex].ColB);
+    {$ENDIF}
     glPrint(Word[WordIndex].Text);
   end;
 end;

@@ -611,7 +611,7 @@ end;
 procedure InitializeScreen;
 {$IFDEF ANDROID}
 begin
-setupGraphicsAndroid;
+
 end;
 {$ELSE}
 

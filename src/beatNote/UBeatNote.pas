@@ -593,8 +593,10 @@ begin
 
 
 
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(1, 1, 1);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -613,7 +615,10 @@ begin
 
            if (NoteType = ntRap) and CurrentSong.RapBeat then
            begin
+             {$IFDEF UseOpenGLES3}
+             {$ELSE}
                 glColor4f(1, 1, 1, 1);
+             {$ENDIF}
 
             W := NotesW[PlayerNumber - 1] * 2 + 1;
             H := NotesH[PlayerNumber - 1] * 1.5 + 3.5;
@@ -632,25 +637,30 @@ begin
 
             //Syntax for test Tex_BG_Left[PlayerIndex+1].TexNum
             glBindTexture(GL_TEXTURE_2D, Tex_Note_Beat[PlayerNumber].TexNum);
-
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glBegin(GL_QUADS);
               glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
               glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
               glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
               glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
             glEnd;
+            {$ENDIF}
 
             // Optional clapping hands to indicate the nature of the beat notes
             if Ini.BeatPlayClapSignOn=1 then
             begin
                glBindTexture(GL_TEXTURE_2D, Tex_Note_Clap.TexNum);
 
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
               glBegin(GL_QUADS);
               glTexCoord2f(0, 0); glVertex2f((Rec.Left+Rec.Right)/2-8,  Rec.Top-25);
               glTexCoord2f(0, 1); glVertex2f((Rec.Left+Rec.Right)/2-8,  Rec.Top-8);
               glTexCoord2f(1, 1); glVertex2f((Rec.Left+Rec.Right)/2+11, Rec.Top-8);
               glTexCoord2f(1, 0); glVertex2f((Rec.Left+Rec.Right)/2+11, Rec.Top-25);
               glEnd;
+              {$ENDIF}
 
             end;
 
@@ -680,7 +690,10 @@ begin
   if (ScreenSing.settings.NotesVisible and (1 shl PlayerIndex) <> 0) then
   begin
     //glColor4f(1, 1, 1, sqrt((1+sin( AudioPlayback.Position * 3))/4)/ 2 + 0.5 );
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(1, 1, 1, sqrt((1 + sin(AudioPlayback.Position * 3)))/2 + 0.05);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -712,12 +725,15 @@ begin
             //Syntax for test Tex_BG_Left[PlayerIndex+1].TexNum
             glBindTexture(GL_TEXTURE_2D, Tex_Note_Beat_BG[PlayerIndex+1].TexNum);
 
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glBegin(GL_QUADS);
               glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
               glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
               glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
               glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
             glEnd;
+            {$ENDIF}
 
 
 
@@ -746,8 +762,10 @@ begin
   if (ScreenSing.Settings.InputVisible) then
   begin
     //Log.LogStatus('Player notes', 'SingDraw');
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(1, 1, 1);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -791,16 +809,21 @@ begin
           Rec.Bottom := Rec.Top + 2 * NotesH2;
 
           // draw the left part
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor3f(1, 1, 1);
+          {$ENDIF}
 
           glBindTexture(GL_TEXTURE_2D, Tex_Left[PlayerIndex+1].TexNum);
-
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
             glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
             glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
             glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
           glEnd;
+          {$ENDIF}
 
           // Middle part of the note
           Rec.Left  := Rec.Right;
@@ -820,26 +843,34 @@ begin
           glBindTexture(GL_TEXTURE_2D, Tex_Mid[PlayerIndex+1].TexNum);
           glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
           glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
             glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
             glTexCoord2f(round((Rec.Right-Rec.Left)/32), 1); glVertex2f(Rec.Right, Rec.Bottom);
             glTexCoord2f(round((Rec.Right-Rec.Left)/32), 0); glVertex2f(Rec.Right, Rec.Top);
           glEnd;
+          {$ENDIF}
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor3f(1, 1, 1);
+          {$ENDIF}
 
           // the right part of the note
           Rec.Left  := Rec.Right;
           Rec.Right := Rec.Right + NotesW[PlayerIndex];
 
           glBindTexture(GL_TEXTURE_2D, Tex_Right[PlayerIndex+1].TexNum);
-
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
             glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
             glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
             glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
           glEnd;
+          {$ENDIF}
 
           // Perfect note is stored
           if Hit and (Ini.EffectSing=1) then

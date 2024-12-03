@@ -1043,16 +1043,20 @@ begin
           glEnable(GL_TEXTURE_2D);
           glEnable(GL_BLEND);
           glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor4f(1,1,1, Alpha);
+          {$ENDIF}
           glBindTexture(GL_TEXTURE_2D, Settings.PopUpTex[PopUp.Rating].TexNum);
-
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(X, Y);
             glTexCoord2f(0, Settings.PopUpTex[PopUp.Rating].TexH); glVertex2f(X, Y + H);
             glTexCoord2f(Settings.PopUpTex[PopUp.Rating].TexW, Settings.PopUpTex[PopUp.Rating].TexH); glVertex2f(X + W, Y + H);
             glTexCoord2f(Settings.PopUpTex[PopUp.Rating].TexW, 0); glVertex2f(X + W, Y);
           glEnd;
+          {$ENDIF}
 
           glDisable(GL_TEXTURE_2D);
           glDisable(GL_BLEND);
@@ -1069,7 +1073,10 @@ begin
 
           // color and pos
           SetFontPos (X + (W - TextLen) / 2, Y + FontOffset);
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor4f(1, 1, 1, Alpha);
+          {$ENDIF}
 
           // draw
           glPrint(Theme.Sing.LineBonusText[PopUp.Rating]);
@@ -1197,16 +1204,20 @@ begin
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(1,1,1, 1);
+    {$ENDIF}
     glBindTexture(GL_TEXTURE_2D, Players[Index].ScoreBG.TexNum);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(0, 0); glVertex2f(Position.BGX, Position.BGY);
       glTexCoord2f(0, Players[Index].ScoreBG.TexH); glVertex2f(Position.BGX, Position.BGY + Position.BGH);
       glTexCoord2f(Players[Index].ScoreBG.TexW, Players[Index].ScoreBG.TexH); glVertex2f(Position.BGX + Position.BGW, Position.BGY + Position.BGH);
       glTexCoord2f(Players[Index].ScoreBG.TexW, 0); glVertex2f(Position.BGX + Position.BGW, Position.BGY);
     glEnd;
+    {$ENDIF}
 
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
@@ -1495,9 +1506,13 @@ begin
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // draw rating bar bg
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(1, 1, 1, 0.8);
+    {$ENDIF}
     glBindTexture(GL_TEXTURE_2D, Settings.RatingBar_BG_Tex.TexNum);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(0, 0);
       glVertex2f(Position.RBX, Position.RBY);
@@ -1511,9 +1526,12 @@ begin
       glTexCoord2f(Settings.RatingBar_BG_Tex.TexW, 0);
       glVertex2f(Position.RBX+Position.RBW, Position.RBY);
     glEnd;
+    {$ENDIF}
 
     // draw rating bar itself
     Size := Position.RBX + Position.RBW * Players[Index].RBPos;
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(R, G, B, 1);
     glBindTexture(GL_TEXTURE_2D, Settings.RatingBar_Bar_Tex.TexNum);
     glBegin(GL_QUADS);
@@ -1529,8 +1547,11 @@ begin
       glTexCoord2f(Settings.RatingBar_Bar_Tex.TexW, 0);
       glVertex2f(Size, Position.RBY);
     glEnd;
+    {$ENDIF}
 
     // draw rating bar fg (the thing with the 3 lines to get better readability)
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(1, 1, 1, 0.6);
     glBindTexture(GL_TEXTURE_2D, Settings.RatingBar_FG_Tex.TexNum);
     glBegin(GL_QUADS);
@@ -1546,6 +1567,7 @@ begin
       glTexCoord2f(Settings.RatingBar_FG_Tex.TexW, 0);
       glVertex2f(Position.RBX + Position.RBW, Position.RBY);
     glEnd;
+    {$ENDIF}
 
     // disable all enabled glfuncs
     glDisable(GL_TEXTURE_2D);

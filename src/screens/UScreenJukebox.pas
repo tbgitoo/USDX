@@ -316,6 +316,8 @@ const
 procedure TScreenJukebox.DrawLine(X, Y, W, H: real);
 begin
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0.3, 0.3, 0.3, 0.4);
   glbegin(gl_quads);
    glVertex2f(X, Y);
@@ -323,10 +325,13 @@ begin
    glVertex2f(X + W, Y + H);
    glVertex2f(X + W, Y);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure TScreenJukebox.DrawMoveLine();
 begin
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(SelectColR, SelectColG, SelectColB, 1);
   glbegin(gl_quads);
     glVertex2f(MoveX, MoveY);
@@ -334,6 +339,7 @@ begin
     glVertex2f(MoveX + Button[SongDescription[0]].Texture.W, MoveY + 2);
     glVertex2f(MoveX + Button[SongDescription[0]].Texture.W, MoveY);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure TScreenJukebox.DrawBlackBars();
@@ -347,7 +353,8 @@ begin
   Y1 := 0;
   H := Y + 1;
   W := 800;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0, 0, 0, 1);
   glbegin(gl_quads);
     glVertex2f(X1, Y1);
@@ -355,13 +362,15 @@ begin
     glVertex2f(X1 + W, Y1 + H);
     glVertex2f(X1 + W, Y1);
   glEnd;
+  {$ENDIF}
 
   // Bottom
   X1 := 0;
   Y1 := 600;
   H := Y + 1;
   W := 800;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0, 0, 0, 1);
   glbegin(gl_quads);
     glVertex2f(X1, Y1);
@@ -369,13 +378,15 @@ begin
     glVertex2f(X1 + W, Y1 - H);
     glVertex2f(X1 + W, Y1);
   glEnd;
+  {$ENDIF}
 
   // Left
   X1 := 0;
   Y1 := 0;
   H := 600;
   W := X + 1;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0, 0, 0, 1);
   glbegin(gl_quads);
     glVertex2f(X1, Y1);
@@ -383,13 +394,15 @@ begin
     glVertex2f(X1 + W, Y1 + H);
     glVertex2f(X1 + W, Y1);
   glEnd;
+  {$ENDIF}
 
   // Right
   X1 := 800;
   Y1 := 0;
   H := 600;
   W := X + 1;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0, 0, 0, 1);
   glbegin(gl_quads);
     glVertex2f(X1, Y1);
@@ -397,6 +410,7 @@ begin
     glVertex2f(X1 - W, Y1 + H);
     glVertex2f(X1 - W, Y1);
   glEnd;
+  {$ENDIF}
 
 end;
 

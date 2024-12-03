@@ -61,7 +61,7 @@ implementation
 uses
   USkins,
   SysUtils,
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   dglOpenGLES,
   {$ELSE}
   dglOpenGL,
@@ -112,8 +112,8 @@ begin
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBindTexture(GL_TEXTURE_2D, Tex.TexNum);
   {$IFDEF ANDROID}
-  draw_rectangle_quads_opengles(0,0,800,600,
-       Tex.TexX1*Tex.TexW,Tex.TexY1*Tex.TexH,Tex.TexX2*Tex.TexW,Tex.TexY2*Tex.TexH,Tex.TexNum);
+  //draw_rectangle_quads_opengles(0,0,800,600,
+  //     Tex.TexX1*Tex.TexW,Tex.TexY1*Tex.TexH,Tex.TexX2*Tex.TexW,Tex.TexY2*Tex.TexH,Tex.TexNum);
   {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(Tex.TexX1*Tex.TexW, Tex.TexY1*Tex.TexH);

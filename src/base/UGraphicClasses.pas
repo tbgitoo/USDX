@@ -411,32 +411,45 @@ begin
     // this draws (multiple) texture(s) of our particle
     for L := 0 to High(Col) do
     begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(Col[L].r, Col[L].g, Col[L].b, Alpha);
 
       glBegin(GL_QUADS);
+      {$ENDIF}
       if StarType <> perfectBeat then
         begin
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glTexCoord2f((1/16) * Frame, 0);          glVertex2f(X-W*Scale[L]*SizeMod, Y-H*Scale[L]*SizeMod);
         glTexCoord2f((1/16) * Frame + (1/16), 0); glVertex2f(X-W*Scale[L]*SizeMod, Y+H*Scale[L]*SizeMod);
         glTexCoord2f((1/16) * Frame + (1/16), 1); glVertex2f(X+W*Scale[L]*SizeMod, Y+H*Scale[L]*SizeMod);
         glTexCoord2f((1/16) * Frame, 1);          glVertex2f(X+W*Scale[L]*SizeMod, Y-H*Scale[L]*SizeMod);
-
+        {$ENDIF}
         end
         else  // For the beat smileys
         begin
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glTexCoord2f(0, 0);          glVertex2f(X-W*Scale[L]*SizeMod, Y-H*Scale[L]*SizeMod);
         glTexCoord2f(0, 1); glVertex2f(X-W*Scale[L]*SizeMod, Y+H*Scale[L]*SizeMod);
         glTexCoord2f(1, 1); glVertex2f(X+W*Scale[L]*SizeMod, Y+H*Scale[L]*SizeMod);
         glTexCoord2f(1, 0);          glVertex2f(X+W*Scale[L]*SizeMod, Y-H*Scale[L]*SizeMod);
-
+        {$ENDIF}
         end;
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glEnd;
+      {$ENDIF}
     end;
 	
 	  glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glcolor4f(1,1,1,1);
+    {$ENDIF}
   end;
 end;
 // end of TParticle

@@ -304,8 +304,10 @@ begin
     SetFontStyle(Style);
     SetFontSize(Size);
     SetFontItalic(false);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(ColR*Int, ColG*Int, ColB*Int, Alpha);
+    {$ENDIF}
 
     // reflection
     if Reflection then

@@ -359,13 +359,19 @@ begin
 
   if (Webcam.TextureCam.TexNum > 0) then
   begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(1, 1, 1, 1);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, Webcam.TextureCam.TexNum);
     glEnable(GL_BLEND);
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
+
 
       glTexCoord2f(0, 0);
       glVertex2f(800,  0);
@@ -377,11 +383,16 @@ begin
       glVertex2f(0, 0);
 
     glEnd;
+    {$ENDIF}
+
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 
     // reset to default
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    {$ENDIF}
 
   end;
 

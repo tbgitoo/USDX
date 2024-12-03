@@ -4182,7 +4182,10 @@ begin
           {$ENDIF}
         end
         else
+           {$IFDEF UseOpenGLES3}
+           {$ELSE}
           glColor4f(0.7, 0.7, 0.7, 1);
+          {$ENDIF}
       end;
 
     StartBeat := Tracks[Track].Lines[LineIndex].Notes[0].StartBeat;
@@ -4196,25 +4199,33 @@ begin
     Button[TransparentLineButtonId[LineIndex]].SetY(Y);
     Button[TransparentLineButtonId[LineIndex]].SetW(Width);
     Button[TransparentLineButtonId[LineIndex]].SetH(H);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glbegin(gl_quads);
       glVertex2f(X + CurrentPos, Y);
       glVertex2f(X + CurrentPos, Y + H);
       glVertex2f(X + CurrentPos + Width, Y + H);
       glVertex2f(X + CurrentPos + Width, Y);
     glEnd;
+    {$ENDIF}
   end;
 
   if(PlaySentence or PlaySentenceMidi or PlayOne) then
   begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(0, 0, 0, 0.5);
+    {$ENDIF}
     CurrentPos := 0;
     Width := (CurrentBeat - SongStart) / SongDuration * W;
     if (Width > W) then
       Width := W;
   end else
   begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(1, 0, 0, 1);
+    {$ENDIF}
     CurrentPos := (Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[CurrentNote[Track]].StartBeat - SongStart) / SongDuration * W;
     Width := Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[CurrentNote[Track]].Duration / SongDuration * W;
     if (Width < 1) then
@@ -4222,12 +4233,15 @@ begin
   end;
 
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES3}
+    {$ELSE}
   glbegin(gl_quads);
     glVertex2f(X + CurrentPos, Y);
     glVertex2f(X + CurrentPos, Y + H);
     glVertex2f(X + CurrentPos + Width, Y + H);
     glVertex2f(X + CurrentPos + Width, Y);
   glEnd;
+  {$ENDIF}
   glDisable(GL_BLEND);
 
   glLineWidth(1);
@@ -4250,7 +4264,10 @@ begin
   begin
     Space := H / (NumLines - 1);
     //PlayerNumber := Track + 1; // Player 1 is 0
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(1, 1, 1);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -4262,7 +4279,10 @@ begin
     begin
 
       OrgFont := CurrentFont;
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(0, 0, 0, 1);
+      {$ENDIF}
       SetFontFamily(0);
       SetFontStyle(ftBold);
       SetFontItalic(False);
@@ -4289,9 +4309,15 @@ begin
             Str := Language.Translate('EDIT_MEDLEYSTART');
             Str := '| ' + Copy(Str, 1, Length(Str) - 1) + ' (' + Language.Translate('EDIT_DURATION') + ' ' + FloatToStr(GetMedleyLength) + ' s)';
             SetFontPos(Rec.Left - 0.5 - NotesW[0], Rec.Top + Space);
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glColor4f(0.15, 0.75, 0.15, 1);
+            {$ENDIF}
             glPrint(Str);
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glColor4f(0, 0, 0, 1);
+            {$ENDIF}
           end;
           // add info if current note is medley end
           if (CurrentSong.Medley.Source <> msNone) and (MedleyNotes.isEnd) and (Tracks[Track].CurrentLine = MedleyNotes.end_.line) and (Count = MedleyNotes.end_.note) then
@@ -4299,9 +4325,12 @@ begin
             Str := Language.Translate('EDIT_MEDLEYEND');
             Str := '(' + Language.Translate('EDIT_DURATION') + ' ' + FloatToStr(GetMedleyLength) + ' s) ' + Copy(Str, 1, Length(Str) - 1) + ' |';
             SetFontPos(Rec.Right + 0.5 + NotesW[0] - glTextWidth(Str), Rec.Top + Space);
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glColor4f(0.15, 0.75, 0.15, 1);
             glPrint(Str);
             glColor4f(0, 0, 0, 1);
+            {$ENDIF}
           end;
           if (CurrentSong.HasPreview) and (IsStartPreview) then
           begin

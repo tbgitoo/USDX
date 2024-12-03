@@ -234,10 +234,10 @@ constructor TTextureUnit.Create;
 begin
   inherited Create;
   TextureDatabase := TTextureDatabase.Create;
-  Log.LogInfo('OpenGL vendor ' + glGetString(GL_VENDOR), 'TTextureUnit.Create');
-  Log.LogInfo('OpenGL renderer ' + glGetString(GL_RENDERER), 'TTextureUnit.Create');
-  Log.LogInfo('OpenGL version ' + glGetString(GL_VERSION), 'TTextureUnit.Create');
-  SupportsNPOT := (AnsiContainsStr(glGetString(GL_EXTENSIONS),'texture_non_power_of_two')) and not (AnsiContainsStr(glGetString(GL_EXTENSIONS), 'Radeon X16'));
+  Log.LogInfo('OpenGL vendor ' + String(glGetString(GL_VENDOR)), 'TTextureUnit.Create');
+  Log.LogInfo('OpenGL renderer ' + String(glGetString(GL_RENDERER)), 'TTextureUnit.Create');
+  Log.LogInfo('OpenGL version ' + String(glGetString(GL_VERSION)), 'TTextureUnit.Create');
+  SupportsNPOT := (AnsiContainsStr(String(glGetString(GL_EXTENSIONS)),'texture_non_power_of_two')) and not (AnsiContainsStr(String(glGetString(GL_EXTENSIONS)), 'Radeon X16'));
   Log.LogInfo('OpenGL TextureNPOT-support: ' + BoolToStr(SupportsNPOT), 'TTextureUnit.Create');
 end;
 

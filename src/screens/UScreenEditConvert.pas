@@ -1064,7 +1064,7 @@ begin
   DrawLine(Padding,   Y,  Padding,   Bottom, 0, 0, 0);
   DrawLine(XTrack,    Y,  XTrack,    Bottom, 0, 0, 0);
   DrawLine(Right,     Y,  Right,     Bottom, 0, 0, 0);
-  {$IFDEF UseOpenGLES}
+  {$IFDEF UseOpenGLES3}
   {$ELSE}
   glColor3f(0, 0, 0);
   {$ENDIF}
@@ -1088,14 +1088,14 @@ begin
     begin
       if tsNotes in MTracks[Count].Status then
         begin
-        {$IFDEF UseOpenGLES}
+        {$IFDEF UseOpenGLES3}
         {$ELSE}
         glColor3f(0, 0, 0)
         {$ENDIF}
         end
       else
         begin
-        {$IFDEF UseOpenGLES}
+        {$IFDEF UseOpenGLES3}
         {$ELSE}
         glColor3f(0.7, 0.7, 0.7);
         {$ENDIF}
@@ -1108,14 +1108,14 @@ begin
     begin
       if tsLyrics in MTracks[Count].Status then
         begin
-        {$IFDEF UseOpenGLES}
+        {$IFDEF UseOpenGLES3}
         {$ELSE}
         glColor3f(0, 0, 0)
         {$ENDIF}
         end
       else
         begin
-        {$IFDEF UseOpenGLES}
+        {$IFDEF UseOpenGLES3}
         {$ELSE}
         glColor3f(0.7, 0.7, 0.7);
         {$ENDIF}
@@ -1228,7 +1228,7 @@ begin
 
   for Count := 0 to High(Channels) do
   begin
-    {$IFDEF UseOpenGLES}
+    {$IFDEF UseOpenGLES3}
     {$ELSE}
     glColor3f(0, 0, 0);
     {$ENDIF}

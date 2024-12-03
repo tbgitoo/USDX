@@ -90,8 +90,10 @@ begin
         //Bind Tex and GL Attributes
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
-
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glDepthRange(0, 10);
+        {$ENDIF}
         glDepthFunc(GL_LEQUAL);
         glEnable(GL_DEPTH_TEST);
 
@@ -99,6 +101,8 @@ begin
         glBindTexture(GL_TEXTURE_2D, TexNum);
 
         //Draw
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glBegin(GL_QUADS);//Top Left
           glColor4f(ColR * Int, ColG * Int, ColB * Int, Alpha-0.3);
           glTexCoord2f(TexX1*TexW, TexY2*TexH);
@@ -120,6 +124,7 @@ begin
           glTexCoord2f(TexX2*TexW, TexY2*TexH);
           glVertex3f(x+w*scaleW, y+h*scaleH + Reflectionspacing, z);
         glEnd;
+        {$ENDIF}
 
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);

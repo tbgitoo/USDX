@@ -563,8 +563,11 @@ end;
 constructor TVideo_FFmpeg.Create;
 begin
   glGenTextures(1, PGLuint(@fFrameTex));
+  {$IFDEF UseOpenGLES3}
+  SupportsNPOT := (AnsiContainsStr(String(glGetString(GL_EXTENSIONS)),'texture_non_power_of_two')) and not (AnsiContainsStr(String(glGetString(GL_EXTENSIONS)), 'Radeon X16'));
+  {$ELSE}
   SupportsNPOT := (AnsiContainsStr(glGetString(GL_EXTENSIONS),'texture_non_power_of_two')) and not (AnsiContainsStr(glGetString(GL_EXTENSIONS), 'Radeon X16'));
-
+  {$ENDIF}
   Reset();
 end;
 
@@ -890,7 +893,9 @@ begin
   if (fPboEnabled) then
   begin
     glGetError();
+    {$IFDEF UseOpenGLES3}
 
+    {$ELSE}
     glGenBuffersARB(1, @fPboId);
     glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, fPboId);
     glBufferDataARB(
@@ -899,7 +904,7 @@ begin
         nil,
         GL_STREAM_DRAW_ARB);
     glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
-
+    {$ENDIF}
     glErr := glGetError();
     if (glErr <> GL_NO_ERROR) then
     begin
@@ -999,7 +1004,10 @@ begin
   {$ENDIF}
 
   if (fPboId <> 0) then
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glDeleteBuffersARB(1, @fPboId);
+    {$ENDIF}
 
   fOpened := False;
 end;
@@ -1364,7 +1372,10 @@ begin
   {$ENDIF}
 
   // glTexEnvi with GL_REPLACE might give a small speed improvement
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  {$ENDIF}
   glPixelStorei(GL_UNPACK_ROW_LENGTH, fAVFrameRGB.linesize[0] div PIXEL_FMT_SIZE);
 
   if (not fPboEnabled) then
@@ -1377,7 +1388,8 @@ begin
   else // fPboEnabled
   begin
     glGetError();
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, fPboId);
     glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB,
         fScaledHeight * fAVFrameRGB.linesize[0],
@@ -1385,6 +1397,7 @@ begin
         GL_STREAM_DRAW_ARB);
 
     bufferPtr := glMapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+
     if(bufferPtr <> nil) then
     begin
       Move(fAVFrameRGB^.data[0]^, bufferPtr^,
@@ -1394,12 +1407,18 @@ begin
       glUnmapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB);
     end;
 
+    {$ENDIF}
+
     glBindTexture(GL_TEXTURE_2D, fFrameTex);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
         fScaledWidth, fScaledHeight,
         PIXEL_FMT_OPENGL, GL_UNSIGNED_BYTE, nil);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
+
+    {$ENDIF}
+
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glErr := glGetError();
@@ -1408,8 +1427,11 @@ begin
   end;
 
   // reset to default
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  {$ENDIF}
 
   if (not fFrameTexValid) then
     fFrameTexValid := true;
@@ -1487,6 +1509,8 @@ end;
 procedure TVideo_FFmpeg.DrawBorders(ScreenRect: TRectCoords);
   procedure DrawRect(left, right, upper, lower: double);
   begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(0, 0, 0, fAlpha);
     glBegin(GL_QUADS);
       glVertex3f(left, upper, fPosZ);
@@ -1494,6 +1518,7 @@ procedure TVideo_FFmpeg.DrawBorders(ScreenRect: TRectCoords);
       glVertex3f(right, lower, fPosZ);
       glVertex3f(left, lower, fPosZ);
     glEnd;
+    {$ENDIF}
   end;
 begin
   //upper border
@@ -1525,7 +1550,8 @@ var
   begin
     AlphaTop := AlphaUpper+(AlphaLower-AlphaUpper)*(upper-rPosUpper)/(fHeight*ReflectionH);
     AlphaBottom := AlphaLower+(AlphaUpper-AlphaLower)*(rPosLower-lower)/(fHeight*ReflectionH);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
       glColor4f(0, 0, 0, AlphaTop);
       glVertex3f(left, upper, fPosZ);
@@ -1535,6 +1561,7 @@ var
       glVertex3f(right, lower, fPosZ);
       glVertex3f(left, lower, fPosZ);
     glEnd;
+    {$ENDIF}
   end;
 begin
   rPosUpper := fPosY+fHeight+fReflectionSpacing;
@@ -1589,12 +1616,17 @@ begin
 
   glEnable(GL_SCISSOR_TEST);
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glDepthRange(0, 10);
+  {$ENDIF}
   glDepthFunc(GL_LEQUAL);
   glEnable(GL_DEPTH_TEST);
 
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, fFrameTex);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(1, 1, 1, fAlpha);
   glBegin(GL_QUADS);
     // upper-left coord
@@ -1610,6 +1642,7 @@ begin
     glTexCoord2f(TexRect.Right, TexRect.Upper);
     glVertex3f(ScreenRect.Right, ScreenRect.Upper, fPosZ);
   glEnd;
+  {$ENDIF}
 
   glDisable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -1664,7 +1697,10 @@ begin
 
   glEnable(GL_SCISSOR_TEST);
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glDepthRange(0, 10);
+  {$ENDIF}
   glDepthFunc(GL_LEQUAL);
   glEnable(GL_DEPTH_TEST);
 
@@ -1685,7 +1721,8 @@ begin
     (ScreenRect.Upper-fPosY-fHeight-fReflectionSpacing)/fHeight;
   AlphaBottom := AlphaLower+(AlphaUpper-AlphaLower)*
     (fPosY+fHeight+fReflectionSpacing+fHeight*ReflectionH-ScreenRect.Lower)/fHeight;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_QUADS);
     //Top Left
     glColor4f(1, 1, 1, AlphaTop);
@@ -1707,6 +1744,7 @@ begin
     glTexCoord2f(TexRect.Right, TexRect.Lower);
     glVertex3f(ScreenRect.Right, ScreenRect.Upper, fPosZ);
   glEnd;
+  {$ENDIF}
 
   glDisable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, 0);

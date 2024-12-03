@@ -135,12 +135,17 @@ begin
 
   if (Webcam.TextureCam.TexNum > 0) then
   begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(1, 1, 1, 1);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, Webcam.TextureCam.TexNum);
     glEnable(GL_BLEND);
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
 
       glTexCoord2f(0, 0);
@@ -153,11 +158,15 @@ begin
       glVertex2f(0, 0);
 
     glEnd;
+    {$ENDIF}
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
 
     // reset to default
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    {$ENDIF}
 
   end;
 
@@ -200,6 +209,8 @@ begin
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, ScreenSing.Tex_Background.TexNum);
       glEnable(GL_BLEND);
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glBegin(GL_QUADS);
         (* gradient draw *)
         (* top *)
@@ -230,6 +241,7 @@ begin
         glTexCoord2f(TexRec.Right, TexRec.Bottom); glVertex2f(Rec.Right, Rec.Bottom);
 
       glEnd;
+      {$ENDIF}
       glDisable(GL_TEXTURE_2D);
       glDisable(GL_BLEND);
     end
@@ -283,6 +295,8 @@ begin
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, ScreenSing.Tex_Background.TexNum);
       //glEnable(GL_BLEND);
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glBegin(GL_QUADS);
       // top left
       glTexCoord2f(0, 0);
@@ -297,6 +311,7 @@ begin
       glTexCoord2f(ScreenSing.Tex_Background.TexW, 0);
       glVertex2f(Rec.Right, Rec.Top);
       glEnd;
+      {$ENDIF}
       glDisable(GL_TEXTURE_2D);
       //glDisable(GL_BLEND);
     end;
@@ -326,7 +341,8 @@ begin
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, ScreenJukebox.Tex_Background.TexNum);
       glEnable(GL_BLEND);
-
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glBegin(GL_QUADS);
         (* gradient draw *)
         (* top *)
@@ -336,28 +352,37 @@ begin
         glColor4f(1, 1, 1, 1);
         glTexCoord2f(TexRec.Left,  TexRec.Bottom); glVertex2f(Rec.Left,  Rec.Bottom);
         glTexCoord2f(TexRec.Right, TexRec.Bottom); glVertex2f(Rec.Right, Rec.Bottom);
+        {$ENDIF}
         (* mid *)
         Rec.Top := Rec.Bottom;
         Rec.Bottom := 490 - 20; // 490 - 20
         TexRec.Top := TexRec.Bottom;
         TexRec.Bottom := (Rec.Bottom / 600) * ScreenJukebox.Tex_Background.TexH;
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glTexCoord2f(TexRec.Left,  TexRec.Top);    glVertex2f(Rec.Left,  Rec.Top);
         glTexCoord2f(TexRec.Left,  TexRec.Bottom); glVertex2f(Rec.Left,  Rec.Bottom);
         glTexCoord2f(TexRec.Right, TexRec.Bottom); glVertex2f(Rec.Right, Rec.Bottom);
 
         glTexCoord2f(TexRec.Right, TexRec.Top);    glVertex2f(Rec.Right, Rec.Top);
+        {$ENDIF}
         (* bottom *)
         Rec.Top := Rec.Bottom;
         Rec.Bottom := 490; // 490
         TexRec.Top := TexRec.Bottom;
         TexRec.Bottom := (Rec.Bottom / 600) * ScreenJukebox.Tex_Background.TexH;
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glTexCoord2f(TexRec.Right, TexRec.Top);    glVertex2f(Rec.Right, Rec.Top);
         glTexCoord2f(TexRec.Left,  TexRec.Top);    glVertex2f(Rec.Left,  Rec.Top);
         glColor4f(1, 1, 1, 0);
         glTexCoord2f(TexRec.Left,  TexRec.Bottom); glVertex2f(Rec.Left,  Rec.Bottom);
         glTexCoord2f(TexRec.Right, TexRec.Bottom); glVertex2f(Rec.Right, Rec.Bottom);
-
+        {$ENDIF}
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glEnd;
+      {$ENDIF}
       glDisable(GL_TEXTURE_2D);
       glDisable(GL_BLEND);
     end
@@ -366,6 +391,8 @@ begin
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, ScreenJukebox.Tex_Background.TexNum);
       glEnable(GL_BLEND);
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glBegin(GL_QUADS);
         glColor4f(1, 1, 1, 1);
 
@@ -375,6 +402,7 @@ begin
         glTexCoord2f( ScreenJukebox.Tex_Background.TexW, 0);   glVertex2f(800, 0);
 
       glEnd;
+      {$ENDIF}
       glDisable(GL_TEXTURE_2D);
       glDisable(GL_BLEND);
     end;
@@ -384,6 +412,8 @@ begin
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ScreenJukebox.Tex_Background.TexNum);
     //glEnable(GL_BLEND);
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
       glColor4f(0, 0, 0, 1);
 
@@ -393,6 +423,7 @@ begin
       glTexCoord2f( ScreenJukebox.Tex_Background.TexW, 0);   glVertex2f(800, 0);
 
     glEnd;
+    {$ENDIF}
     glDisable(GL_TEXTURE_2D);
     //glDisable(GL_BLEND);
   end;
@@ -406,6 +437,8 @@ begin
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, ScreenJukebox.Tex_Background.TexNum);
   //glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_QUADS);
     glColor4f(0, 0, 0, 1);
 
@@ -415,6 +448,7 @@ begin
     glTexCoord2f( ScreenJukebox.Tex_Background.TexW, 0);   glVertex2f(800, 0);
 
   glEnd;
+  {$ENDIF}
   glDisable(GL_TEXTURE_2D);
   //glDisable(GL_BLEND);
 end;
@@ -556,32 +590,45 @@ begin;
     Col := GetPlayerColor(Ini.TeamColor[NrSound])
   else
     Col := GetPlayerColor(Ini.PlayerColor[NrSound]);
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor3f(Col.R, Col.G, Col.B);
+  {$ENDIF}
 {
   if (ParamStr(1) = '-black') or (ParamStr(1) = '-fsblack') then
     glColor3f(1, 1, 1);
 }
   MaxX := Position.W-1;
   MaxY := (Position.H-1) / 2;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glTranslatef(Position.X, Position.Y + MaxY, 0);
   glScalef(MaxX/High(Sound.AnalysisBuffer), MaxY/Low(Smallint), 1);
-
+  {$ENDIF}
   Sound.LockAnalysisBuffer();
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_LINE_STRIP);
+  {$ENDIF}
     for SampleIndex := 0 to High(Sound.AnalysisBuffer) do
     begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glVertex2s(SampleIndex, Sound.AnalysisBuffer[SampleIndex]);
+      {$ENDIF}
     end;
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnd;
+  {$ENDIF}
 
   Sound.UnlockAnalysisBuffer();
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glPopMatrix();
+  {$ENDIF}
 end;
 
 procedure SingDrawNoteLines(Left, Top, Right: real; LineSpacing: integer);
@@ -589,14 +636,23 @@ var
   Count: integer;
 begin
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(Skin_P1_LinesR, Skin_P1_LinesG, Skin_P1_LinesB, 0.4);
   glBegin(GL_LINES);
+  {$ENDIF}
   for Count := 0 to 9 do
   begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glVertex2f(Left,  Top + Count * LineSpacing);
     glVertex2f(Right, Top + Count * LineSpacing);
+    {$ENDIF}
   end;
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnd;
+  {$ENDIF}
   glDisable(GL_BLEND);
 end;
 
@@ -615,7 +671,10 @@ begin
   begin
     // the textures start counting at 1, but everything else just starts at 0
     PlayerNumber := PlayerIndex + 1;
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(1, 1, 1);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -634,15 +693,22 @@ begin
             if Ini.EffectSing = 0 then
               // If Golden note Effect of then Change not Color
             begin
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
               case NoteType of
                 ntNormal: glColor4f(1, 1, 1, 1);   // We set alpha to 1, cause we can control the transparency through the png itself
                 ntGolden: glColor4f(1, 1, 0.3, 1); // no stars, paint yellow -> glColor4f(1, 1, 0.3, 0.85); - we could
                 ntRap:    glColor4f(1, 1, 1, 1);
                 ntRapGolden: glColor4f(1, 1, 0.3, 1);
             end; // case
+              {$ENDIF}
             end //Else all Notes same Color
-            else
-              glColor4f(1, 1, 1, 1);        // We set alpha to 1, cause we can control the transparency through the png itself
+            else begin
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
+              glColor4f(1, 1, 1, 1);
+              {$ENDIF}// We set alpha to 1, cause we can control the transparency through the png itself
+            end;
 
             // left part
             Rec.Left  := (StartBeat - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat) * TempR + Left + 0.5 + 10*ScreenX;
@@ -662,12 +728,15 @@ begin
               begin
                    glBindTexture(GL_TEXTURE_2D, Tex_plain_Left[PlayerNumber].TexNum);
               end;
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
               glBegin(GL_QUADS);
                                 glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
                                 glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
                                 glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
                                 glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
               glEnd;
+              {$ENDIF}
 
             end;
 
@@ -701,6 +770,8 @@ begin
               begin
                 glBindTexture(GL_TEXTURE_2D, Tex_plain_Mid[PlayerNumber].TexNum);
               end;
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
               glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
               glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
               glBegin(GL_QUADS);
@@ -709,6 +780,7 @@ begin
                 glTexCoord2f(round((Rec.Right-Rec.Left)/32), 1); glVertex2f(Rec.Right, Rec.Bottom);
                 glTexCoord2f(round((Rec.Right-Rec.Left)/32), 0); glVertex2f(Rec.Right, Rec.Top);
               glEnd;
+              {$ENDIF}
             end;
 
 
@@ -726,12 +798,15 @@ begin
               begin
                 glBindTexture(GL_TEXTURE_2D, Tex_plain_Right[PlayerNumber].TexNum);
               end;
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
               glBegin(GL_QUADS);
                 glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
                 glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
                 glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
                 glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
               glEnd;
+              {$ENDIF}
 
             end;
 
@@ -768,8 +843,10 @@ begin
   if (ScreenSing.Settings.InputVisible) and ((Ini.AdvanceDrawNotes<3) or (LyricsState.CurrentBeatD>=Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[Tracks[Track].Lines[Tracks[Track].CurrentLine].HighNote].StartBeat) ) then
   begin
     //Log.LogStatus('Player notes', 'SingDraw');
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(1, 1, 1);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -806,7 +883,10 @@ begin
           Rec.Bottom := Rec.Top + 2 * NotesH2;
 
           // draw the left part
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor3f(1, 1, 1);
+          {$ENDIF}
           If (NoteType = ntRap) or (NoteType = ntRapGolden) then
           begin
             glBindTexture(GL_TEXTURE_2D, Tex_Left_Rap[PlayerIndex+1].TexNum);
@@ -815,12 +895,15 @@ begin
           begin
             glBindTexture(GL_TEXTURE_2D, Tex_Left[PlayerIndex+1].TexNum);
           end;
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
             glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
             glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
             glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
           glEnd;
+          {$ENDIF}
 
           // Middle part of the note
           Rec.Left  := Rec.Right;
@@ -843,6 +926,8 @@ begin
           begin
             glBindTexture(GL_TEXTURE_2D, Tex_Mid[PlayerIndex+1].TexNum);
           end;
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
           glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
           glBegin(GL_QUADS);
@@ -852,6 +937,7 @@ begin
             glTexCoord2f(round((Rec.Right-Rec.Left)/32), 0); glVertex2f(Rec.Right, Rec.Top);
           glEnd;
           glColor3f(1, 1, 1);
+          {$ENDIF}
 
           // the right part of the note
           Rec.Left  := Rec.Right;
@@ -865,12 +951,15 @@ begin
           begin
           glBindTexture(GL_TEXTURE_2D, Tex_Right[PlayerIndex+1].TexNum);
           end;
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glBegin(GL_QUADS);
             glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
             glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
             glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
             glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
           glEnd;
+          {$ENDIF}
 
           // Perfect note is stored
           if Perfect and (Ini.EffectSing=1) then
@@ -914,7 +1003,10 @@ begin
   if (ScreenSing.settings.NotesVisible and (1 shl PlayerIndex) <> 0) then
   begin
     //glColor4f(1, 1, 1, sqrt((1+sin( AudioPlayback.Position * 3))/4)/ 2 + 0.5 );
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(1, 1, 1, sqrt((1 + sin(AudioPlayback.Position * 3)))/2 + 0.05);
+    {$ENDIF}
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -962,12 +1054,15 @@ begin
               begin
                 glBindTexture(GL_TEXTURE_2D, Tex_BG_Left[PlayerIndex+1].TexNum);
               end;
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
               glBegin(GL_QUADS);
                 glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
                 glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
                 glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
                 glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
               glEnd;
+              {$ENDIF}
 
             end;
 
@@ -997,12 +1092,15 @@ begin
               begin
                 glBindTexture(GL_TEXTURE_2D, Tex_BG_Mid[PlayerIndex+1].TexNum);
               end;
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
               glBegin(GL_QUADS);
                 glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
                 glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
                 glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
                 glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
               glEnd;
+              {$ENDIF}
 
             end;
 
@@ -1022,12 +1120,15 @@ begin
               begin
                 glBindTexture(GL_TEXTURE_2D, Tex_BG_Right[PlayerIndex+1].TexNum);
               end;
+              {$IFDEF UseOpenGLES3}
+              {$ELSE}
               glBegin(GL_QUADS);
                 glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
                 glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
                 glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
                 glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
               glEnd;
+              {$ENDIF}
 
             end;
 
@@ -1176,17 +1277,22 @@ begin
       end
       else
         Col := GetLyricBarColor(1);
-
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(Col.R, Col.G, Col.B, BarAlpha);
+      {$ENDIF}
 
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glBindTexture(GL_TEXTURE_2D, Tex_Lyric_Help_Bar.TexNum);
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex2f(Bounds.Left,  Bounds.Top);
         glTexCoord2f(0, 1); glVertex2f(Bounds.Left,  Bounds.Bottom);
         glTexCoord2f(1, 1); glVertex2f(Bounds.Right, Bounds.Bottom);
         glTexCoord2f(1, 0); glVertex2f(Bounds.Right, Bounds.Top);
       glEnd;
+      {$ENDIF}
       glDisable(GL_BLEND);
     end;
   end;
@@ -1284,16 +1390,22 @@ begin
       glEnable(GL_BLEND);
 
       //glColor4f(1, 0.75, 0, BarAlpha);
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(ScreenJukebox.LyricHelper.R, ScreenJukebox.LyricHelper.G, ScreenJukebox.LyricHelper.B, BarAlpha);
+      {$ENDIF}
 
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glBindTexture(GL_TEXTURE_2D, Tex_Lyric_Help_Bar.TexNum);
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex2f(Bounds.Left,  Bounds.Top);
         glTexCoord2f(0, 1); glVertex2f(Bounds.Left,  Bounds.Bottom);
         glTexCoord2f(1, 1); glVertex2f(Bounds.Right, Bounds.Bottom);
         glTexCoord2f(1, 0); glVertex2f(Bounds.Right, Bounds.Top);
       glEnd;
+      {$ENDIF}
       glDisable(GL_BLEND);
     end;
   end;
@@ -1711,7 +1823,10 @@ var
   Space: real;
 begin
   Space := H / (NumLines - 1);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor3f(1, 1, 1);
+  {$ENDIF}
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1727,6 +1842,8 @@ begin
       begin
 
         // Golden Note Patch
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         case NoteType of
           ntFreestyle: glColor4f(1, 1, 1, 0.35);
           ntNormal: glColor4f(1, 1, 1, 0.85);
@@ -1738,6 +1855,7 @@ begin
             end;
           ntRapGolden: Glcolor4f(1, 1, 0.3, 0.85);
         end; // case
+        {$ENDIF}
 
         // left part
         Rec.Left  := (StartBeat - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat) * TempR + X + 0.5 + 10*ScreenX;
@@ -1763,12 +1881,15 @@ begin
         begin
           glBindTexture(GL_TEXTURE_2D, Tex_Left[Color].TexNum);
         end;
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glBegin(GL_QUADS);
           glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
           glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
           glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
           glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
         glEnd;
+        {$ENDIF}
         GoldenStarPos := Rec.Left;
 
         // middle part, with shift for beat notes
@@ -1790,12 +1911,15 @@ begin
         begin
           glBindTexture(GL_TEXTURE_2D, Tex_Mid[Color].TexNum);
         end;
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glBegin(GL_QUADS);
           glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
           glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
           glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
           glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
         glEnd;
+        {$ENDIF}
 
         // right part
         Rec.Left  := Rec.Right;
@@ -1809,12 +1933,15 @@ begin
         begin
           glBindTexture(GL_TEXTURE_2D, Tex_Right[Color].TexNum);
         end;
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glBegin(GL_QUADS);
           glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
           glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
           glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
           glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
         glEnd;
+        {$ENDIF}
 
         if ((NoteType = ntGolden) or (NoteType = ntRapGolden)) and (Ini.EffectSing = 1) then
         begin
@@ -1825,38 +1952,50 @@ begin
         if (NoteType = ntRap) and CurrentSong.RapBeat then
         begin
              // The dot on the beat is drawn less transparent than the tail
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glColor4f(1, 1, 1, 0.85);
+            {$ENDIF}
             Rec.Left  := (StartBeat - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat-0.5) * TempR + X + 0.5 + 10*ScreenX;
             Rec.Right := Rec.Left + NotesW[0];
             Rec.Top := YBaseNote - (Tone-BaseNote)*Space/2 - NotesH[0];
             Rec.Bottom := Rec.Top + 2 * NotesH[0];
             glBindTexture(GL_TEXTURE_2D, Tex_Left[Color].TexNum);
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glBegin(GL_QUADS);
               glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
               glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
               glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
               glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
             glEnd;
+            {$ENDIF}
             // Middle, only for the beat at the beginning of the note (duration 1)
             Rec.Left  := Rec.Right;
             Rec.Right := (StartBeat + 1 - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat-0.5) * TempR + X - NotesW[0] - 0.5 + 10*ScreenX;
             glBindTexture(GL_TEXTURE_2D, Tex_Mid[Color].TexNum);
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glBegin(GL_QUADS);
               glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
               glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
               glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
               glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
             glEnd;
+            {$ENDIF}
             // right, only for the beat
             Rec.Left  := Rec.Right;
             Rec.Right := Rec.Right + NotesW[0];
             glBindTexture(GL_TEXTURE_2D, Tex_Right[Color].TexNum);
+            {$IFDEF UseOpenGLES3}
+            {$ELSE}
             glBegin(GL_QUADS);
               glTexCoord2f(0, 0); glVertex2f(Rec.Left,  Rec.Top);
               glTexCoord2f(0, 1); glVertex2f(Rec.Left,  Rec.Bottom);
               glTexCoord2f(1, 1); glVertex2f(Rec.Right, Rec.Bottom);
             glTexCoord2f(1, 0); glVertex2f(Rec.Right, Rec.Top);
         glEnd;
+        {$ENDIF}
         end;
 
       end; // with
@@ -1872,6 +2011,8 @@ begin
   glDisable(GL_BLEND);
 
   // box
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(FillR,
             FillG,
             FillB,
@@ -1882,8 +2023,11 @@ begin
     glVertex2f(X+W, Y+H);
     glVertex2f(X+W, Y);
   glEnd;
+  {$ENDIF}
 
   // black border
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0, 0, 0, 1);
   glLineWidth(2);
   glBegin(GL_LINE_LOOP);
@@ -1892,6 +2036,7 @@ begin
     glVertex2f(X+W+1, Y+H+1);
     glVertex2f(X-1, Y+H+1);
   glEnd;
+  {$ENDIF}
 end;
 
 procedure EditDrawBeatDelimiters(X, Y, W, H: real; Track: integer);
@@ -1908,17 +2053,36 @@ begin
     else
       TempR := 0;
   glEnable(GL_BLEND);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_LINES);
+  {$ENDIF}
   for Count := Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat to Tracks[Track].Lines[Tracks[Track].CurrentLine].EndBeat do
   begin
     if (Count mod Tracks[Track].Resolution) = Tracks[Track].NotesGAP then
-      glColor4f(0, 0, 0, 1)
+    begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
+      glColor4f(0, 0, 0, 1);
+    {$ENDIF}
+    end
     else
+    begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(0, 0, 0, 0.3);
+      {$ENDIF}
+    end;
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glVertex2f(X + TempR * (Count - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat), Y);
     glVertex2f(X + TempR * (Count - Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[0].StartBeat), Y + H);
+    {$ENDIF}
   end;
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnd;
+  {$ENDIF}
   glDisable(GL_BLEND);
 end;
 
@@ -1937,10 +2101,12 @@ begin
 
     width  := Theme.Jukebox.StaticTimeProgress.w;
     height := Theme.Jukebox.StaticTimeProgress.h;
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(Theme.Jukebox.StaticTimeProgress.ColR,
               Theme.Jukebox.StaticTimeProgress.ColG,
               Theme.Jukebox.StaticTimeProgress.ColB, 1); //Set Color
+    {$ENDIF}
   end;
 
   if (ScreenJukebox.SongMenuVisible) then
@@ -1950,20 +2116,24 @@ begin
 
     width  := Theme.Jukebox.StaticSongMenuTimeProgress.w;
     height := Theme.Jukebox.StaticSongMenuTimeProgress.h;
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(Theme.Jukebox.StaticSongMenuTimeProgress.ColR,
               Theme.Jukebox.StaticSongMenuTimeProgress.ColG,
               Theme.Jukebox.StaticSongMenuTimeProgress.ColB, 1); //Set Color
+    {$ENDIF}
   end;
 
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
 
   glBindTexture(GL_TEXTURE_2D, Tex_JukeboxTimeProgress.TexNum);
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
     glVertex2f(x, y);
+    {$ENDIF}
 
     CurLyricsTime := LyricsState.GetCurrentTime();
     if (CurLyricsTime > 0) and
@@ -1973,20 +2143,31 @@ begin
       // avoid that the bar "overflows" for inaccurate song lengths
       if (LyricsProgress > 1.0) then
         LyricsProgress := 1.0;
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glTexCoord2f((width * LyricsProgress) / 8, 0);
       glVertex2f(x + width * LyricsProgress, y);
 
       glTexCoord2f((width * LyricsProgress) / 8, 1);
       glVertex2f(x + width * LyricsProgress, y + height);
+      {$ENDIF}
     end;
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glTexCoord2f(0, 1);
     glVertex2f(x, y + height);
+    {$ENDIF}
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnd;
+  {$ENDIF}
 
  glDisable(GL_TEXTURE_2D);
  glDisable(GL_BLEND);
+ {$IFDEF UseOpenGLES3}
+ {$ELSE}
  glcolor4f(1, 1, 1, 1);
+ {$ENDIF}
 
 end;
 

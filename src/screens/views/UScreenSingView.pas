@@ -1046,8 +1046,10 @@ begin
 
     timeDiff := GetTimeFromBeat(CurrentSong.Medley.StartBeat) - AudioPlayback.Position + 1;
     t := frac(timeDiff);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(0.15, 0.30, 0.6, t);
+    {$ENDIF}
 
     h := 300*t*ScreenH/RenderH;
     SetFontFamily(0);
@@ -1288,11 +1290,23 @@ begin
       Exit;
     //set color to player.color
     if (CurrentTrack = 0) then
+    begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(GetLyricColor(Ini.SingColor[0]).R, GetLyricColor(Ini.SingColor[0]).G, GetLyricColor(Ini.SingColor[0]).B, 0.6)
+      {$ENDIF}
+    end
     else
+    begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(GetLyricColor(Ini.SingColor[CurrentTrack]).R, GetLyricColor(Ini.SingColor[CurrentTrack]).G, GetLyricColor(Ini.SingColor[CurrentTrack]).B, 0.6);
-
+      {$ENDIF}
+    end;
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glbegin(gl_quads);
+    {$ENDIF}
     for LineIndex := 0 to numLines - 1 do
     begin
       if (Tracks[CurrentTrack].Lines[LineIndex].Notes = nil) then Continue;
@@ -1303,16 +1317,24 @@ begin
                 Tracks[CurrentTrack].Lines[LineIndex].Notes[0].StartBeat) / SongDuration*w; //br = last note of sentence position + its duration - first note of sentence position
 
       //draw a square
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glVertex2f(x+pos, y); //left top
       glVertex2f(x+pos, y+h); //left bottom
       glVertex2f(x+pos+br, y+h); //right bottom
       glVertex2f(x+pos+br, y); //right top
+      {$ENDIF}
     end;
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glEnd;
+    {$ENDIF}
   end;
 
   // draw progress indicator
   br := (gapInBeats + LyricsState.CurrentBeat - SongStart) / SongDuration*w;
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(Theme.Sing.StaticTimeProgress.ColR,
              Theme.Sing.StaticTimeProgress.ColG,
              Theme.Sing.StaticTimeProgress.ColB, 1); //Set Color
@@ -1322,6 +1344,7 @@ begin
   glVertex2f(x+br, y+h); // right bottom
   glVertex2f(x+br, y); // right top
   glEnd;
+  {$ENDIF}
 end;
 
 end.

@@ -1530,19 +1530,23 @@ begin
     Width := aPlayerScoreScreenRatings[PlayerNumber].RateEaseValue/2;
 
     glBindTexture(GL_TEXTURE_2D, Tex_Score_Ratings[Rating].TexNum);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(1.0, 1.0, 1.0);
+    {$ENDIF}
       
     glEnable(GL_TEXTURE_2D);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(0, 0);                                                           glVertex2f(PosX - Width,  PosY - Width);
       glTexCoord2f(Tex_Score_Ratings[Rating].TexW, 0);                              glVertex2f(PosX + Width,  PosY - Width);
       glTexCoord2f(Tex_Score_Ratings[Rating].TexW, Tex_Score_Ratings[Rating].TexH); glVertex2f(PosX + Width,  PosY + Width);
       glTexCoord2f(0, Tex_Score_Ratings[Rating].TexH);                              glVertex2f(PosX - Width,  PosY + Width);
     glEnd;
+    {$ENDIF}
 
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2d);
@@ -1665,8 +1669,10 @@ begin
   // this is solely for better readability of the drawing
   Width        := Theme.Score.StaticBackLevel[ThemeIndex].W;
   BarStartPosX := Theme.Score.StaticBackLevel[ThemeIndex].X;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(1, 1, 1, 1);
+  {$ENDIF}
 
   // set the texture for the bar
   if (BarType = sbtScore) then
@@ -1681,12 +1687,15 @@ begin
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
 
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0); glVertex3f(BarStartPosX,         BarStartPosY - NewHeight, ZBars);
     glTexCoord2f(1, 0); glVertex3f(BarStartPosX + Width, BarStartPosY - NewHeight, ZBars);
     glTexCoord2f(1, 1); glVertex3f(BarStartPosX + Width, BarStartPosY,             ZBars);
     glTexCoord2f(0, 1); glVertex3f(BarStartPosX,         BarStartPosY,             ZBars);
   glEnd;
+  {$ENDIF}
 
   glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2d);
@@ -1702,13 +1711,15 @@ begin
   glEnable(GL_TEXTURE_2D);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0); glVertex3f(BarStartPosX,         (BarStartPosY - Statics[StaticLevelRound[ThemeIndex]].Texture.h) - NewHeight, ZBars);
     glTexCoord2f(1, 0); glVertex3f(BarStartPosX + Width, (BarStartPosY - Statics[StaticLevelRound[ThemeIndex]].Texture.h) - NewHeight, ZBars);
     glTexCoord2f(1, 1); glVertex3f(BarStartPosX + Width,  BarStartPosY - NewHeight,                                                     ZBars);
     glTexCoord2f(0, 1); glVertex3f(BarStartPosX,          BarStartPosY - NewHeight,                                                     ZBars);
   glEnd;
+  {$ENDIF}
 
   glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2d);

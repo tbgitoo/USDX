@@ -499,7 +499,8 @@ begin
    MaxX := W-1;
    MaxY := (H-1) / 2;
 
-
+   {$IFDEF UseOpenGLES3}
+    {$ELSE}
    glColor3f(0, 0, 0.2);
    glBegin(GL_QUADS);
       glVertex2f(X , Y);
@@ -524,7 +525,7 @@ begin
 
   glEnd;
 
-
+   {$ENDIF}
 
   if peakDetected then
   begin
@@ -533,10 +534,14 @@ begin
     Col.G:=255;
     Col.B:=255;
 
+
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(Col.R, Col.G, Col.B);
 
 
   glBegin(GL_LINE_STRIP);
+  {$ENDIF}
     for SampleIndex := 0 to High(AnalysisBufferAtPeakDetection) do
     begin
       if (SampleIndex>=peakInfo.BufferIndex) and (SampleIndex<=peakInfo.BufferIndexLast) then
@@ -544,20 +549,31 @@ begin
         Col.R:=255;
         Col.G:=0;
         Col.B:=0;
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
 
         glColor3f(Col.R, Col.G, Col.B);
+        {$ENDIF}
       end else
       begin
          Col.R:=255;
         Col.G:=255;
         Col.B:=255;
-
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glColor3f(Col.R, Col.G, Col.B);
+        {$ENDIF}
       end;
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glVertex2f(X + MaxX * SampleIndex/High(AnalysisBufferAtPeakDetection),
                  Y + MaxY * (1 - AnalysisBufferAtPeakDetection[SampleIndex]/-Low(Smallint)));
+      {$ENDIF}
     end;
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnd;
+  {$ENDIF}
 
 
 
@@ -568,8 +584,10 @@ begin
   Col.R:=255;
   Col.G:=255;
   Col.B:=255;
-
+  {$IFDEF UseOpenGLES3}
+    {$ELSE}
   glColor3f(Col.R, Col.G, Col.B);
+  {$ENDIF}
 {
   if (ParamStr(1) = '-black') or (ParamStr(1) = '-fsblack') then
     glColor3f(1, 1, 1);
@@ -579,14 +597,22 @@ begin
   PreviewChannel.LockAnalysisBuffer();
 
 
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_LINE_STRIP);
+  {$ENDIF}
     for SampleIndex := 0 to High(PreviewChannel.AnalysisBuffer) do
     begin
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
       glVertex2f(X + MaxX * SampleIndex/High(PreviewChannel.AnalysisBuffer),
                  Y + MaxY * (1 - PreviewChannel.AnalysisBuffer[SampleIndex]/-Low(Smallint)));
+    {$ENDIF}
     end;
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnd;
+  {$ENDIF}
 
   PreviewChannel.UnlockAnalysisBuffer();
 

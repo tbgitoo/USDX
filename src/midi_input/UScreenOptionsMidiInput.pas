@@ -436,8 +436,13 @@ begin
       end else
       begin // white keys
        if keyIsPlayed then
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor3f(100.0/255.0, 180.0/255.0, 255.0/255.0)
+          {$ENDIF}
        else
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor3f(255, 255, 255);
        glBegin(GL_QUADS);
        glVertex2f(X+W/n_white_key*count_white , Y);
@@ -455,6 +460,7 @@ begin
        glVertex2f(X+W/n_white_key*(count_white+1.0) , Y);
        glVertex2f(X+W/n_white_key*count_white , Y);
       glEnd;
+      {$ENDIF}
 
       count_white:=count_white+1;
 
@@ -474,8 +480,13 @@ begin
       begin
 
         if keyIsPlayed then
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor3f(50.0/255.0, 120.0/255.0, 200.0/255.0)
+          {$ENDIF}
        else
+          {$IFDEF UseOpenGLES3}
+          {$ELSE}
           glColor3f(0, 0, 0);
       glBegin(GL_QUADS);
        glVertex2f(X+W/n_white_key*(count_white-0.25) , Y);
@@ -483,6 +494,7 @@ begin
        glVertex2f(X+W/n_white_key*(count_white+0.25) , Y+H*0.6);
        glVertex2f(X+W/n_white_key*(count_white+0.25) , Y);
       glEnd;
+      {$ENDIF}
       end else
       begin // white keys, but we've already drawn them
 

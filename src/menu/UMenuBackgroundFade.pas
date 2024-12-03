@@ -140,7 +140,8 @@ begin
 
     glColorRGB(Color, Progress);
     glBindTexture(GL_TEXTURE_2D, Tex.TexNum);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
       glTexCoord2f(Tex.TexX1*Tex.TexW, Tex.TexY1*Tex.TexH);
       glVertex2f(0, 0);
@@ -154,7 +155,7 @@ begin
       glTexCoord2f(Tex.TexX2*Tex.TexW, Tex.TexY1*Tex.TexH);
       glVertex2f(800, 0);
     glEnd;
-
+    {$ENDIF}
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
   end
@@ -168,13 +169,15 @@ begin
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glColorRGB(Color, Progress);
-
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glBegin(GL_QUADS);
       glVertex2f(0, 0);
       glVertex2f(0, 600);
       glVertex2f(800, 600);
       glVertex2f(800, 0);
     glEnd;
+    {$ENDIF}
 
     glDisable(GL_BLEND);
   end;  

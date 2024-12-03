@@ -557,6 +557,8 @@ begin
   glEnable(GL_BLEND);
 
   // draw black background-rect
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0, 0, 0, 0.8);
   glBegin(GL_QUADS);
     glVertex2f(x1, y1);
@@ -564,6 +566,7 @@ begin
     glVertex2f(x2, y2);
     glVertex2f(x1, y2);
   glEnd();
+  {$ENDIF}
 
   VolBarInnerWidth := Trunc(Width - 2*VolBarInnerHSpacing);
 
@@ -580,6 +583,8 @@ begin
   y2 := y2 - VolBarInnerVSpacing;
 
   // draw volume-bar
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_QUADS);
     // draw volume bar
     glColor3f(0.4, 0.3, 0.3);
@@ -589,6 +594,7 @@ begin
     glVertex2f(x2, y2);
     glVertex2f(x2, y1);
   glEnd();
+  {$ENDIF}
 
   { not needed anymore
   // coordinates for separator
@@ -630,6 +636,8 @@ begin
   glEnable(GL_BLEND);
 
   // draw black background-rect
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0, 0, 0, 0.8);
   glBegin(GL_QUADS);
     glVertex2f(x1, y1);
@@ -637,6 +645,7 @@ begin
     glVertex2f(x2, y2);
     glVertex2f(x1, y2);
   glEnd();
+  {$ENDIF}
 
   VolBarInnerWidth := Trunc(Width - 2*VolBarInnerHSpacing);
 
@@ -647,8 +656,10 @@ begin
   // coordinates for bevel
   x1 := x + VolBarInnerHSpacing;
   x2 := x1 + VolBarInnerWidth;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_QUADS);
+  {$ENDIF}
     Volume := PreviewChannel.MaxSampleVolume();
 
     // coordinates for volume bar
@@ -656,12 +667,15 @@ begin
     x2 := x1 + VolBarInnerWidth * Volume;
 
     // draw volume bar
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(State.RD, State.GD, State.BD);
     glVertex2f(x1, y1);
     glVertex2f(x1, y2);
     glColor3f(State.R, State.G, State.B);
     glVertex2f(x2, y2);
     glVertex2f(x2, y1);
+    {$ENDIF}
 
     Delta := (SDL_GetTicks() - ChannelPeak.Time)/1000;
     PeakVolume := ChannelPeak.Volume - Delta*Delta*PeakDecay;
@@ -678,22 +692,28 @@ begin
     x2 := x1 + 2;
 
     // draw peak
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor3f(0.8, 0.8, 0.8);
     glVertex2f(x1, y1);
     glVertex2f(x1, y2);
     glVertex2f(x2, y2);
     glVertex2f(x2, y1);
+    {$ENDIF}
 
     // draw threshold
     x1 := x + VolBarInnerHSpacing;
     x2 := x1 + VolBarInnerWidth * IThresholdVals[Ini.ThresholdIndex];
 
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(0.3, 0.3, 0.3, 0.6);
     glVertex2f(x1, y1);
     glVertex2f(x1, y2);
     glVertex2f(x2, y2);
     glVertex2f(x2, y1);
   glEnd();
+  {$ENDIF}
 
   glDisable(GL_BLEND);
 end;
@@ -725,6 +745,8 @@ begin
   glEnable(GL_BLEND);
 
   // draw black background-rect
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(0, 0, 0, 0.8);
   glBegin(GL_QUADS);
     glVertex2f(x1, y1);
@@ -732,13 +754,16 @@ begin
     glVertex2f(x2, y2);
     glVertex2f(x1, y2);
   glEnd();
+  {$ENDIF}
 
   // coordinates for tone boxes
   ToneBoxWidth := Width / NumHalftones;
   y1 := y1 + PitchBarInnerVSpacing;
   y2 := y2 - PitchBarInnerVSpacing;
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glBegin(GL_QUADS);
+  {$ENDIF}
     // draw tone boxes
     for i := 0 to NumHalftones-1 do
     begin
@@ -749,20 +774,31 @@ begin
           (PreviewChannel.ToneAbs = i)) then
       begin
         // highlight current tone-pitch
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glColor3f(1, i / (NumHalftones-1), 0)
+        {$ENDIF}
       end
       else
       begin
         // grey other tone-pitches
+        {$IFDEF UseOpenGLES3}
+        {$ELSE}
         glColor3f(0.3, i / (NumHalftones-1) * 0.3, 0);
+        {$ENDIF}
       end;
-
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glVertex2f(x1, y1);
       glVertex2f(x2, y1);
       glVertex2f(x2, y2);
       glVertex2f(x1, y2);
+      {$ENDIF}
     end;
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glEnd();
+  {$ENDIF}
 
   glDisable(GL_BLEND);
 
@@ -785,7 +821,10 @@ begin
 
   // draw
   SetFontPos(x-ToneStringWidth-ToneStringCenterXOffset, y-ToneStringHeight/2);
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor3f(0, 0, 0);
+  {$ENDIF}
   glPrint(ToneString);
 end;
 

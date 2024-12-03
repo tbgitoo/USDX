@@ -94,21 +94,21 @@ begin
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBindTexture(GL_TEXTURE_2D, TexNum);
 
-        {$IFDEF ANDROID}
-        draw_quads_opengles_z_color(
-        x, y+h*scaleH+ Reflectionspacing,z,
-        x, y+h*scaleH + h*scaleH/2 + Reflectionspacing,z,
-        x+w*scaleW, y+h*scaleH + h*scaleH/2 + Reflectionspacing,z,
-        x+w*scaleW, y+h*scaleH + Reflectionspacing,z,
-        TexX1*TexW, TexY2*TexH,
-        TexX1*TexW, 0.5*TexH+TexY1,
-        TexX2*TexW, 0.5*TexH+TexY1,
-        TexX2*TexW, TexY2*TexH,
-        ColR * Int, ColG * Int, ColB * Int, Alpha-0.3,
-        ColR * Int, ColG * Int, ColB * Int, 0,
-        ColR * Int, ColG * Int, ColB * Int, 0,
-        ColR * Int, ColG * Int, ColB * Int, Alpha-0.3,
-        TexNum);
+        {$IFDEF UseOpenGLES3}
+        //draw_quads_opengles_z_color(
+        //x, y+h*scaleH+ Reflectionspacing,z,
+        //x, y+h*scaleH + h*scaleH/2 + Reflectionspacing,z,
+        //x+w*scaleW, y+h*scaleH + h*scaleH/2 + Reflectionspacing,z,
+        //x+w*scaleW, y+h*scaleH + Reflectionspacing,z,
+        //TexX1*TexW, TexY2*TexH,
+        //TexX1*TexW, 0.5*TexH+TexY1,
+        //TexX2*TexW, 0.5*TexH+TexY1,
+        //TexX2*TexW, TexY2*TexH,
+        //ColR * Int, ColG * Int, ColB * Int, Alpha-0.3,
+        //ColR * Int, ColG * Int, ColB * Int, 0,
+        //ColR * Int, ColG * Int, ColB * Int, 0,
+        //ColR * Int, ColG * Int, ColB * Int, Alpha-0.3,
+        //TexNum);}
         {$ELSE}
         //Draw
         glBegin(GL_QUADS);//Top Left

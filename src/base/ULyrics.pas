@@ -391,7 +391,8 @@ begin
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBindTexture(GL_TEXTURE_2D, PlayerIconTex[Player][IEnabled].TexNum);
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(1, 1, 1, Alpha);
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0); glVertex2f(X, Y);
@@ -399,7 +400,7 @@ begin
     glTexCoord2f(1, 1); glVertex2f(X + Size, Y + Size);
     glTexCoord2f(1, 0); glVertex2f(X + Size, Y);
   glEnd;
-
+  {$ENDIF}
   glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
 end;
@@ -413,7 +414,8 @@ begin
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glBindTexture(GL_TEXTURE_2D, BallTex.TexNum);
-
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   glColor4f(1, 1, 1, Alpha);
   glBegin(GL_QUADS);
     glTexCoord2f(0, 0); glVertex2f(XBall - 10, YBall);
@@ -421,7 +423,7 @@ begin
     glTexCoord2f(1, 1); glVertex2f(XBall + 10, YBall + 20);
     glTexCoord2f(1, 0); glVertex2f(XBall + 10, YBall);
   glEnd;
-
+  {$ENDIF}
   glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
 end;
@@ -688,15 +690,28 @@ begin
 
     // draw sentence before current word
     if (LyricsEffect in [lfxSimple, lfxBall, lfxShift]) then
-      // only highlight current word and not that ones before in this line
-      glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha)
+      // only highlight current word and not that ones before in this
+      begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
+      glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha);
+      {$ENDIF}
+      end
     else
+      begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(LineColor_act.R, LineColor_act.G ,LineColor_act.B, Alpha);
+      {$ENDIF}
+      end;
 
     DrawLyricsWords(Line, LyricX, LyricY, 0, Line.CurWord-1);
 
     // draw rest of sentence (without current word)
+    {$IFDEF UseOpenGLES3}
+    {$ELSE}
     glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha);
+    {$ENDIF}
 
     if (NextWord <> nil) then
     begin
@@ -722,57 +737,81 @@ begin
         WordY := LyricY;
 
       // change the color of the current word
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(LineColor_act.R, LineColor_act.G ,LineColor_act.B, Alpha);
+      {$ENDIF}
 
       DrawLyricsWords(Line, LyricX + CurWord.X, WordY, Line.CurWord, Line.CurWord);
     end
     // change color and zoom current word
     else if (LyricsEffect = lfxZoom) then
     begin
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glPushMatrix;
+      {$ENDIF}
 
       // zoom at word center
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glTranslatef(LyricX + CurWord.X + CurWord.Width/2,
                    LyricY + Line.Height/2, 0);
       glScalef(1.0 + (1-Progress) * 0.5, 1.0 + (1-Progress) * 0.5, 1);
 
       glColor4f(LineColor_act.R, LineColor_act.G ,LineColor_act.B, Alpha);
+      {$ENDIF}
 
       DrawLyricsWords(Line, -CurWord.Width/2, -Line.Height/2, Line.CurWord, Line.CurWord);
 
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glPopMatrix;
+      {$ENDIF}
     end
     // split current word into active and non-active part
     else if (LyricsEffect = lfxSlide) then
     begin
       // enable clipping and set clip equation coefficients to zeros
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glEnable(GL_CLIP_PLANE0);
+      {$ENDIF}
       FillChar(ClipPlaneEq[0], SizeOf(ClipPlaneEq), 0);
-
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glPushMatrix;
       glTranslatef(LyricX + CurWord.X, LyricY, 0);
-
+      {$ENDIF}
       // clip non-active right part of the current word
       ClipPlaneEq[0] := -1;
       ClipPlaneEq[3] := CurWord.Width * Progress;
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glClipPlane(GL_CLIP_PLANE0, @ClipPlaneEq);
       // and draw active left part
       glColor4f(LineColor_act.R, LineColor_act.G ,LineColor_act.B, Alpha);
-
+      {$ENDIF}
       DrawLyricsWords(Line, 0, 0, Line.CurWord, Line.CurWord);
 
       // clip active left part of the current word
       ClipPlaneEq[0] := -ClipPlaneEq[0];
       ClipPlaneEq[3] := -ClipPlaneEq[3];
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glClipPlane(GL_CLIP_PLANE0, @ClipPlaneEq);
       // and draw non-active right part
       glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha);
+      {$ENDIF}
 
       DrawLyricsWords(Line, 0, 0, Line.CurWord, Line.CurWord);
-
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glPopMatrix;
 
+
       glDisable(GL_CLIP_PLANE0);
+      {$ENDIF}
     end;
 
     // draw the ball onto the current word
@@ -793,15 +832,19 @@ begin
     begin
       // outline color
       SetOutlineColor(OutlineColor_en.R, OutlineColor_en.G, OutlineColor_en.B, Alpha);
-
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(LineColor_en.R, LineColor_en.G ,LineColor_en.B, Alpha);
+      {$ENDIF}
     end
     else
     begin
       // outline color
       SetOutlineColor(OutlineColor_dis.R, OutlineColor_dis.G, OutlineColor_dis.B, Alpha);
-
+      {$IFDEF UseOpenGLES3}
+      {$ELSE}
       glColor4f(LineColor_dis.R, LineColor_dis.G ,LineColor_dis.B, Alpha);
+      {$ENDIF}
     end;
 
     DrawLyricsWords(Line, LyricX, LyricY, 0, High(Line.Words));
