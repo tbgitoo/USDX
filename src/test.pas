@@ -46,7 +46,17 @@ uses
   // For test purposes only, remove
   dglOpenGLES in 'lib\dglOpenGL\dglOpenGLES.pas',
 
-  UCommon in 'base\UCommon.pas';
+  UCommon in 'base\UCommon.pas',
+  anyascii in 'lib\anyascii\anyascii.pas',
+  UUnicodeUtils in 'base\UUnicodeUtils.pas',
+  UConfig in 'base\UConfig.pas',
+  UTime in 'base\UTime.pas',
+  UTextEncoding in 'base\UTextEncoding.pas',
+  IniFiles,
+  UUnicodeStringHelper in 'base\UUnicodeStringHelper.pas',
+  UPath in 'base\UPath.pas',
+  UFilesystem in 'base\UFilesystem.pas';
+
 
 
 

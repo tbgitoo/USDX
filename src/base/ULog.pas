@@ -34,8 +34,8 @@ interface
 {$I switches.inc}
 
 uses
-  Classes,
-  UPath;
+  Classes{$IFNDEF ANDROID},
+  UPath{$ENDIF};
 
 (*
  * LOG_LEVEL_[TYPE] defines the "minimum" index for logs of type TYPE. Each
@@ -125,7 +125,11 @@ type
     // voice
     procedure LogVoice(SoundNr: integer);
     // buffer
+    {$IFDEF ANDROID}
+    procedure LogBuffer(const buf : Pointer; const bufLength : Integer; const filename : String);
+    {$ELSE}
     procedure LogBuffer(const buf : Pointer; const bufLength : Integer; const filename : IPath);
+    {$ENDIF}
 
     // console
     property ConsoleCount: integer read GetConsoleCount;
