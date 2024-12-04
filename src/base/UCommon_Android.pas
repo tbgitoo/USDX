@@ -23,7 +23,7 @@
  * $Id: UCommon.pas 2241 2010-04-15 17:57:15Z whiteshark0 $
  *}
 
-unit UCommon;
+unit UCommon_Android;
 
 interface
 
@@ -37,17 +37,7 @@ interface
 uses
   SysUtils,
   Classes,
-  {$IFDEF ANDROID}
   UJniCallback;
-  {$ELSE}
-  {$IFDEF MSWINDOWS}
-  Windows,
-  UPlatformWindows,
-  {$ENDIF}
-  UConfig,
-  ULog,
-  UPath;
-  {$ENDIF}
 
 type
   TIntegerDynArray = array of integer;
@@ -60,7 +50,22 @@ const
   SDL_BUTTON_WHEELUP = 1001; // emulated MouseButton ID for mouse wheel up. @Note some high number to prevent conflict. @see sdl_mouse.inc
   SDL_BUTTON_WHEELDOWN = 1002; // emulated MouseButton ID for mouse wheel down. @Note some high number to prevent conflict. @see sdl_mouse.inc
 
-{**
+
+type
+  TRGB = record
+    R: single;
+    G: single;
+    B: single;
+  end;
+
+  TRGBA = record
+    R, G, B, A: double;
+  end;
+
+  function RGBToHex(R, G, B: integer):string;
+  function HexToRGB(Hex: string): TRGB;
+
+  {**
  * Splits a string into pieces separated by Separators.
  * MaxCount specifies the max. number of pieces. If it is <= 0 the number is
  * not limited. If > 0 the last array element will hold the rest of the string
@@ -78,19 +83,8 @@ function StringDeleteFromArray(var InArray: TIntegerDynArray; const InIndex: int
 function StringDeleteFromArray(var InStrings: TStringDynArray; const InIndex: integer): Boolean; overload;
 function StringDeleteFromArray(var InStrings: TUTF8StringDynArray; const InIndex: integer): Boolean; overload;
 
-type
-  TRGB = record
-    R: single;
-    G: single;
-    B: single;
-  end;
 
-  TRGBA = record
-    R, G, B, A: double;
-  end;
 
-function RGBToHex(R, G, B: integer):string;
-function HexToRGB(Hex: string): TRGB;
 
 type
   TMessageType = (mtInfo, mtError);
@@ -104,6 +98,7 @@ function RandomRange(aMin: integer; aMax: integer): integer;
 {$ENDIF}
 
 procedure DisableFloatingPointExceptions();
+
 procedure SetDefaultNumericLocale();
 procedure RestoreNumericLocale();
 
@@ -117,9 +112,7 @@ procedure MergeSort(List: TList; CompareFunc: TListSortCompare);
 
 function GetAlignedMem(Size: cardinal; Alignment: integer): pointer;
 procedure FreeAlignedMem(P: pointer);
-
 function Equals(A, B: string; CaseSensitive: boolean = false): Boolean; overload;
-
 function GetArrayIndex(const SearchArray: array of UTF8String; Value: string; CaseInsensitiv: boolean = false): integer; overload;
 function GetArrayIndex(const SearchArray: array of integer; Value: integer): integer; overload;
 
@@ -129,109 +122,17 @@ function BuildResolutionString(x,y: integer): string;
 implementation
 
 uses
+  Math,
   {$IFDEF Delphi}
   Dialogs,
   {$ENDIF}
    {$IFDEF UseSDL3}
-  SDL3,
+  SDL3;
   {$ELSE}
-  SDL2,
+  SDL2;
   {$ENDIF}
-  Math{$IFDEF ANDROID};{$ELSE},
-  UFilesystem,
-  UMain,
-  UUnicodeUtils;{$ENDIF}
 
-function StringInArray(const Value: string; Strings: array of string): Boolean;
-var I: Integer;
-begin
-  Result := True;
-  for I := Low(Strings) to High(Strings) do
-    if Strings[i] = Value then Exit;
-  Result := False;
-end;
-
-function StringDeleteFromArray(var InArray: TIntegerDynArray; const InIndex: integer): Boolean;
-begin
-  Result := false;
-  if (InIndex >= 0) and (InIndex < Length(InArray)) then
-  begin
-    Result := true;
-    Move(InArray[InIndex + 1], InArray[InIndex], SizeOf(InArray[0]) * (Length(InArray) - InIndex - 1));
-    SetLength(InArray, Length(InArray) - 1);
-  end;
-end;
-
-function StringDeleteFromArray(var InStrings: TStringDynArray; const InIndex: integer): Boolean;
-var
-  i: integer;
-begin
-  Result := false;
-  if (InIndex >= 0) and (InIndex < Length(InStrings)) then
-  begin
-    Result := true;
-    for i := High(InStrings) downto InIndex+1 do
-    begin
-      InStrings[i-1] := InStrings[i];
-    end;
-    SetLength(InStrings, Length(InStrings) - 1);
-  end;
-end;
-
-function StringDeleteFromArray(var InStrings: TUTF8StringDynArray; const InIndex: integer): Boolean;
-var
-  i: integer;
-begin
-  Result := false;
-  if (InIndex >= 0) and (InIndex < Length(InStrings)) then
-  begin
-    Result := true;
-    for i := High(InStrings) downto InIndex+1 do
-    begin
-      InStrings[i-1] := InStrings[i];
-    end;
-    SetLength(InStrings, Length(InStrings) - 1);
-  end;
-end;
-
-function SplitString(const Str: string; MaxCount: integer; Separators: TSysCharSet; RemoveEmpty: boolean): TStringDynArray;
-
-  // Adds Str[StartPos..Endpos-1] to the result array.
-  procedure AddSplit(StartPos, EndPos: integer);
-  begin
-    if (not RemoveEmpty) or (EndPos > StartPos) then
-    begin
-      SetLength(Result, Length(Result)+1);
-      Result[High(Result)] := Copy(Str, StartPos, EndPos-StartPos);
-    end;
-  end;
-
-var
-  I, Count: integer;
-  Start: integer;
-begin
-  Start := 0;
-  Count := 0;
-  SetLength(Result, 0);
-
-  for I := 1 to Length(Str) do
-  begin
-    if (Str[I] in Separators) then
-    begin
-      inc(Count);
-      AddSplit(Start+1, I);
-      Start := I;
-      if (MaxCount > 0) and (Count >= MaxCount) then Break
-    end;
-  end;
-
-  // last component
-  if (Start < Length(Str)+1) then
-    AddSplit(Start+1, Length(Str)+1);
-end;
-
-
-function RGBToHex(R, G, B: integer): string;
+  function RGBToHex(R, G, B: integer): string;
 begin
   Result := IntToHex(R, 2) + IntToHex(G, 2) + IntToHex(B, 2);
 end;
@@ -247,49 +148,112 @@ begin
   Result := Col;
 end;
 
-// data used by the ...Locale() functions
-{$IF Defined(Linux) or Defined(FreeBSD)}
 
-var
-  PrevNumLocale: string;
+  function StringInArray(const Value: string; Strings: array of string): Boolean;
+  var I: Integer;
+  begin
+    Result := True;
+    for I := Low(Strings) to High(Strings) do
+      if Strings[i] = Value then Exit;
+    Result := False;
+  end;
 
-const
-  LC_NUMERIC  = 1;
+  function StringDeleteFromArray(var InArray: TIntegerDynArray; const InIndex: integer): Boolean;
+  begin
+    Result := false;
+    if (InIndex >= 0) and (InIndex < Length(InArray)) then
+    begin
+      Result := true;
+      Move(InArray[InIndex + 1], InArray[InIndex], SizeOf(InArray[0]) * (Length(InArray) - InIndex - 1));
+      SetLength(InArray, Length(InArray) - 1);
+    end;
+  end;
 
-function setlocale(category: integer; locale: pchar): pchar; cdecl; external 'c' name 'setlocale';
+  function StringDeleteFromArray(var InStrings: TStringDynArray; const InIndex: integer): Boolean;
+  var
+    i: integer;
+  begin
+    Result := false;
+    if (InIndex >= 0) and (InIndex < Length(InStrings)) then
+    begin
+      Result := true;
+      for i := High(InStrings) downto InIndex+1 do
+      begin
+        InStrings[i-1] := InStrings[i];
+      end;
+      SetLength(InStrings, Length(InStrings) - 1);
+    end;
+  end;
 
-{$IFEND}
+  function StringDeleteFromArray(var InStrings: TUTF8StringDynArray; const InIndex: integer): Boolean;
+  var
+    i: integer;
+  begin
+    Result := false;
+    if (InIndex >= 0) and (InIndex < Length(InStrings)) then
+    begin
+      Result := true;
+      for i := High(InStrings) downto InIndex+1 do
+      begin
+        InStrings[i-1] := InStrings[i];
+      end;
+      SetLength(InStrings, Length(InStrings) - 1);
+    end;
+  end;
 
-// In Linux and maybe MacOSX some units (like cwstring) call setlocale(LC_ALL, '')
-// to set the language/country specific locale (e.g. charset) for this application.
-// Unfortunately, LC_NUMERIC is set by this call too.
-// It defines the decimal-separator and other country-specific numeric settings.
-// This parameter is used by the C string-to-float parsing functions atof() and strtod().
-// After changing LC_NUMERIC some external C-based libs (like projectM) are not
-// able to parse strings correctly
-// (e.g. in Germany "0.9" is not recognized as a valid number anymore but "0,9" is).
-// So we reset the numeric settings to the default ('C').
-// Note: The behaviour of Pascal parsing functions (e.g. strtofloat()) is not
-//   changed by this because it doesn't use the locale-settings.
-// TODO:
-// - Check if this is needed in MacOSX (at least the locale is set in cwstring)
-// - Find out which libs are concerned by this problem.
-//   If only projectM is concerned by this problem set and restore the numeric locale
-//   for each call to projectM instead of changing it globally.
-procedure SetDefaultNumericLocale();
+  function SplitString(const Str: string; MaxCount: integer; Separators: TSysCharSet; RemoveEmpty: boolean): TStringDynArray;
+
+    // Adds Str[StartPos..Endpos-1] to the result array.
+    procedure AddSplit(StartPos, EndPos: integer);
+    begin
+      if (not RemoveEmpty) or (EndPos > StartPos) then
+      begin
+        SetLength(Result, Length(Result)+1);
+        Result[High(Result)] := Copy(Str, StartPos, EndPos-StartPos);
+      end;
+    end;
+
+  var
+    I, Count: integer;
+    Start: integer;
+  begin
+    Start := 0;
+    Count := 0;
+    SetLength(Result, 0);
+
+    for I := 1 to Length(Str) do
+    begin
+      if (Str[I] in Separators) then
+      begin
+        inc(Count);
+        AddSplit(Start+1, I);
+        Start := I;
+        if (MaxCount > 0) and (Count >= MaxCount) then Break
+      end;
+    end;
+
+    // last component
+    if (Start < Length(Str)+1) then
+      AddSplit(Start+1, Length(Str)+1);
+  end;
+
+
+procedure ShowMessage(const msg: String; msgType: TMessageType);
 begin
-  {$IF Defined(LINUX) or Defined(FreeBSD)}
-  PrevNumLocale := setlocale(LC_NUMERIC, nil);
-  setlocale(LC_NUMERIC, 'C');
-  {$IFEND}
+  ConsoleWriteln(msg);
 end;
 
-procedure RestoreNumericLocale();
+procedure ConsoleWriteLn(const msg: string);
 begin
-  {$IF Defined(LINUX) or Defined(FreeBSD)}
-  setlocale(LC_NUMERIC, PChar(PrevNumLocale));
-  {$IFEND}
+  debug_message_to_android(msg);
 end;
+
+{$IFDEF FPC}
+function RandomRange(aMin: integer; aMax: integer): integer;
+begin
+  RandomRange := Random(aMax - aMin) + aMin ;
+end;
+{$ENDIF}
 
 (*
  * If an invalid floating point operation was performed the Floating-point unit (FPU)
@@ -367,6 +331,38 @@ begin
                     exOverflow, exUnderflow, exPrecision]);
 end;
 
+
+// In Linux and maybe MacOSX some units (like cwstring) call setlocale(LC_ALL, '')
+// to set the language/country specific locale (e.g. charset) for this application.
+// Unfortunately, LC_NUMERIC is set by this call too.
+// It defines the decimal-separator and other country-specific numeric settings.
+// This parameter is used by the C string-to-float parsing functions atof() and strtod().
+// After changing LC_NUMERIC some external C-based libs (like projectM) are not
+// able to parse strings correctly
+// (e.g. in Germany "0.9" is not recognized as a valid number anymore but "0,9" is).
+// So we reset the numeric settings to the default ('C').
+// Note: The behaviour of Pascal parsing functions (e.g. strtofloat()) is not
+//   changed by this because it doesn't use the locale-settings.
+// TODO:
+// - Check if this is needed in MacOSX (at least the locale is set in cwstring)
+// - Find out which libs are concerned by this problem.
+//   If only projectM is concerned by this problem set and restore the numeric locale
+//   for each call to projectM instead of changing it globally.
+procedure SetDefaultNumericLocale();
+begin
+  {$IF Defined(LINUX) or Defined(FreeBSD)}
+  PrevNumLocale := setlocale(LC_NUMERIC, nil);
+  setlocale(LC_NUMERIC, 'C');
+  {$IFEND}
+end;
+
+procedure RestoreNumericLocale();
+begin
+  {$IF Defined(LINUX) or Defined(FreeBSD)}
+  setlocale(LC_NUMERIC, PChar(PrevNumLocale));
+  {$IFEND}
+end;
+
 {$IFNDEF MSWINDOWS}
 procedure ZeroMemory(Destination: pointer; Length: dword);
 begin
@@ -380,168 +376,6 @@ end;
 
 {$ENDIF}
 
-{$IFDEF FPC}
-function RandomRange(aMin: integer; aMax: integer): integer;
-begin
-  RandomRange := Random(aMax - aMin) + aMin ;
-end;
-{$ENDIF}
-
-
-{$IFDEF FPC}
-var
-  MessageList: TStringList;
-  ConsoleHandler: TThreadID;
-  // Note: TRTLCriticalSection is defined in the units System and Libc, use System one
-  ConsoleCriticalSection: System.TRTLCriticalSection;
-  ConsoleEvent: PRTLEvent;
-  ConsoleQuit: boolean;
-{$ENDIF}
-
-(*
- * Write to console if one is available.
- * It checks if a console is available before output so it will not
- * crash on windows if none is available.
- * Do not use this function directly because it is not thread-safe,
- * use ConsoleWriteLn() instead.
- *)
-procedure _ConsoleWriteLn(const aString: string); {$IFDEF HasInline}inline;{$ENDIF}
-begin
-  {$IFDEF ANDROID}
-  debug_message_to_android(aString);
-  {$ELSE}
-  if Log <> nil then
-    Log.LogConsole(aString);
-  {$IFDEF MSWINDOWS}
-  // sanity check to avoid crashes with writeln()
-  if IsConsole and HasConsole then
-  begin
-  {$ENDIF}
-    Writeln(aString);
-  {$IFDEF MSWINDOWS}
-  end;
-  {$ENDIF}
-  {$ENDIF}
-end;
-
-{$IFNDEF ANDROID}
-{$IFDEF FPC}
-{*
- * The console-handlers main-function.
- * TODO: create a quit-event on closing.
- *}
-function ConsoleHandlerFunc(param: pointer): PtrInt;
-var
-  i: integer;
-  quit: boolean;
-begin
-  quit := false;
-  while (not quit) do
-  begin
-    // wait for new output or quit-request
-    RTLeventWaitFor(ConsoleEvent);
-
-    System.EnterCriticalSection(ConsoleCriticalSection);
-    // output pending messages
-    for i := 0 to MessageList.Count - 1 do
-    begin
-      _ConsoleWriteLn(MessageList[i]);
-    end;
-    MessageList.Clear();
-
-    // use local quit-variable to avoid accessing
-    // ConsoleQuit outside of the critical section
-    if (ConsoleQuit) then
-      quit := true;
-
-    RTLeventResetEvent(ConsoleEvent);
-    System.LeaveCriticalSection(ConsoleCriticalSection);
-  end;
-  result := 0;
-end;
-{$ENDIF}
-{$ENDIF}
-
-
-{$IFNDEF ANDROID}
-procedure InitConsoleOutput();
-begin
-  Log := TLog.Create;
-  {$IFDEF FPC}
-  // init thread-safe output
-  MessageList := TStringList.Create();
-  System.InitCriticalSection(ConsoleCriticalSection);
-  ConsoleEvent := RTLEventCreate();
-  ConsoleQuit := false;
-  // must be a thread managed by FPC. Otherwise (e.g. SDL-thread)
-  // it will crash when using Writeln.
-  ConsoleHandler := BeginThread(@ConsoleHandlerFunc);
-  {$ENDIF}
-end;
-{$ENDIF}
-
-{$IFNDEF ANDROID}
-procedure FinalizeConsoleOutput();
-begin
-  {$IFDEF FPC}
-  // terminate console-handler
-  System.EnterCriticalSection(ConsoleCriticalSection);
-  ConsoleQuit := true;
-  RTLeventSetEvent(ConsoleEvent);
-  System.LeaveCriticalSection(ConsoleCriticalSection);
-  WaitForThreadTerminate(ConsoleHandler, 0);
-  // free data
-  System.DoneCriticalsection(ConsoleCriticalSection);
-  RTLeventDestroy(ConsoleEvent);
-  MessageList.Free();
-  {$ENDIF}
-  Log.Free;
-end;
-{$ENDIF}
-
-{*
- * FPC uses threadvars (TLS) managed by FPC for console output locking.
- * Using WriteLn() from external threads (like in SDL callbacks)
- * will crash the program as those threadvars have never been initialized.
- * The solution is to create an FPC-managed thread which has the TLS data
- * and use it to handle the console-output (hence it is called Console-Handler)
- *}
-procedure ConsoleWriteLn(const msg: string);
-begin
-{$IFDEF ANDROID}
-_ConsoleWriteLn(msg);
-{$ELSE}
-{$IFDEF CONSOLE}
-  {$IFDEF FPC}
-  // TODO: check for the main-thread and use a simple _ConsoleWriteLn() then?
-  //GetCurrentThreadThreadId();
-  System.EnterCriticalSection(ConsoleCriticalSection);
-  MessageList.Add(msg);
-  RTLeventSetEvent(ConsoleEvent);
-  System.LeaveCriticalSection(ConsoleCriticalSection);
-  {$ELSE}
-  _ConsoleWriteLn(msg);
-  {$ENDIF}
-{$ENDIF}
-{$ENDIF}
-end;
-
-procedure ShowMessage(const msg: String; msgType: TMessageType);
-{$IFDEF MSWINDOWS}
-var Flags: cardinal;
-{$ENDIF}
-begin
-{$IF Defined(MSWINDOWS)}
-  case msgType of
-    mtInfo:  Flags := MB_ICONINFORMATION or MB_OK;
-    mtError: Flags := MB_ICONERROR or MB_OK;
-    else Flags := MB_OK;
-  end;
-  MessageBox(0, PChar(msg), PChar(USDXVersionStr()), Flags);
-{$ELSE}
-  ConsoleWriteln(msg);
-{$IFEND}
-end;
 
 (*
  * Recursive part of the MergeSort algorithm.
@@ -606,6 +440,7 @@ begin
   end;
 end;
 
+
 (*
  * Stable alternative to the instable TList.Sort() (uses QuickSort) implementation.
  * A stable sorting algorithm preserves preordered items. E.g. if sorting by
@@ -626,81 +461,6 @@ begin
   TempList.Free;
 end;
 
-function Equals(A,B: string; CaseSensitive: boolean = false): boolean;
-begin
-  if CaseSensitive then Result := A = B
-  else Result := (CompareText(A, B) = 0);
-end;
-
-(**
- * Returns the index of Value in SearchArray
- * or -1 if Value is not in SearchArray.
- *)
-function GetArrayIndex(const SearchArray: array of UTF8String; Value: string;
-    CaseInsensitiv: boolean = false): integer;
-var
-  i: integer;
-begin
-  Result := -1;
-
-  for i := 0 to High(SearchArray) do
-  begin
-    if (SearchArray[i] = Value) or
-       (CaseInsensitiv and (CompareText(SearchArray[i], Value) = 0)) then
-    begin
-      Result := i;
-      Break;
-    end;
-  end;
-end;
-
-(**
- * Returns the index of Value in SearchArray
- * or -1 if Value is not in SearchArray.
- *)
-function GetArrayIndex(const SearchArray: array of integer; Value: integer): integer;
-var
-  i: integer;
-begin
-  Result := -1;
-
-  for i := 0 to High(SearchArray) do
-  begin
-    if (SearchArray[i] = Value) then
-    begin
-      Result := i;
-      Break;
-    end;
-  end;
-end;
-
-function BuildResolutionString(x,y: integer): string;
-begin
-  Result := Format('%dx%d', [x, y]);
-end;
-
-function ParseResolutionString(const ResolutionString: string; out x,y : integer): boolean;
-  var
-    Pieces: TStringDynArray;
-begin
-  Pieces := SplitString(LowerCase(ResolutionString), 1, ['x']);
-  Result := false;
-
-  if (Length(Pieces) > 1) and (Length(Pieces[0]) > 0) and (Length(Pieces[1]) > 0) then
-  begin
-    x := StrToInt(Pieces[0]);
-    y := StrToInt(Pieces[1]);
-  end
-  // FIXME: legacy code as long as SplitString is not fixed
-  else if Pos('x', ResolutionString) > 0then
-  begin
-    x := StrToInt(Copy(ResolutionString, 1, Pos('x', ResolutionString)-1));
-    y := StrToInt(Copy(ResolutionString, Pos('x', ResolutionString)+1, 1000));
-  end else Exit;
-
-  // verify if resolution has proper values
-  Result := (x > 0) and (y > 0);
-end;
 
 type
   // stores the unaligned pointer of data allocated by GetAlignedMem()
@@ -762,14 +522,86 @@ end;
 {$WARNINGS ON}
 
 
+function Equals(A,B: string; CaseSensitive: boolean = false): boolean;
+begin
+  if CaseSensitive then Result := A = B
+  else Result := (CompareText(A, B) = 0);
+end;
+
+(**
+ * Returns the index of Value in SearchArray
+ * or -1 if Value is not in SearchArray.
+ *)
+function GetArrayIndex(const SearchArray: array of UTF8String; Value: string;
+    CaseInsensitiv: boolean = false): integer;
+var
+  i: integer;
+begin
+  Result := -1;
+
+  for i := 0 to High(SearchArray) do
+  begin
+    if (SearchArray[i] = Value) or
+       (CaseInsensitiv and (CompareText(SearchArray[i], Value) = 0)) then
+    begin
+      Result := i;
+      Break;
+    end;
+  end;
+end;
+
+(**
+ * Returns the index of Value in SearchArray
+ * or -1 if Value is not in SearchArray.
+ *)
+function GetArrayIndex(const SearchArray: array of integer; Value: integer): integer;
+var
+  i: integer;
+begin
+  Result := -1;
+
+  for i := 0 to High(SearchArray) do
+  begin
+    if (SearchArray[i] = Value) then
+    begin
+      Result := i;
+      Break;
+    end;
+  end;
+end;
+
+function ParseResolutionString(const ResolutionString: string; out x,y : integer): boolean;
+  var
+    Pieces: TStringDynArray;
+begin
+  Pieces := SplitString(LowerCase(ResolutionString), 1, ['x']);
+  Result := false;
+
+  if (Length(Pieces) > 1) and (Length(Pieces[0]) > 0) and (Length(Pieces[1]) > 0) then
+  begin
+    x := StrToInt(Pieces[0]);
+    y := StrToInt(Pieces[1]);
+  end
+  // FIXME: legacy code as long as SplitString is not fixed
+  else if Pos('x', ResolutionString) > 0then
+  begin
+    x := StrToInt(Copy(ResolutionString, 1, Pos('x', ResolutionString)-1));
+    y := StrToInt(Copy(ResolutionString, Pos('x', ResolutionString)+1, 1000));
+  end else Exit;
+
+  // verify if resolution has proper values
+  Result := (x > 0) and (y > 0);
+end;
+
+function BuildResolutionString(x,y: integer): string;
+begin
+  Result := Format('%dx%d', [x, y]);
+end;
+
 initialization
-  {$IFNDEF ANDROID}
-  InitConsoleOutput();
-  {$ENDIF}
+
 
 finalization
-  {$IFNDEF ANDROID}
-  FinalizeConsoleOutput();
-  {$ENDIF}
+
 
 end.
