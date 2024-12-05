@@ -55,7 +55,9 @@ uses
   IniFiles,
   UUnicodeStringHelper in 'base\UUnicodeStringHelper.pas',
   UPath in 'base\UPath.pas',
-  UFilesystem in 'base\UFilesystem.pas';
+  UFilesystem in 'base\UFilesystem.pas',
+  //UCommandLine in 'base\UCommandLine.pas';
+  ULog in 'base\ULog.pas';
 
 
 

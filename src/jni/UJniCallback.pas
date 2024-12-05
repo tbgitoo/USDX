@@ -13,6 +13,7 @@ uses
 
 function android_log_write(prio:longint;tag,text:pchar):longint; cdecl;
 procedure debug_message_to_android(str : String);
+procedure debug_message_to_android(str : String; tag: String);
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
 function getJniHandler(env: PJNIEnv):jclass;
 function storageRoot_fromJava():String;
@@ -49,6 +50,25 @@ begin
    end;
    convert_two_byte_string_to_one_byte_string:=stra;
 
+end;
+
+procedure debug_message_to_android(str : String; tag: String);
+var
+  p: PChar;
+  t: PChar;
+  stra: AnsiString;
+  strt: AnsiString;
+begin
+   stra:=AnsiString(str);
+   strt:=AnsiString(tag);
+   p := PChar(GetMem(Length(stra) + 1));
+   t := PChar(GetMem(Length(strt) + 1));
+   Move(stra[1], p[0], Length(stra));
+   Move(strt[1], t[0], Length(strt));
+   p[Length(stra)]:=#0;
+   t[Length(strt)]:=#0;
+   android_log_write(4,t,p);
+   FreeMem(p);
 end;
 
 procedure debug_message_to_android(str : String);

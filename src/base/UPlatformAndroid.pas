@@ -64,7 +64,6 @@ type
 implementation
 
 uses
-  UCommandLine,
   BaseUnix,
   SysUtils,
   ULog,
@@ -101,7 +100,7 @@ begin
    Result := GetGameUserPath().Append('logs', pdAppend);
 
   // create non-existing directories
-  Result.CreateDirectory(true);
+   Result.CreateDirectory(true);
 end;
 
 function TPlatformAndroid.GetGameSharedPath: IPath;

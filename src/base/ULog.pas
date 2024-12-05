@@ -34,8 +34,9 @@ interface
 {$I switches.inc}
 
 uses
-  Classes{$IFNDEF ANDROID},
-  UPath{$ENDIF};
+  Classes,
+  UPath{$IFDEF ANDROID},
+  UJniCallback{$ENDIF};
 
 (*
  * LOG_LEVEL_[TYPE] defines the "minimum" index for logs of type TYPE. Each
@@ -125,11 +126,8 @@ type
     // voice
     procedure LogVoice(SoundNr: integer);
     // buffer
-    {$IFDEF ANDROID}
-    procedure LogBuffer(const buf : Pointer; const bufLength : Integer; const filename : String);
-    {$ELSE}
+
     procedure LogBuffer(const buf : Pointer; const bufLength : Integer; const filename : IPath);
-    {$ENDIF}
 
     // console
     property ConsoleCount: integer read GetConsoleCount;
@@ -149,14 +147,16 @@ implementation
 uses
   SysUtils,
   DateUtils,
+  UTime,
+  UCommon{$IFNDEF ANDROID},
   URecord,
   UMain,
-  UMusic,  
-  UTime,
-  UCommon,
+  UMusic,
   UCommandLine,
-  UPathUtils{$IF Defined(ANDROID)},
-  UJniCallback{$IFEND};
+  UPathUtils{$ENDIF};
+
+
+
 
 (*
  * Write to console if in debug mode (Thread-safe).
@@ -164,14 +164,18 @@ uses
  *)
 procedure DebugWriteln(const aString: string);
 begin
-  {$IFNDEF DEBUG}
-  if not assigned(Params) or Params.Debug then
-  begin
-  {$ENDIF}
-    ConsoleWriteLn(aString);
-  {$IFNDEF DEBUG}
-  end;
-  {$ENDIF}
+  {$IFDEF ANDROID}
+       ConsoleWriteLn(aString);
+    {$ELSE}
+    {$IFNDEF DEBUG}
+    if not assigned(Params) or Params.Debug then
+    begin
+    {$ENDIF}
+      ConsoleWriteLn(aString);
+    {$IFNDEF DEBUG}
+    end;
+    {$ENDIF}
+    {$ENDIF}
 end;
 
 
@@ -210,6 +214,11 @@ begin
 end;
 
 procedure TLog.LogBenchmark(const Text: string; Number: integer);
+{$IFDEF ANDROID}
+  begin
+  end;
+
+{$ELSE}
 var
   Minutes:      integer;
   Seconds:      integer;
@@ -295,9 +304,12 @@ begin
   end;
   LeaveCriticalSection(Lock);
 end;
+{$ENDIF}
 
 procedure TLog.LogToFile(const Text: string);
 begin
+  {$IFDEF ANDROID}
+  {$ELSE}
   EnterCriticalSection(Lock);
   if (FileOutputEnabled and not LogFileOpened) then
   begin
@@ -329,6 +341,7 @@ begin
     end;
   end;
   LeaveCriticalSection(Lock);
+  {$ENDIF}
 end;
 
 procedure TLog.SetLogLevel(Level: integer);
@@ -376,7 +389,7 @@ begin
       DebugWriteLn(LogMsg);
       LogConsole(LogMsg);
       {$IF Defined(ANDROID)}
-      debug_message_to_android(LogMsg);
+      debug_message_to_android('USDX logging',LogMsg);
       {$IFEND}
     end;
     
@@ -465,6 +478,9 @@ type
   end;
 
 procedure TLog.LogVoice(SoundNr: integer);
+{$IFDEF ANDROID}
+  begin
+{$ELSE}
 var
   Stream: TBinaryFileStream;
   Prefix: string;
@@ -537,6 +553,7 @@ begin
   Stream.CopyFrom(Buffer, Buffer.Size);
 
   Stream.Free;
+  {$ENDIF}
 end;
 
 procedure TLog.LogBuffer(const buf: Pointer; const bufLength: Integer; const filename: IPath);

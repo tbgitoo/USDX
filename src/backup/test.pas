@@ -54,7 +54,10 @@ uses
   UTextEncoding in 'base\UTextEncoding.pas',
   IniFiles,
   UUnicodeStringHelper in 'base\UUnicodeStringHelper.pas',
-  UPath in 'base\UPath.pas';
+  UPath in 'base\UPath.pas',
+  UFilesystem in 'base\UFilesystem.pas',
+  //UCommandLine in 'base\UCommandLine.pas';
+  ULogAndroid in 'base\ULogAndroid.pas';
 
 
 
