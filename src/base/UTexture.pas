@@ -148,10 +148,11 @@ uses
   DateUtils,
   StrUtils,
   Math,
+  UImage,
   ULog{$IFDEF ANDROID};{$ELSE},
   UCovers,
-  UThemes,
-  UImage;
+  UThemes;
+
   {$ENDIF}
 
 function RoundPOT(value: integer): integer;

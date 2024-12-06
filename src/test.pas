@@ -69,7 +69,17 @@ uses
   FreeType in 'lib\freetype\freetype.pas',
   UFont in 'base\UFont.pas',
   UImage in 'base\UImage.pas',
-  zlib in 'lib\zlib\zlib.pas';
+  zlib in 'lib\zlib\zlib.pas',
+  TextGL in 'base\TextGL.pas',
+  UWebSDK                 in 'webSDK\UWebSDK.pas';
+  //UDllManager in 'base\UDLLManager.pas';
+  //Amidi in 'lib\amidi\amidi.pas',
+  //UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
+  //pasfluidsynth_android in 'lib\fluidsynth\pasfluidsynth_android.pas',
+  //UMidiInputStream in 'midi_input\UMidiInputStream.pas',
+  //UMidiTransfer in 'midi_input\UMidiTransfer.pas',
+  //UIni in 'base\UIni.pas';
+
 
 
 
