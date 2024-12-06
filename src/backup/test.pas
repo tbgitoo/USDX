@@ -55,6 +55,7 @@ uses
   IniFiles,
   UUnicodeStringHelper in 'base\UUnicodeStringHelper.pas',
   UPath in 'base\UPath.pas',
+  UPathUtils in 'base\UPathUtils.pas',
   UFilesystem in 'base\UFilesystem.pas',
   ULog in 'base\ULog.pas',
   UPlatform in 'base\UPlatform.pas',
@@ -334,8 +335,7 @@ var index: GLint;
 begin
 
 
-     myplatform:=Platform;
-     myplatform.init;
+     InitializePaths;
 
      InitializeProgram;
 
@@ -361,6 +361,7 @@ end;
 
 
 exports SDL_main name 'SDL_main';
+exports JNI_OnLoad name 'JNI_OnLoad';
 
 
 

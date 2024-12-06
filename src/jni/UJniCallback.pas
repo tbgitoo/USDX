@@ -170,8 +170,32 @@ begin
 end;
 
 function external_storageRoot_fromJava():String;
+var
+ jni_handler: jclass;
+ env: PJNIEnv;
+ env1: JNIEnv;
+ envrec: JNINativeInterface;
+ methodID_externalstorageRoot: JMethodID;
+ methodID_getexternalStorageRootStrLen: JMethodID;
+ ret: JString;
+ len: integer;
+ Str: String;
+ IsCopy: JBoolean;  // added for GetStringChars
+ Chars: PJChar;     // added for GetStringChars
 begin
-   Result:='';
+   env1:=@envrec;  // This is subtle: in jni.pas JNIEnv is itself declared as a pointer, so in order
+   // to have something to work with, we need first to have an actual JNINativeInterface object
+   env:=@env1;
+   GetJNIEnv(env);
+   theJavaVM^^.AttachCurrentThread(theJavaVM,@env,nil);
+   jni_handler:=getJniHandler(env);
+   methodID_externalstorageRoot:=env^^.GetStaticMethodID(env, jni_handler,'getExternalStorageRoot','()Ljava/lang/String;');
+   ret:=env^^.CallStaticObjectMethod(env,jni_handler,methodID_externalstorageRoot);
+   methodID_getexternalStorageRootStrLen:=env^^.GetStaticMethodID(env, jni_handler,'getExternalStorageRootStrLen','()I');
+   len:=env^^.CallStaticIntMethod(env,jni_handler,methodID_getexternalStorageRootStrLen);
+
+
+    external_storageRoot_fromJava:=JStringToString(env,ret,len);
 end;
 
 end.

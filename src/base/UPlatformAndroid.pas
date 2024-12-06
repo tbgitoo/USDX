@@ -79,6 +79,7 @@ begin
   AndroidInternalStorageRootFolder:=private_storageRoot_fromJava();
   debug_message_to_android('PlatformAndroid: Android internal storage data directory: '+AndroidInternalStorageRootFolder);
   AndroidExternalStorageRootFolder:=external_storageRoot_fromJava();
+  debug_message_to_android('PlatformAndroid: Android external storage data directory: '+AndroidExternalStorageRootFolder);
 end;
 
 {**
@@ -107,12 +108,12 @@ end;
 
 function TPlatformAndroid.GetGameSharedPath: IPath;
 begin
-  Result := GetExecutionDir();
+  Result := GetGameUserPath();
 end;
 
 function TPlatformAndroid.GetGameUserPath: IPath;
 begin
-    Result := GetExecutionDir()
+    Result := Path(AndroidExternalStorageRootFolder);
 end;
 
 {**

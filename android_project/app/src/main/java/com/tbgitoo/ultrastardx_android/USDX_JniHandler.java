@@ -18,6 +18,17 @@ public class USDX_JniHandler {
         return USDX_FileHandler.getPrivateStorageRoot().length();
     }
 
+    public static String getExternalStorageRoot()
+    {
+        return USDX_FileHandler.getExternalStorageRoot();
+    }
+
+
+    public static int getExternalStorageRootStrLen()
+    {
+        return USDX_FileHandler.getExternalStorageRoot().length();
+    }
+
 
     /*
      * Print out status to logcat

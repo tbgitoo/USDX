@@ -67,7 +67,9 @@ implementation
 uses
   StrUtils,
   UPlatform,
+  {$IFNDEF ANDROID}
   UCommandLine,
+  {$ENDIF}
   ULog;
 
 procedure AddSpecialPath(var PathList: IInterfaceList; const Path: IPath);
@@ -192,7 +194,9 @@ begin
   end;
 
   // Add song paths
+  {$IFNDEF ANDROID}
   AddSongPath(Params.SongPath);
+  {$ENDIF}
 {$IF Defined(DARWIN)}
   AddSongPath(Platform.GetMusicPath);
   AddSongPath(UserPath.Append('songs'));

@@ -140,7 +140,7 @@ public class USDX_FileHandler {
     protected static void setPrivateStorageRoot(String newStorageRoot)
     {
         privateStorageRoot =newStorageRoot;
-        Log.v("USDX_FileHandler","Internal storage :"+privateStorageRoot);
+
 
     }
 
@@ -169,7 +169,7 @@ public class USDX_FileHandler {
     protected static void setExternalStorageRoot(String newStorageRoot)
     {
         externalStorageRoot =newStorageRoot;
-        Log.v("USDX_FileHandler","External storage :"+externalStorageRoot);
+
 
     }
 

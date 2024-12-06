@@ -148,12 +148,12 @@ uses
   SysUtils,
   DateUtils,
   UTime,
+  UPathUtils,
   UCommon{$IFNDEF ANDROID},
   URecord,
   UMain,
   UMusic,
-  UCommandLine,
-  UPathUtils{$ENDIF};
+  UCommandLine{$ENDIF};
 
 
 

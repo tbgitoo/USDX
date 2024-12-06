@@ -55,6 +55,7 @@ uses
   IniFiles,
   UUnicodeStringHelper in 'base\UUnicodeStringHelper.pas',
   UPath in 'base\UPath.pas',
+  UPathUtils in 'base\UPathUtils.pas',
   UFilesystem in 'base\UFilesystem.pas',
   ULog in 'base\ULog.pas',
   UPlatform in 'base\UPlatform.pas',
@@ -333,9 +334,8 @@ function SDL_main(argc: integer; argv: PPChar): integer;
 var index: GLint;
 begin
 
-
-     myplatform:=Platform;
-     myplatform.init;
+     Platform.init;
+     InitializePaths;
 
      InitializeProgram;
 
