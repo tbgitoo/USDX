@@ -42,7 +42,8 @@ type
     private
       UseLocalDirs: boolean;
 
-      AndroidDataRoot: string;
+      AndroidInternalStorageRootFolder: string;
+      AndroidExternalStorageRootFolder: string;
 
 
       procedure DetectLocalExecution();
@@ -75,8 +76,9 @@ procedure TPlatformAndroid.Init;
 begin
   inherited Init();
   DetectLocalExecution();
-  AndroidDataRoot:=private_storageRoot_fromJava();
-  debug_message_to_android('PlatformAndroid: Android data directory: '+AndroidDataRoot);
+  AndroidInternalStorageRootFolder:=private_storageRoot_fromJava();
+  debug_message_to_android('PlatformAndroid: Android internal storage data directory: '+AndroidInternalStorageRootFolder);
+  AndroidExternalStorageRootFolder:=external_storageRoot_fromJava();
 end;
 
 {**
@@ -124,7 +126,7 @@ end;
 
 function TPlatformAndroid.GetExecutionDir(): IPath;
 begin
-  GetExecutionDir := Path(AndroidDataRoot);
+  GetExecutionDir := Path(AndroidInternalStorageRootFolder);
 
 end;
 

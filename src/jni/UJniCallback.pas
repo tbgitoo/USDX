@@ -17,6 +17,7 @@ procedure debug_message_to_android(str : String; tag: String);
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
 function getJniHandler(env: PJNIEnv):jclass;
 function private_storageRoot_fromJava():String;
+function external_storageRoot_fromJava():String;
 
 
 var
@@ -166,6 +167,11 @@ begin
 
     private_storageRoot_fromJava:=JStringToString(env,ret,len);
 
+end;
+
+function external_storageRoot_fromJava():String;
+begin
+   Result:='';
 end;
 
 end.

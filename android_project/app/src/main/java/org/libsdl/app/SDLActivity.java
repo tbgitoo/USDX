@@ -280,6 +280,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
         USDX_FileHandler.setContext(this);
         USDX_FileHandler.initStorageLocationsDefault();
+        USDX_FileHandler.install_USDX_game_files();
 
         mClipboardHandler = new SDLClipboardHandler();
 
