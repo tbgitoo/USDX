@@ -1034,7 +1034,8 @@ end;
   *)
 
   const
-  ULuaGl_Enum: array [0..579] of TULuaGl_Enums = (
+  ULuaGl_Enum: array [ 0..{$IFDEF UseOpenGLES3}118
+    {$ELSE}579{$ENDIF}] of TULuaGl_Enums = (
     {$IFDEF UseOpenGLES3}
     {$ELSE}
     (Text:'GL_ACCUM';Value:GL_ACCUM),//(Text:'GL_VERSION_1_1';Value:GL_VERSION_1_1),

@@ -83,11 +83,12 @@ type
     // level of messages written to the log-file
     LogFileLevel: integer;
 
-    procedure LogToFile(const Text: string);
+    //procedure LogToFile(const Text: string);
 
     function GetConsoleCount: integer;
 
   public
+
     BenchmarkTimeStart:   array[0..31] of real;
     BenchmarkTimeLength:  array[0..31] of real;//TDateTime;
 
@@ -135,12 +136,13 @@ type
     procedure LogConsole(const Text: string);
     procedure ClearConsoleLog;
 
+    procedure LogToFile(const Text: string);
+
   end;
 
 procedure DebugWriteln(const aString: String);
 
-var
-  Log:    TLog;
+function Log(): TLog;
 
 implementation
 
@@ -156,7 +158,17 @@ uses
   UCommandLine{$ENDIF};
 
 
+var
+  myLog:    TLog;
 
+function Log(): TLog;
+begin
+  if myLog = nil then
+  begin
+    myLog:=TLog.Create;
+  end;
+  Result:=myLog;
+end;
 
 (*
  * Write to console if in debug mode (Thread-safe).
@@ -308,8 +320,6 @@ end;
 
 procedure TLog.LogToFile(const Text: string);
 begin
-  {$IFDEF ANDROID}
-  {$ELSE}
   EnterCriticalSection(Lock);
   if (FileOutputEnabled and not LogFileOpened) then
   begin
@@ -341,7 +351,8 @@ begin
     end;
   end;
   LeaveCriticalSection(Lock);
-  {$ENDIF}
+
+
 end;
 
 procedure TLog.SetLogLevel(Level: integer);

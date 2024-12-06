@@ -16,6 +16,7 @@ library test;
 
 uses
   //heaptrc,
+    //heaptrc,
   {$IFDEF Unix}
   cthreads,            // THIS MUST be the first used unit in FPC if Threads are used!!
                        // (see http://wiki.lazarus.freepascal.org/Multithreaded_Application_Tutorial)
@@ -46,6 +47,9 @@ uses
   // For test purposes only, remove
   dglOpenGLES in 'lib\dglOpenGL\dglOpenGLES.pas',
 
+  SQLiteTable3  in 'lib\SQLite\SQLiteTable3.pas',
+  SQLite3       in 'lib\SQLite\SQLite3.pas',
+
   UCommon in 'base\UCommon.pas',
   anyascii in 'lib\anyascii\anyascii.pas',
   UUnicodeUtils in 'base\UUnicodeUtils.pas',
@@ -59,7 +63,26 @@ uses
   UFilesystem in 'base\UFilesystem.pas',
   ULog in 'base\ULog.pas',
   UPlatform in 'base\UPlatform.pas',
-  UPlatformAndroid in 'base\UPlatformAndroid.pas';
+  UPlatformAndroid in 'base\UPlatformAndroid.pas',
+  UCommandLine in 'base\UCommandLine.pas',
+
+
+
+  //------------------------------
+  //Includes - Lua Support
+  //------------------------------
+  ULua           in 'lib\Lua\ULua.pas',
+  ULuaUtils      in 'lua\ULuaUtils.pas',
+  ULuaGl         in 'lua\ULuaGl.pas',
+  ULuaLog        in 'lua\ULuaLog.pas',
+  ULuaTextGL     in 'lua\ULuaTextGL.pas',
+  ULuaTexture    in 'lua\ULuaTexture.pas',
+  UHookableEvent in 'lua\UHookableEvent.pas',
+  ULuaCore       in 'lua\ULuaCore.pas',
+  ULuaUsdx       in 'lua\ULuaUsdx.pas',
+  ULuaParty      in 'lua\ULuaParty.pas',
+  ULuaScreenSing in 'lua\ULuaScreenSing.pas';
+
 
 
 
@@ -94,7 +117,7 @@ var    window: PSDL_Window;
         '   outcolor = vec4(1.0f, 0.5f, 0.0f, 1.0f);'#13#10+
         '}'#13#10;
   gQuit: boolean;
-  myplatform: TPlatform;
+
 
 
 
@@ -107,7 +130,17 @@ end;
 
 procedure InitializeProgram();
 begin
-      if SDL_Init(SDL_INIT_VIDEO)<0 then debug_message_to_android('SDL not loaded');
+       SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, '1');
+
+        //SDL_EnableUnicode(1);  //not necessary in SDL2 any more
+       // initialize SDL
+       // without SDL_INIT_TIMER SDL_GetTicks() might return strange values
+
+
+      if SDL_Init(SDL_INIT_VIDEO or SDL_INIT_TIMER)<0 then debug_message_to_android('SDL not loaded');
+
+      // create luacore first so other classes can register their events
+      LuaCore := TLuaCore.Create;
 
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
@@ -332,10 +365,35 @@ end;
 
 function SDL_main(argc: integer; argv: PPChar): integer;
 var index: GLint;
+    WindowTitle: string;
 begin
+     SetMultiByteConversionCodePage(CP_UTF8);
+     WindowTitle := USDXVersionStr;
+
+     Platform.Init;
+     Log.Title := WindowTitle;
+     Log.FileOutputEnabled := true;
+
 
      Platform.init;
      InitializePaths;
+
+     // Commandline Parameter Parser
+    Params := TCMDParams.Create;
+
+    // fix floating-point exceptions (FPE)
+    DisableFloatingPointExceptions();
+
+    // fix the locale for string-to-float parsing in C-libs
+    SetDefaultNumericLocale();
+
+        // setup separators for parsing
+    // Note: ThousandSeparator must be set because of a bug in TIniFile.ReadFloat
+    DefaultFormatSettings.ThousandSeparator := ',';
+    DefaultFormatSettings.DecimalSeparator := '.';
+
+
+
 
      InitializeProgram;
 

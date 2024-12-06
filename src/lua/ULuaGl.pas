@@ -1039,7 +1039,7 @@ end;
     {$IFDEF UseOpenGLES3}
     {$ELSE}
     (Text:'GL_ACCUM';Value:GL_ACCUM),//(Text:'GL_VERSION_1_1';Value:GL_VERSION_1_1),
-    //(Text:'GL_ACCUM';Value:GL_ACCUM),
+    (Text:'GL_ACCUM';Value:GL_ACCUM),
     (Text:'GL_LOAD';Value:GL_LOAD),
     (Text:'GL_RETURN';Value:GL_RETURN),
     (Text:'GL_MULT';Value:GL_MULT),
