@@ -67,7 +67,9 @@ uses
   UCommandLine in 'base\UCommandLine.pas',
   UTexture in 'base\UTexture.pas',
   FreeType in 'lib\freetype\freetype.pas',
-  UFont in 'base\UFont.pas';
+  UFont in 'base\UFont.pas',
+  UImage in 'base\UImage.pas',
+  zlib in 'lib\zlib\zlib.pas';
 
 
 
