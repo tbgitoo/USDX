@@ -65,23 +65,14 @@ uses
   UPlatform in 'base\UPlatform.pas',
   UPlatformAndroid in 'base\UPlatformAndroid.pas',
   UCommandLine in 'base\UCommandLine.pas',
+  UTexture in 'base\UTexture.pas',
+  FreeType in 'lib\freetype\freetype.pas',
+  UFont in 'base\UFont.pas';
 
 
 
-  //------------------------------
-  //Includes - Lua Support
-  //------------------------------
-  ULua           in 'lib\Lua\ULua.pas',
-  ULuaUtils      in 'lua\ULuaUtils.pas',
-  ULuaGl         in 'lua\ULuaGl.pas',
-  ULuaLog        in 'lua\ULuaLog.pas',
-  ULuaTextGL     in 'lua\ULuaTextGL.pas',
-  ULuaTexture    in 'lua\ULuaTexture.pas',
-  UHookableEvent in 'lua\UHookableEvent.pas',
-  ULuaCore       in 'lua\ULuaCore.pas',
-  ULuaUsdx       in 'lua\ULuaUsdx.pas',
-  ULuaParty      in 'lua\ULuaParty.pas',
-  ULuaScreenSing in 'lua\ULuaScreenSing.pas';
+
+
 
 
 
@@ -139,8 +130,7 @@ begin
 
       if SDL_Init(SDL_INIT_VIDEO or SDL_INIT_TIMER)<0 then debug_message_to_android('SDL not loaded');
 
-      // create luacore first so other classes can register their events
-      LuaCore := TLuaCore.Create;
+
 
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
