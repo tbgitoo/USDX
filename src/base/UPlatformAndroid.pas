@@ -75,7 +75,7 @@ procedure TPlatformAndroid.Init;
 begin
   inherited Init();
   DetectLocalExecution();
-  AndroidDataRoot:=storageRoot_fromJava();
+  AndroidDataRoot:=private_storageRoot_fromJava();
   debug_message_to_android('PlatformAndroid: Android data directory: '+AndroidDataRoot);
 end;
 

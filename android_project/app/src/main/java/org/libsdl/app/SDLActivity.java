@@ -55,6 +55,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tbgitoo.ultrastardx_android.USDX_FileHandler;
+import com.tbgitoo.ultrastardx_android.USDX_JniHandler;
+
 import java.util.Hashtable;
 import java.util.Locale;
 
@@ -274,6 +277,9 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         // So we can call stuff from static callbacks
         mSingleton = this;
         SDL.setContext(this);
+
+        USDX_FileHandler.setContext(this);
+        USDX_FileHandler.initStorageLocationsDefault();
 
         mClipboardHandler = new SDLClipboardHandler();
 

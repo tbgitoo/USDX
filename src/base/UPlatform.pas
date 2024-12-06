@@ -68,6 +68,7 @@ uses
   UPlatformMacOSX,
   {$ELSEIF Defined(ANDROID)}
   UPlatformAndroid,
+  UJniCallback,
   {$ELSEIF Defined(UNIX)}
   UPlatformLinux,
   {$IFEND}
@@ -80,11 +81,27 @@ uses
 // so that this variable can NOT be overwritten from anywhere else in the application.
 // the accessor function platform, emulates all previous calls to work the same way.  
 var
-  Platform_singleton: TPlatform;
+  Platform_singleton: TPlatform = nil;
 
 function Platform: TPlatform;
 begin
-  Result := Platform_singleton;
+
+  if Platform_singleton = nil then
+  begin
+
+     {$IF Defined(MSWINDOWS)}
+     Platform_singleton := TPlatformWindows.Create;
+     {$ELSEIF Defined(DARWIN)}
+     Platform_singleton := TPlatformMacOSX.Create;
+     {$ELSEIF Defined(ANDROID)}
+
+     Platform_singleton := TPlatformAndroid.Create;
+     {$ELSEIF Defined(UNIX)}
+  Platform_singleton := TPlatformLinux.Create;
+  {$ENDIF}
+
+  end;
+  Result:=Platform_singleton;
 end;
 
 (**
@@ -128,11 +145,13 @@ initialization
   Platform_singleton := TPlatformWindows.Create;
 {$ELSEIF Defined(DARWIN)}
   Platform_singleton := TPlatformMacOSX.Create;
-{$ELSEIF Defined(ANDROID)}
-  Platform_singleton := TPlatformAndroid.Create;
-{$ELSEIF Defined(UNIX)}
+{$ELSE}
+{$IFNDEF ANDROID}
+{IF Defined(UNIX)}
   Platform_singleton := TPlatformLinux.Create;
-{$IFEND}
+{$ENDIF}
+{$ENDIF}
+
 
 finalization
   Platform_singleton.Free;

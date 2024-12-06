@@ -16,7 +16,7 @@ procedure debug_message_to_android(str : String);
 procedure debug_message_to_android(str : String; tag: String);
 function JNI_OnLoad(vm:PJavaVM;reserved:pointer):jint; cdecl;
 function getJniHandler(env: PJNIEnv):jclass;
-function storageRoot_fromJava():String;
+function private_storageRoot_fromJava():String;
 
 
 var
@@ -112,7 +112,7 @@ t: Jint;
 begin
 
    if(env^^.FindClass <> nil) then begin
-   str:= 'com/tbgitoo/ultrastardx_android/JniHandler';
+   str:= 'com/tbgitoo/ultrastardx_android/USDX_JniHandler';
    p := PChar(GetMem(Length(str) + 1));
    Move(str[1], p[0], Length(str));
    p[Length(str)]:=#0;
@@ -138,14 +138,14 @@ begin
 end;
 
 
-function storageRoot_fromJava():String;
+function private_storageRoot_fromJava():String;
 var
  jni_handler: jclass;
  env: PJNIEnv;
  env1: JNIEnv;
  envrec: JNINativeInterface;
- methodID_storageRoot: JMethodID;
- methodID_getStorageRootStrLen: JMethodID;
+ methodID_PrivatestorageRoot: JMethodID;
+ methodID_getPrivateStorageRootStrLen: JMethodID;
  ret: JString;
  len: integer;
  Str: String;
@@ -158,13 +158,13 @@ begin
    GetJNIEnv(env);
    theJavaVM^^.AttachCurrentThread(theJavaVM,@env,nil);
    jni_handler:=getJniHandler(env);
-   methodID_storageRoot:=env^^.GetStaticMethodID(env, jni_handler,'getStorageRoot','()Ljava/lang/String;');
-   ret:=env^^.CallStaticObjectMethod(env,jni_handler,methodID_storageRoot);
-   methodID_getStorageRootStrLen:=env^^.GetStaticMethodID(env, jni_handler,'getStorageRootStrLen','()I');
-   len:=env^^.CallStaticIntMethod(env,jni_handler,methodID_getStorageRootStrLen);
+   methodID_PrivatestorageRoot:=env^^.GetStaticMethodID(env, jni_handler,'getPrivateStorageRoot','()Ljava/lang/String;');
+   ret:=env^^.CallStaticObjectMethod(env,jni_handler,methodID_PrivatestorageRoot);
+   methodID_getPrivateStorageRootStrLen:=env^^.GetStaticMethodID(env, jni_handler,'getPrivateStorageRootStrLen','()I');
+   len:=env^^.CallStaticIntMethod(env,jni_handler,methodID_getPrivateStorageRootStrLen);
 
 
-    storageRoot_fromJava:=JStringToString(env,ret,len);
+    private_storageRoot_fromJava:=JStringToString(env,ret,len);
 
 end;
 

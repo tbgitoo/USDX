@@ -56,8 +56,9 @@ uses
   UUnicodeStringHelper in 'base\UUnicodeStringHelper.pas',
   UPath in 'base\UPath.pas',
   UFilesystem in 'base\UFilesystem.pas',
-  //UCommandLine in 'base\UCommandLine.pas';
-  ULogAndroid in 'base\ULogAndroid.pas';
+  ULog in 'base\ULog.pas',
+  UPlatform in 'base\UPlatform.pas',
+  UPlatformAndroid in 'base\UPlatformAndroid.pas';
 
 
 
@@ -92,6 +93,7 @@ var    window: PSDL_Window;
         '   outcolor = vec4(1.0f, 0.5f, 0.0f, 1.0f);'#13#10+
         '}'#13#10;
   gQuit: boolean;
+  myplatform: TPlatform;
 
 
 
@@ -330,6 +332,10 @@ end;
 function SDL_main(argc: integer; argv: PPChar): integer;
 var index: GLint;
 begin
+
+
+     myplatform:=Platform;
+     myplatform.init;
 
      InitializeProgram;
 
