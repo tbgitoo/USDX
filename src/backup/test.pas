@@ -87,6 +87,7 @@ uses
   MidiFile          in 'lib\midi\MidiFile.pas',
   ULanguage in 'base\ULanguage.pas',
   USkins in 'base\USkins.pas',
+  UCatCovers in 'base\UCatCovers.pas',
 
 
 

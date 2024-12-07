@@ -88,6 +88,7 @@ uses
   ULanguage in 'base\ULanguage.pas',
   USkins in 'base\USkins.pas',
   UCatCovers in 'base\UCatCovers.pas',
+  USong in 'base\USong.pas',
 
 
 

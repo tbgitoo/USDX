@@ -62,9 +62,6 @@ uses
   Classes,
   UFilesystem,
   ULog,
-  {$IFNDEF ANDROID}
-  UMain,
-  {$ENDIF}
   UUnicodeUtils,
   UPathUtils;
 
