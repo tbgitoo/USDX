@@ -84,7 +84,6 @@ uses
   Math,
   UIni,
   ULog,
-  UMain,
   UPathUtils,
   UFileSystem;
 
