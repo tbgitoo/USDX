@@ -76,7 +76,9 @@ var
 implementation
 
 uses
+  {$IFNDEF ANDROID}
   UMain,
+  {$ENDIF}
   UIni,
   IniFiles,
   Classes,

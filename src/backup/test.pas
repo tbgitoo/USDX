@@ -84,7 +84,9 @@ uses
   UMusic in 'base\UMusic.pas',
   URecord in 'base\URecord.pas',
   UMidiPlayback in 'midi_input\UMidiPlayback.pas',
-
+  MidiFile          in 'lib\midi\MidiFile.pas',
+  UThemes in 'base\UThemes.pas',
+  ULanguage in 'base\ULanguage.pas',
 
 
 

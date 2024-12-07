@@ -690,12 +690,12 @@ uses
   {$IFNDEF ANDROID}
   UDataBase,
   UDllManager,
-  ULanguage,
   UMain,
-  URecord,
   USkins,
   UThemes,
   {$ENDIF}
+  ULanguage,
+  URecord,
   UPlatform,
   UPathUtils,
   UUnicodeUtils;

@@ -85,6 +85,7 @@ uses
   URecord in 'base\URecord.pas',
   UMidiPlayback in 'midi_input\UMidiPlayback.pas',
   MidiFile          in 'lib\midi\MidiFile.pas',
+  ULanguage in 'base\ULanguage.pas',
 
 
 

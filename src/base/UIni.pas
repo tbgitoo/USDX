@@ -690,11 +690,11 @@ uses
   {$IFNDEF ANDROID}
   UDataBase,
   UDllManager,
-  ULanguage,
   UMain,
   USkins,
   UThemes,
   {$ENDIF}
+  ULanguage,
   URecord,
   UPlatform,
   UPathUtils,
@@ -721,11 +721,6 @@ function TIni.IndexInArray(needle: UTF8String; haystack: array of UTF8String): I
  * Translate and set the values of options, which need translation.
  *)
 procedure TIni.TranslateOptionValues;
-{$IFDEF ANDROID}
-begin
-
-end;
-{$ELSE}
 var
   I: integer;
   Zeros: string;
@@ -1101,7 +1096,7 @@ begin
   end;
 
 end;
-{$ENDIF}
+
 
 procedure TIni.LoadWebcamSettings(IniFile: TCustomIniFile);
 var
