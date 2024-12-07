@@ -77,6 +77,10 @@ uses
   UIni in 'base\UIni.pas',
   UMidiInputStream in 'midi_input\UMidiInputStream.pas',
   UMidiTransfer in 'midi_input\UMidiTransfer.pas',
+  Amidi in 'lib\amidi\amidi.pas',
+  UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
+  pasfluidsynth_android in 'lib\fluidsynth\pasfluidsynth_android.pas',
+  UMusic in 'base\UMusic.pas',
 
 
 

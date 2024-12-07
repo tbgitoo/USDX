@@ -80,6 +80,7 @@ uses
   Amidi in 'lib\amidi\amidi.pas',
   UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
   pasfluidsynth_android in 'lib\fluidsynth\pasfluidsynth_android.pas',
+  UWebcam in 'base\UWebcam.pas',
 
 
 
