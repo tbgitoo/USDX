@@ -89,6 +89,7 @@ uses
   USkins in 'base\USkins.pas',
   UCatCovers in 'base\UCatCovers.pas',
   USong in 'base\USong.pas',
+  UThemes in 'base\UThemes.pas',
 
 
 
