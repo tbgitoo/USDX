@@ -151,17 +151,14 @@ implementation
 uses
   math,
   UIni,
-  {$IFNDEF ANDROID}
   UNote,
-  {$ENDIF}
   UCommandLine,
   URecord,
   ULog,
   UPathUtils,
   UTextEncoding,
-  MidiFile,
-  UCommon;
-
+  UCommon,
+  MidiFile;
 
 var
 

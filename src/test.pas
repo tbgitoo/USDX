@@ -81,6 +81,13 @@ uses
   UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
   pasfluidsynth_android in 'lib\fluidsynth\pasfluidsynth_android.pas',
   UWebcam in 'base\UWebcam.pas',
+  UMusic in 'base\UMusic.pas',
+  URecord in 'base\URecord.pas',
+  UMidiPlayback in 'midi_input\UMidiPlayback.pas',
+  MidiFile          in 'lib\midi\MidiFile.pas',
+
+
+
 
 
 

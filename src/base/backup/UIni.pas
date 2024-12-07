@@ -2592,7 +2592,9 @@ begin
     IniFile := TIniFile.Create(Filename.ToNative);
 
     // ShowWebScore
+    {$IFNDEF ANDROID}
     IniFile.WriteString('Game', 'ShowWebScore', DllMan.Websites[ShowWebScore].Name);
+    {$ENDIF}
 
     IniFile.Free;
   end;

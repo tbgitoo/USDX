@@ -658,9 +658,7 @@ implementation
 uses
   math,
   UIni,
-  {$IFNDEF ANDROID}
   UNote,
-  {$ENDIF}
   UCommandLine,
   URecord,
   ULog,
@@ -1341,7 +1339,7 @@ begin
 
   if found then //found exactly
     exit;
-  {$IFNDEF ANDROID}
+
   if CurrentSong.isDuet and (PlayersPlay <> 1) then
   begin
     for LineIndex := 0 to High(Tracks[1].Lines) do
@@ -1360,7 +1358,6 @@ begin
       end;
     end;
   end;
-  {$ENDIF}
 
   if found then //found exactly
     exit;
@@ -1382,7 +1379,6 @@ begin
     end;
   end;
 
-  {$IFNDEF ANDROID}
   if CurrentSong.isDuet and (PlayersPlay <> 1) then
   begin
     for LineIndex := 0 to High(Tracks[1].Lines) do
@@ -1400,7 +1396,6 @@ begin
       end;
     end;
   end;
-  {$ENDIF}
 end;
 
 end.

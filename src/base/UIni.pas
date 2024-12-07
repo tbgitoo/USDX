@@ -692,10 +692,10 @@ uses
   UDllManager,
   ULanguage,
   UMain,
-  URecord,
   USkins,
   UThemes,
   {$ENDIF}
+  URecord,
   UPlatform,
   UPathUtils,
   UUnicodeUtils;

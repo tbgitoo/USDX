@@ -219,8 +219,8 @@ type
 implementation
 
 uses
-  ULog{$IFNDEF ANDROID},
-  UNote{$ENDIF};
+  ULog,
+  UNote;
 
 var
   singleton_AudioInputProcessor : TAudioInputProcessor = nil;
@@ -1146,7 +1146,7 @@ begin
     for ChannelIndex := 0 to High(DeviceCfg.ChannelToPlayerMap) do
     begin
       Player := DeviceCfg.ChannelToPlayerMap[ChannelIndex] - 1;
-      if (Player < 0) or (Player >= {$IFNDEF ANDROID}PlayersPlay{$ELSE}1{$ENDIF}) then
+      if (Player < 0) or (Player >= PlayersPlay) then
       begin
         Device.LinkCaptureBuffer(ChannelIndex, nil);
       end
