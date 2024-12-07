@@ -71,14 +71,46 @@ uses
   UImage in 'base\UImage.pas',
   zlib in 'lib\zlib\zlib.pas',
   TextGL in 'base\TextGL.pas',
-  UWebSDK                 in 'webSDK\UWebSDK.pas';
-  //UDllManager in 'base\UDLLManager.pas';
+  UWebSDK                 in 'webSDK\UWebSDK.pas',
+  UBeatTimer        in 'base\UBeatTimer.pas', // Up to here things are fine, UBeatTimer needs fixing
+
+  UIni in 'base\UIni.pas',
+  UMidiInputStream in 'midi_input\UMidiInputStream.pas',
+  UMidiTransfer in 'midi_input\UMidiTransfer.pas',
+  Amidi in 'lib\amidi\amidi.pas',
+  UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
+  pasfluidsynth_android in 'lib\fluidsynth\pasfluidsynth_android.pas',
+
+
+
+  {$IFDEF UseOpenCVWrapper}
+  opencv_highgui          in 'lib\openCV3\opencv_highgui.pas',
+  opencv_core             in 'lib\openCV3\opencv_core.pas',
+  opencv_imgproc          in 'lib\openCV3\opencv_imgproc.pas',
+  opencv_types            in 'lib\openCV3\opencv_types.pas';
+{$ELSE}
+  opencv_highgui          in 'lib\openCV\opencv_highgui.pas',
+  opencv_core             in 'lib\openCV\opencv_core.pas',
+  opencv_imgproc          in 'lib\openCV\opencv_imgproc.pas',
+  opencv_types            in 'lib\openCV\opencv_types.pas';
+{$ENDIF}
+
   //Amidi in 'lib\amidi\amidi.pas',
   //UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
   //pasfluidsynth_android in 'lib\fluidsynth\pasfluidsynth_android.pas',
   //UMidiInputStream in 'midi_input\UMidiInputStream.pas',
   //UMidiTransfer in 'midi_input\UMidiTransfer.pas',
-  //UIni in 'base\UIni.pas';
+  //UIni in 'base\UIni.pas',
+  //UMusic in 'base\UMusic.pas',
+
+
+  //UDataBase in 'base\UDataBase.pas',
+  //UFiles in 'base\UFiles.pas',
+  //UDllManager in 'base\UDLLManager.pas';
+
+  //UWebcam in 'base\UWebcam.pas',
+  //ULanguage in 'base\ULanguage.pas',
+
 
 
 

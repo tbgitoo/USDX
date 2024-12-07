@@ -687,16 +687,14 @@ uses
   sdl2,
   {$ENDIF}
   UCommandLine,
-  {$IFNDEF ANDROID}
   UDataBase,
   UDllManager,
   ULanguage,
+  UPlatform,
   UMain,
   URecord,
   USkins,
   UThemes,
-  {$ENDIF}
-  UPlatform,
   UPathUtils,
   UUnicodeUtils;
 
@@ -721,11 +719,6 @@ function TIni.IndexInArray(needle: UTF8String; haystack: array of UTF8String): I
  * Translate and set the values of options, which need translation.
  *)
 procedure TIni.TranslateOptionValues;
-{$IFDEF ANDROID}
-begin
-
-end;
-{$ELSE}
 var
   I: integer;
   Zeros: string;
@@ -1101,7 +1094,6 @@ begin
   end;
 
 end;
-{$ENDIF}
 
 procedure TIni.LoadWebcamSettings(IniFile: TCustomIniFile);
 var
@@ -1564,8 +1556,6 @@ begin
   if (Theme = -1) then
     Theme := 0;
 
-  {$IFDEF ANDROID}
-  {$ELSE}
   // Skin
   Skin.onThemeChange;
 
@@ -1579,7 +1569,6 @@ begin
 
   // Color
   Color := ReadArrayIndex(IColor, IniFile, 'Themes', 'Color', Skin.GetDefaultColor(SkinNo));
-  {$ENDIF}
 end;
 
 procedure TIni.LoadScreenModes(IniFile: TCustomIniFile);
@@ -1838,10 +1827,6 @@ begin
 
   MicDelay := IniFile.ReadInteger('Game', 'MicDelay', 140);
 
-  {$IFDEF ANDROID}
-
-  {$ELSE}
-
   // Read Users Info (Network)
   DataBase.ReadUsers;
 
@@ -1863,8 +1848,6 @@ begin
     if (ShowWebScore = -1) then
       ShowWebScore := 0;
   end;
-
-  {$ENDIF}
 
   // Debug
   Debug := ReadArrayIndex(IDebug, IniFile, 'Game', 'Debug', 0);
@@ -2452,10 +2435,8 @@ begin
 
     if (JukeboxSingLineColor <> High(ISingLineColor)) then
     begin
-     {$IFNDEF ANDROID}
       C := GetLyricColor(JukeboxSingLineColor);
       HexColor := RGBToHex(Round(C.R * 255), Round(C.G * 255), Round(C.B * 255));
-      {$ENDIF}
     end
     else
       HexColor := RGBToHex(JukeboxSingLineOtherColorR, JukeboxSingLineOtherColorG, JukeboxSingLineOtherColorB);
@@ -2464,10 +2445,8 @@ begin
 
     if (JukeboxActualLineColor <> High(IActualLineColor)) then
     begin
-     {$IFNDEF ANDROID}
       C := GetLyricGrayColor(JukeboxActualLineColor);
       HexColor := RGBToHex(Round(C.R * 255), Round(C.G * 255), Round(C.B * 255));
-      {$ENDIF}
     end
     else
       HexColor := RGBToHex(JukeboxActualLineOtherColorR, JukeboxActualLineOtherColorG, JukeboxActualLineOtherColorB);
@@ -2476,10 +2455,8 @@ begin
 
     if (JukeboxNextLineColor <> High(INextLineColor)) then
     begin
-     {$IFNDEF ANDROID}
       C := GetLyricGrayColor(JukeboxNextLineColor);
       HexColor := RGBToHex(Round(C.R * 255), Round(C.G * 255), Round(C.B * 255));
-      {$ENDIF}
     end
     else
       HexColor := RGBToHex(JukeboxNextLineOtherColorR, JukeboxNextLineOtherColorG, JukeboxNextLineOtherColorB);
@@ -2488,10 +2465,8 @@ begin
 
     if (JukeboxSingLineOutlineColor <> High(ISingLineOColor)) then
     begin
-     {$IFNDEF ANDROID}
       C := GetLyricOutlineColor(JukeboxSingLineOutlineColor);
       HexColor := RGBToHex(Round(C.R * 255), Round(C.G * 255), Round(C.B * 255));
-      {$ENDIF}
     end
     else
       HexColor := RGBToHex(JukeboxSingLineOtherOColorR, JukeboxSingLineOtherOColorG, JukeboxSingLineOtherOColorB);
@@ -2500,10 +2475,8 @@ begin
 
     if (JukeboxActualLineOutlineColor <> High(IActualLineOColor)) then
     begin
-     {$IFNDEF ANDROID}
       C := GetLyricOutlineColor(JukeboxActualLineOutlineColor);
       HexColor := RGBToHex(Round(C.R * 255), Round(C.G * 255), Round(C.B * 255));
-      {$ENDIF}
     end
     else
       HexColor := RGBToHex(JukeboxActualLineOtherOColorR, JukeboxActualLineOtherOColorG, JukeboxActualLineOtherOColorB);
@@ -2512,10 +2485,8 @@ begin
 
     if (JukeboxNextLineOutlineColor <> High(INextLineOColor)) then
     begin
-     {$IFNDEF ANDROID}
       C := GetLyricOutlineColor(JukeboxNextLineOutlineColor);
       HexColor := RGBToHex(Round(C.R * 255), Round(C.G * 255), Round(C.B * 255));
-      {$ENDIF}
     end
     else
       HexColor := RGBToHex(JukeboxNextLineOtherOColorR, JukeboxNextLineOtherOColorG, JukeboxNextLineOtherOColorB);
