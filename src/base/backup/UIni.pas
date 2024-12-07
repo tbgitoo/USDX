@@ -691,8 +691,8 @@ uses
   UDataBase,
   UDllManager,
   UMain,
-  UThemes,
   {$ENDIF}
+  UThemes,
   USkins,
   ULanguage,
   URecord,
@@ -1561,8 +1561,9 @@ begin
 
   // Skin
   Skin.onThemeChange;
-
+  {$IFNDEF ANDROID}
   SkinNo := ReadArrayIndex(ISkin, IniFile, 'Themes', 'Skin', UThemes.Theme.Themes[Theme].DefaultSkin);
+  {$ENDIF}
 
   { there may be a not existing skin in the ini file
     e.g. due to manual edit or corrupted file.
