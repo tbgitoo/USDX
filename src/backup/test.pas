@@ -86,6 +86,8 @@ uses
   UMidiPlayback in 'midi_input\UMidiPlayback.pas',
   MidiFile          in 'lib\midi\MidiFile.pas',
   ULanguage in 'base\ULanguage.pas',
+  USkins in 'base\USkins.pas',
+
 
 
 
