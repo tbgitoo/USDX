@@ -691,9 +691,9 @@ uses
   UDataBase,
   UDllManager,
   UMain,
-  USkins,
   UThemes,
   {$ENDIF}
+  USkins,
   ULanguage,
   URecord,
   UPlatform,
@@ -721,11 +721,6 @@ function TIni.IndexInArray(needle: UTF8String; haystack: array of UTF8String): I
  * Translate and set the values of options, which need translation.
  *)
 procedure TIni.TranslateOptionValues;
-{$IFDEF ANDROID}
-begin
-
-end;
-{$ELSE}
 var
   I: integer;
   Zeros: string;
@@ -1101,7 +1096,7 @@ begin
   end;
 
 end;
-{$ENDIF}
+
 
 procedure TIni.LoadWebcamSettings(IniFile: TCustomIniFile);
 var
@@ -1564,8 +1559,6 @@ begin
   if (Theme = -1) then
     Theme := 0;
 
-  {$IFDEF ANDROID}
-  {$ELSE}
   // Skin
   Skin.onThemeChange;
 
@@ -1579,7 +1572,6 @@ begin
 
   // Color
   Color := ReadArrayIndex(IColor, IniFile, 'Themes', 'Color', Skin.GetDefaultColor(SkinNo));
-  {$ENDIF}
 end;
 
 procedure TIni.LoadScreenModes(IniFile: TCustomIniFile);

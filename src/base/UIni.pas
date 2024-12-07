@@ -691,9 +691,9 @@ uses
   UDataBase,
   UDllManager,
   UMain,
-  USkins,
   UThemes,
   {$ENDIF}
+  USkins,
   ULanguage,
   URecord,
   UPlatform,
@@ -1559,12 +1559,11 @@ begin
   if (Theme = -1) then
     Theme := 0;
 
-  {$IFDEF ANDROID}
-  {$ELSE}
   // Skin
   Skin.onThemeChange;
-
+  {$IFNDEF ANDROID}
   SkinNo := ReadArrayIndex(ISkin, IniFile, 'Themes', 'Skin', UThemes.Theme.Themes[Theme].DefaultSkin);
+  {$ENDIF}
 
   { there may be a not existing skin in the ini file
     e.g. due to manual edit or corrupted file.
@@ -1574,7 +1573,6 @@ begin
 
   // Color
   Color := ReadArrayIndex(IColor, IniFile, 'Themes', 'Color', Skin.GetDefaultColor(SkinNo));
-  {$ENDIF}
 end;
 
 procedure TIni.LoadScreenModes(IniFile: TCustomIniFile);
