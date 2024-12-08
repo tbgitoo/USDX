@@ -57,8 +57,6 @@ uses
   UAvatars,
   UCovers,
   UMusic,
-  USkins {$IFNDEF ANDROID},
-
   UScreenLoading,
   UScreenMain,
   UScreenName,
@@ -91,6 +89,7 @@ uses
   UScreenEditConvert,
   UScreenOpen,
   UScreenAbout,
+  USkins,
   UScreenSongMenu,
   UScreenSongJumpto,
   {Party Screens}
@@ -110,7 +109,7 @@ uses
   {CreditsScreen}
   UScreenCredits,
   {Popup for errors, etc.}
-  UScreenPopup{$ENDIF};
+  UScreenPopup;
 
 type
   TRecR = record
@@ -150,7 +149,6 @@ var
   HasValidPosition:     boolean;
   HasValidSize:         boolean;
 
-  {$IFNDEF ANDROID}
   ScreenLoading:      TScreenLoading;
   ScreenMain:         TScreenMain;
   ScreenName:         TScreenName;
@@ -221,8 +219,6 @@ var
 
   //popup help system
   ScreenPopupHelp:  TScreenPopupHelp;
-
-  {$ENDIF}
 
   //Notes
   Tex_Left:        array[1..UIni.IMaxPlayerCount] of TTexture;   //rename to tex_note_left
@@ -575,9 +571,7 @@ begin
   LoadScreens(Title);
 
   SDL_SetWindowTitle(Screen, PChar(Title));
-  {$IFNDEF ANDROID}
   Display.CurrentScreen^.FadeTo( @ScreenMain );
-  {$ENDIF}
 
   // work around to force a good screen initialization on MacOS
   {$IFDEF MACOS}
@@ -994,9 +988,7 @@ end;
 
 procedure LoadLoadingScreen;
 begin
-  {$IFNDEF ANDROID}
   ScreenLoading := TScreenLoading.Create;
-
 
   ScreenLoading.OnShow;
   Display.CurrentScreen := @ScreenLoading;
@@ -1007,13 +999,12 @@ begin
   Log.logStatus('UGraphic','LoadLoadingScreen Drawing done' );
   Display.Draw;
   SwapBuffers;
-  {$ENDIF}
 end;
 
 procedure LoadScreens(Title: string);
 begin
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenMain & ScreenName'));
-  {$IFNDEF ANDROID}
+
   ScreenMain :=             TScreenMain.Create;
 
   ScreenName :=             TScreenName.Create;
@@ -1103,7 +1094,6 @@ begin
   ScreenStatDetail :=       TScreenStatDetail.Create;
   ScreenCredits    :=       TScreenCredits.Create;
   SDL_SetWindowTitle(Screen, PChar(Title));
-  {$ENDIF}
 end;
 
 function LoadingThreadFunction: integer;
@@ -1114,7 +1104,6 @@ end;
 
 procedure UnloadScreens;
 begin
-  {$IFNDEF ANDROID}
   ScreenMain.Free;
   ScreenName.Free;
   ScreenLevel.Free;
@@ -1165,7 +1154,6 @@ begin
   ScreenStatDetail.Free;
   ScreenOptionsMidiInput.Free;
   ScreenOptionsSoundfont.Free;
-  {$ENDIF}
 end;
 
 end.

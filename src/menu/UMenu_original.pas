@@ -1341,10 +1341,8 @@ begin
     //Hack to Finish Singscreen correct on Exit with Q Shortcut
     if (Display.NextScreenWithCheck = nil) then
     begin
-      {$IFNDEF ANDROID}
       if (Display.CurrentScreen = @ScreenSing) then
         ScreenSing.Finish
-      {$ENDIF}
       {else if (Display.CurrentScreen = @ScreenSingModi) then
         ScreenSingModi.Finish;}
     end;
@@ -1361,9 +1359,7 @@ begin
   Display.Fade := 0;
   Display.NextScreenWithCheck := Screen;
   Display.CheckOK := false;
-  {$IFNDEF ANDROID}
   ScreenPopupCheck.ShowPopup(msg, OnSaveEncodingError, nil, false);
-  {$ENDIF}
 end;
 
 procedure TMenu.AddButtonText(AddX, AddY: real; const AddText: UTF8String);

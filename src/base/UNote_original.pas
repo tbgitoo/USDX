@@ -52,10 +52,8 @@ uses
   ULyrics,
   UMusic,
   URecord,
-  {$IFNDEF ANDROID}
   UScreenSingController,
   UScreenJukebox,
-  {$ENDIF}
   USong,
   UTime,
   UBeatNote,
@@ -142,18 +140,15 @@ const
   MAX_SONG_SCORE = 10000;     // max. achievable points per song
   MAX_SONG_LINE_BONUS = 1000; // max. achievable line bonus per song
 
-{$IFNDEF ANDROID}
 procedure Sing(Screen: TScreenSingController);
 procedure NewSentence(CP: integer; Screen: TScreenSingController);
 procedure NewBeatClick(Screen: TScreenSingController);  // executed when on then new beat for click
 procedure NewBeatDetect(Screen: TScreenSingController); // executed when on then new beat for detection
 procedure NewNote(CP: integer; Screen: TScreenSingController);       // detect note
-{$ENDIF}
 function  GetMidBeat(Time: real): real;
 function  GetTimeFromBeat(Beat: integer; SelfSong: TSong = nil): real;
-{$IFNDEF ANDROID}
+
 procedure SingJukebox(Screen: TScreenJukebox);
-{$ENDIF}
 
 implementation
 
@@ -165,16 +160,12 @@ uses
   UCommon,
   UConfig,
   UCovers,
-  {$IFNDEF ANDROID}
   UDataBase,
-  {$ENDIF}
   UGraphic,
   UGraphicClasses,
   UJoystick,
   ULanguage,
-  {$IFNDEF ANDROID}
   UParty,
-  {$ENDIF}
   UPathUtils,
   UPlatform,
   UPlaylist,
@@ -318,7 +309,7 @@ begin
     Result := 0;
   end;
 end;
-{$IFNDEF ANDROID}
+
 procedure Sing(Screen: TScreenSingController);
 var
   LineIndex:  integer;
@@ -431,7 +422,6 @@ begin
 
   Screen.onSentenceChange(CP, Tracks[CP].CurrentLine)
 end;
-{$ENDIF}
 
 procedure NewBeatClick;
 var
@@ -468,7 +458,7 @@ begin
     end;
   end;
 end;
-{$IFNDEF ANDROID}
+
 procedure NewBeatDetect(Screen: TScreenSingController);
   var
     MaxCP, CP, SentenceEnd: integer;
@@ -762,6 +752,5 @@ begin
   end; // for ActualBeat
   //Log.LogStatus('EndBeat', 'NewBeat');
 end;
-{$ENDIF}
 
 end.

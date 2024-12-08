@@ -104,7 +104,6 @@ var
 implementation
 
 uses
-  UMain,
   ULog,
   UPathUtils,
   UPlatform,

@@ -58,6 +58,8 @@ uses
   ctypes                 in 'lib\ctypes\ctypes.pas', // FPC compatibility types for C libs
   {$ENDIF}
 
+  UMainThread              in 'base\UMainThread.pas',     
+
   //------------------------------
   //Includes - 3rd Party Libraries
   //------------------------------

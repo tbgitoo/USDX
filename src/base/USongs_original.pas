@@ -240,13 +240,12 @@ begin
 
     //if assigned(Covers) then
     //  Covers.Load;
-    {$IFNDEF ANDROID}
+
     if assigned(ScreenSong)  then
     begin
       ScreenSong.GenerateThumbnails();
       ScreenSong.OnShow; // refresh ScreenSong
     end;
-    {$ENDIF}
 
   finally
     Log.LogStatus('Search Complete', 'SongList');

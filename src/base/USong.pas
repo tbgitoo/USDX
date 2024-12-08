@@ -227,8 +227,9 @@ uses
   TextGL,
   UIni,
   UPathUtils,
-  {$IFNDEF ANDROID}
+
   USongs,
+  {$IFNDEF ANDROID}
   UNote,   //needed for Player
   {$ENDIF}
   UMusic;  //needed for Tracks

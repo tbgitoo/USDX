@@ -39,7 +39,7 @@ uses
   {$ENDIF}
   //new work on current OpenGL implementation
 
-
+  UMainThread              in 'base\UMainThread.pas',
 
   UJniCallback            in 'jni\UJniCallback.pas',
 
@@ -90,6 +90,97 @@ uses
   UCatCovers in 'base\UCatCovers.pas',
   USong in 'base\USong.pas',
   UThemes in 'base\UThemes.pas',
+  {$IFDEF UseFFmpegVideo}
+  UVideo                    in 'media\UVideo.pas',
+  {$ENDIF}
+
+  {$IFDEF UseFFmpeg}
+    {$IFDEF FPC} // This solution is not very elegant, but working
+      avcodec             in 'lib\' + FFMPEG_DIR + '\avcodec.pas',
+      avformat            in 'lib\' + FFMPEG_DIR + '\avformat.pas',
+      avutil              in 'lib\' + FFMPEG_DIR + '\avutil.pas',
+      rational            in 'lib\' + FFMPEG_DIR + '\rational.pas',
+      avio                in 'lib\' + FFMPEG_DIR + '\avio.pas',
+      {$IFDEF UseSWResample}
+      swresample          in 'lib\' + FFMPEG_DIR + '\swresample.pas',
+      {$ENDIF}
+      {$IFDEF useOLD_FFMPEG}
+        mathematics       in 'lib\' + FFMPEG_DIR + '\mathematics.pas',
+        opt               in 'lib\' + FFMPEG_DIR + '\opt.pas',
+      {$ENDIF}
+      {$IFDEF UseSWScale}
+        swscale           in 'lib\' + FFMPEG_DIR + '\swscale.pas',
+      {$ENDIF}
+    {$ELSE} // speak: This is for Delphi. Change version as needed!
+      avcodec            in 'lib\ffmpeg-0.10\avcodec.pas',
+      avformat           in 'lib\ffmpeg-0.10\avformat.pas',
+      avutil             in 'lib\ffmpeg-0.10\avutil.pas',
+      rational           in 'lib\ffmpeg-0.10\rational.pas',
+      avio               in 'lib\ffmpeg-0.10\avio.pas',
+      {$IFDEF UseSWResample}
+      swresample         in 'lib\ffmpeg-0.10\swresample.pas',
+      {$ENDIF}
+      {$IFDEF UseSWScale}
+        swscale          in 'lib\ffmpeg-0.10\swscale.pas',
+      {$ENDIF}
+    {$ENDIF}
+    UMediaCore_FFmpeg    in 'media\UMediaCore_FFmpeg.pas',
+  {$ENDIF}  // UseFFmpeg
+
+  UGraphicClasses   in 'base\UGraphicClasses.pas',
+
+
+  UPlaylist in 'base\UPlaylist.pas',
+  USongs in 'base\USongs.pas',
+  UCovers in 'base\UCovers.pas',
+  UFiles in 'base\UFiles.pas',
+  UNote in 'base\UNote.pas',
+  UGraphic in 'base\UGraphic.pas',
+  UAvatars in 'base\UAvatars.pas',
+  ULyrics in 'base\ULyrics.pas',
+  UDraw in 'base\UDraw.pas',
+
+  //------------------------------
+  //Includes -Beat Playing
+  //------------------------------
+
+  UBeatNote             in 'beatNote\UBeatNote.pas',
+  UBeatNoteTimer        in 'beatNote\UBeatNoteTimer.pas',
+  UExtraScore           in 'beatNote\UExtraScore.pas',
+
+    //------------------------------
+  //Includes -Keyboard Playing
+  //-----
+
+  UKeyboardRecording in 'beatNote\UKeyboardRecording.pas',
+
+  //---------------------------------
+  // Midi stuff
+
+  // --------
+
+  UMidiNote in 'midi_input\UMidiNote.pas',
+
+   //------------------------------
+  //Includes - Menu System
+  //------------------------------
+  UDisplay               in 'menu\UDisplay.pas',
+  UMenu                  in 'menu\UMenu.pas',
+  UMenuStatic            in 'menu\UMenuStatic.pas',
+  UMenuText              in 'menu\UMenuText.pas',
+  UMenuButton            in 'menu\UMenuButton.pas',
+  UMenuInteract          in 'menu\UMenuInteract.pas',
+  UMenuSelectSlide       in 'menu\UMenuSelectSlide.pas',
+  UMenuEqualizer         in 'menu\UMenuEqualizer.pas',
+  UDrawTexture           in 'menu\UDrawTexture.pas',
+  UMenuButtonCollection  in 'menu\UMenuButtonCollection.pas',
+
+  UMenuBackground        in 'menu\UMenuBackground.pas',
+  UMenuBackgroundNone    in 'menu\UMenuBackgroundNone.pas',
+  UMenuBackgroundColor   in 'menu\UMenuBackgroundColor.pas',
+  UMenuBackgroundTexture in 'menu\UMenuBackgroundTexture.pas',
+  UMenuBackgroundVideo   in 'menu\UMenuBackgroundVideo.pas',
+  UMenuBackgroundFade    in 'menu\UMenuBackgroundFade.pas',
 
 
 
@@ -100,13 +191,15 @@ uses
   opencv_highgui          in 'lib\openCV3\opencv_highgui.pas',
   opencv_core             in 'lib\openCV3\opencv_core.pas',
   opencv_imgproc          in 'lib\openCV3\opencv_imgproc.pas',
-  opencv_types            in 'lib\openCV3\opencv_types.pas';
+  opencv_types            in 'lib\openCV3\opencv_types.pas',
 {$ELSE}
   opencv_highgui          in 'lib\openCV\opencv_highgui.pas',
   opencv_core             in 'lib\openCV\opencv_core.pas',
   opencv_imgproc          in 'lib\openCV\opencv_imgproc.pas',
-  opencv_types            in 'lib\openCV\opencv_types.pas';
+  opencv_types            in 'lib\openCV\opencv_types.pas',
 {$ENDIF}
+
+UJoystick         in 'base\UJoystick.pas';
 
   //Amidi in 'lib\amidi\amidi.pas',
   //UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',

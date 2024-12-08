@@ -255,8 +255,9 @@ uses
 {$IFDEF UsePortTime}
   PortTime,
 {$ENDIF}
+UMainThread,
 {$IFNDEF ANDROID}
-  UMain,
+
   {$ENDIF}
   {$IFDEF UseSDL3}
   sdl3;
@@ -406,9 +407,9 @@ end;
 
 function TimerCallback(interval: UInt32; param: Pointer): UInt32; cdecl;
 begin
-  {$IFNDEF ANDROID}
+
   MainThreadExec(@EventHandler, param);
-  {$ENDIF}
+
   result := interval;
 end;
 

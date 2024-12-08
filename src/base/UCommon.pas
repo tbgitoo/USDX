@@ -466,7 +466,7 @@ end;
 {$IFNDEF ANDROID}
 procedure InitConsoleOutput();
 begin
-  Log := TLog.Create;
+
   {$IFDEF FPC}
   // init thread-safe output
   MessageList := TStringList.Create();

@@ -110,7 +110,6 @@ var
 implementation
 
 uses
-  UMain,
   ULog,
   UPlatform,
   UIni,

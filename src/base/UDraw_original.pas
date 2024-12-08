@@ -114,15 +114,11 @@ uses
   ULog,
   ULyrics,
   UNote,
-  {$IFNDEF ANDROID}
   UParty,
-  {$ENDIF}
   UMusic,
   URecord,
-  {$IFNDEF ANDROID}
   UScreenSingController,
   UScreenJukebox,
-  {$ENDIF}
   USong,
   UTexture,
   UWebcam,
@@ -195,7 +191,6 @@ var
   ScaledTexWidth, ScaledTexHeight: double;
 begin
   // TODO: this is also called if a video is playing
-  {$IFNDEF ANDROID}
   if (ScreenSing.Tex_Background.TexNum > 0) then
   begin
     if (Ini.MovieSize <= 1) then  //HalfSize BG
@@ -321,7 +316,6 @@ begin
       //glDisable(GL_BLEND);
     end;
   end;
-  {$ENDIF}
 end;
 
 procedure SingDrawJukeboxBackground;
@@ -329,7 +323,6 @@ var
   Rec:    TRecR;
   TexRec: TRecR;
 begin
-    {$IFNDEF ANDROID}
   if (ScreenJukebox.Tex_Background.TexNum > 0) then
   begin
     if (Ini.MovieSize <= 1) then  //HalfSize BG
@@ -434,7 +427,6 @@ begin
     glDisable(GL_TEXTURE_2D);
     //glDisable(GL_BLEND);
   end;
-  {$ENDIF}
 end;
 
 procedure SingDrawJukeboxBlackBackground;
@@ -442,7 +434,6 @@ var
   Rec:    TRecR;
   TexRec: TRecR;
 begin
-  {$IFNDEF ANDROID}
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, ScreenJukebox.Tex_Background.TexNum);
   //glEnable(GL_BLEND);
@@ -460,7 +451,6 @@ begin
   {$ENDIF}
   glDisable(GL_TEXTURE_2D);
   //glDisable(GL_BLEND);
-  {$ENDIF}
 end;
 
 procedure SingDrawOscilloscopes;
@@ -595,11 +585,10 @@ begin;
 
   //  Log.LogStatus('Oscilloscope', 'SingDraw');
   //glColor3f(Skin_OscR, Skin_OscG, Skin_OscB);
-  {$IFNDEF ANDROID}
+
   if (Party.bPartyGame) then
     Col := GetPlayerColor(Ini.TeamColor[NrSound])
   else
-  {$ENDIF}
     Col := GetPlayerColor(Ini.PlayerColor[NrSound]);
   {$IFDEF UseOpenGLES3}
   {$ELSE}
@@ -678,9 +667,7 @@ var
   GoldenStarPos: real;
   doDrawing: boolean;
 begin
-  {$IFNDEF ANDROID}
   if (ScreenSing.settings.NotesVisible and (1 shl Track) <> 0) then
-  {$ENDIF}
   begin
     // the textures start counting at 1, but everything else just starts at 0
     PlayerNumber := PlayerIndex + 1;
@@ -853,9 +840,7 @@ var
 begin
   //Tracks[Track].Lines[Tracks[Track].CurrentLine]
   //or (LyricsState.CurrentBeatD>=Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[Tracks[Track].Lines[Tracks[Track].CurrentLine].HighNote].StartBeat)
-  {$IFNDEF ANDROID}
   if (ScreenSing.Settings.InputVisible) and ((Ini.AdvanceDrawNotes<3) or (LyricsState.CurrentBeatD>=Tracks[Track].Lines[Tracks[Track].CurrentLine].Notes[Tracks[Track].Lines[Tracks[Track].CurrentLine].HighNote].StartBeat) ) then
-  {$ENDIF}
   begin
     //Log.LogStatus('Player notes', 'SingDraw');
     {$IFDEF UseOpenGLES3}
@@ -1015,9 +1000,7 @@ var
   W, H:           real;
   doDrawing:      boolean;
 begin
-  {$IFNDEF ANDROID}
   if (ScreenSing.settings.NotesVisible and (1 shl PlayerIndex) <> 0) then
-  {$ENDIF}
   begin
     //glColor4f(1, 1, 1, sqrt((1+sin( AudioPlayback.Position * 3))/4)/ 2 + 0.5 );
     {$IFDEF UseOpenGLES3}
@@ -1193,7 +1176,6 @@ begin
   CurLine := @Tracks[CP].Lines[Tracks[CP].CurrentLine];
 
   // FIXME: accessing ScreenSing is not that generic
-  {$IFNDEF ANDROID}
   if (CurrentSong.isDuet) and (PlayersPlay <> 1) then
   begin
     if (CP = 1) then
@@ -1204,7 +1186,6 @@ begin
   else
     LyricEngine := ScreenSing.Lyrics;
 
-  {$ENDIF}
   LyricEngine.FontFamily := Ini.LyricsFont;
   LyricEngine.FontStyle  := Ini.LyricsStyle;
 
@@ -1345,9 +1326,7 @@ begin
   CurLine := @Tracks[0].Lines[Tracks[0].CurrentLine];
 
   // FIXME: accessing ScreenSing is not that generic
-  {$IFNDEF ANDROID}
   LyricEngine := ScreenJukebox.Lyrics;
-  {$ENDIF}
 
   // do not draw the lyrics helper if the current line does not contain any note
   if (Length(CurLine.Notes) > 0) then
@@ -1403,9 +1382,7 @@ begin
       end;
 
       Bounds.Right := Bounds.Left + BarWidth;
-      {$IFNDEF ANDROID}
       Bounds.Top := Theme.LyricBarJukebox.IndicatorYOffset + ScreenJukeBox.Lyrics.UpperLineY;
-      {$ENDIF}
       Bounds.Bottom := Bounds.Top + BarHeight + 3;
 
       // draw lyric help bar
@@ -1450,9 +1427,7 @@ begin
   // draw note-lines
 
   // to-do : needs fix when party mode works w/ 2 screens
-  {$IFNDEF ANDROID}
   if (PlayersPlay = 1) and (Ini.NoteLines = 1) and (ScreenSing.settings.NotesVisible and (1) <> 0) then
-
     SingDrawNoteLines(NR.Left + 10*ScreenX, Skin_P2_NotesB - 105, NR.Right + 10*ScreenX, 15);
 
   if (PlayersPlay = 2) and (Ini.NoteLines = 1) then
@@ -1487,8 +1462,6 @@ begin
       end;
     end;
   end;
-
-
 
   if (PlayersPlay = 3) and (Ini.NoteLines = 1) then begin
     if (ScreenSing.settings.NotesVisible and (1 shl 0) <> 0) then
@@ -1533,7 +1506,6 @@ begin
       end;
     end;
   end;
-  {$ENDIF}
 end;
 
 procedure SingDraw;
@@ -1569,7 +1541,6 @@ begin
   TrackP4 := 0;
   TrackP5 := 0;
   TrackP6 := 0;
-  {$IFNDEF ANDROID}
   // FIXME: accessing ScreenSing is not that generic
   if (CurrentSong.isDuet) and (PlayersPlay <> 1) then
   begin
@@ -1653,7 +1624,6 @@ begin
     end;
 
   end;
-  {$ENDIF}
 
   // Draw the Notes
   if PlayersPlay = 1 then
@@ -1822,7 +1792,6 @@ begin
   NR.Mid   := 400; //NR.Left + NR.WMid;
 
   // FIXME: accessing ScreenJukebox is not that generic
-  {$IFNDEF ANDROID}
   LyricEngine := ScreenJukebox.Lyrics;
 
   // draw Lyrics
@@ -1835,7 +1804,6 @@ begin
         ScreenJukebox.LyricsStart := true;
     end;
   end;
-  {$ENDIF}
 
   glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
@@ -2125,7 +2093,7 @@ var
   LyricsProgress: real;
   CurLyricsTime:  real;
 begin
-  {$IFNDEF ANDROID}
+
   if (ScreenJukebox.SongListVisible) then
   begin
     x := Theme.Jukebox.StaticTimeProgress.x;
@@ -2199,7 +2167,6 @@ begin
  {$IFDEF UseOpenGLES3}
  {$ELSE}
  glcolor4f(1, 1, 1, 1);
- {$ENDIF}
  {$ENDIF}
 
 end;

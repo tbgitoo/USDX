@@ -36,10 +36,11 @@ interface
 uses
   SysUtils,
    {$IFDEF UseSDL3}
-  SDL3;
+  SDL3,
   {$ELSE}
-  SDL2;
+  SDL2,
   {$ENDIF}
+  UMainThread;
 
 var
   CheckMouseButton: boolean; // for checking mouse motion
@@ -53,21 +54,6 @@ procedure StartTextInput;
 procedure StopTextInput;
 procedure SetTextInput(enabled: boolean);
 
-type
-  TMainThreadExecProc = procedure(Data: Pointer);
-
-const
-  MAINTHREAD_EXEC_EVENT = SDL_USEREVENT + 2;
-
-{*
- * Delegates execution of procedure Proc to the main thread.
- * The Data pointer is passed to the procedure when it is called.
- * The main thread is notified by signaling a MAINTHREAD_EXEC_EVENT which
- * is handled in CheckEvents.
- * Note that Data must not be a pointer to local data. If you want to pass local
- * data, use Getmem() or New() or create a temporary object.
- *}
-procedure MainThreadExec(Proc: TMainThreadExecProc; Data: Pointer);
 
 implementation
 
@@ -652,18 +638,6 @@ begin
   end;
 end;
 
-procedure MainThreadExec(Proc: TMainThreadExecProc; Data: Pointer);
-var
-  Event: TSDL_Event;
-begin
-  with Event.user do
-  begin
-    type_ := MAINTHREAD_EXEC_EVENT;
-    code  := 0;     // not used at the moment
-    data1 := @Proc;
-    data2 := Data;
-  end;
-  SDL_PushEvent(@Event);
-end;
+
 
 end.
