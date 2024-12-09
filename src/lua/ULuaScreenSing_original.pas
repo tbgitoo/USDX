@@ -116,9 +116,7 @@ const
 
 implementation
 uses
-  {$IFNDEF ANDROID}
   UScreenSingController,
-  {$ENDIF}
   UNote,
   UDisplay,
   UGraphic,
@@ -171,17 +169,15 @@ begin
 
   // create table
   lua_createtable(L, Length(Player), 0);
-  {$IFNDEF ANDROID}
+
   // fill w/ values
   for I := 0 to High(ScreenSing.Scores.Players) do
   begin
     lua_pushInteger(L, I + 1);
-
     lua_pushNumber(L, ScreenSing.Scores.Players[I].RBPos);
 
     lua_settable(L, -3);
   end;
-  {$ENDIF}
 
   // leave table on stack, it is our result
 end;
@@ -192,7 +188,7 @@ function ULuaScreenSing_GetBPM(L: Plua_State): Integer; cdecl;
 begin
   lua_ClearStack(L);
   Result := 1;
-  {$IFNDEF ANDROID}
+
   if (CurrentSong = nil) or (Length(CurrentSong.BPM) = 0) or (Display.CurrentScreen <> @ScreenSing) then
     lua_PushNumber(L, 0) // in case of error
   else if (Length(CurrentSong.BPM) = 1) then
@@ -202,7 +198,6 @@ begin
     // to-do: do this for songs w/ BPM changes
     //        or drop support for BPM changes?!
   end;
-  {$ENDIF}
 end;
 
 { ScreenSing.BeatsToSeconds(Beats: float)
@@ -210,7 +205,7 @@ end;
 function ULuaScreenSing_BeatsToSeconds(L: Plua_State): Integer; cdecl;
 begin
   Result := 1;
-  {$IFNDEF ANDROID}
+
   if (CurrentSong = nil) or (Length(CurrentSong.BPM) = 0) or (Display.CurrentScreen <> @ScreenSing) then
     lua_PushNumber(L, 0) // in case of error
   else if (Length(CurrentSong.BPM) = 1) then
@@ -220,7 +215,6 @@ begin
     // to-do: do this for songs w/ BPM changes
     //        or drop support for BPM changes?!
   end;
-  {$ENDIF}
 end;
 
 { ScreenSing.BeatsToSeconds(Seconds: float)
@@ -228,7 +222,7 @@ end;
 function ULuaScreenSing_SecondsToBeats(L: Plua_State): Integer; cdecl;
 begin
   Result := 1;
-  {$IFNDEF ANDROID}
+
   if (CurrentSong = nil) or (Length(CurrentSong.BPM) = 0) or (Display.CurrentScreen <> @ScreenSing) then
     lua_PushNumber(L, 0)
   else if (Length(CurrentSong.BPM) = 1) then
@@ -238,7 +232,6 @@ begin
     // to-do: do this for songs w/ BPM changes
     //        or drop support for BPM changes?!
   end;
-  {$ENDIF}
 end;
 
 { ScreenSing.GetBeat() - returns current beat of lyricstate (in quarts) }
@@ -269,7 +262,7 @@ begin
   Top := lua_getTop(L);
   if (Top > 0) then
     lua_pop(L, Top);
-  {$IFNDEF ANDROID}
+
   // create table
   lua_createtable(L, Length(ScreenSing.Scores.Players), 0);
 
@@ -288,7 +281,6 @@ begin
 
     lua_settable(L, -3);
   end;
-  {$ENDIF}
 
   // leave table on stack, it is our result
 end;
@@ -308,7 +300,6 @@ begin
     lua_pop(L, Top);
 
   // create table
-  {$IFNDEF ANDROID}
   lua_createtable(L, Length(ScreenSing.Scores.Players), 0);
 
   // fill w/ values
@@ -326,7 +317,6 @@ begin
 
     lua_settable(L, -3);
   end;
-  {$ENDIF}
 
   // leave table on stack, it is our result
 end;
@@ -342,14 +332,13 @@ begin
   Top := lua_getTop(L);
   if (Top > 0) then
     lua_pop(L, Top);
-  {$IFNDEF ANDROID}
+
   if (Display.CurrentScreen^ = ScreenSing) then
   begin
     ScreenSing.EndSong;
   end
   else
     LuaL_error(L, 'Usdx.ScreenSing.Finish is called, but sing screen is not shown.');
-  {$ENDIF}
 end;
 
 { ScreenSing.GetSettings - no arguments
@@ -365,7 +354,6 @@ begin
   lua_createtable(L, 0, 3);
 
   //fill table w/ info
-  {$IFNDEF ANDROID}
   lua_pushBoolean(L, ScreenSing.Settings.LyricsVisible);
   lua_setField(L, -2, 'LyricsVisible');
 
@@ -377,7 +365,7 @@ begin
 
   lua_pushBoolean(L, ScreenSing.Settings.SoundEnabled);
   lua_setField(L, -2, 'SoundEnabled');
-   {$ENDIF}
+
   Result := 1;
 end;
 
@@ -398,7 +386,7 @@ begin
   while (lua_Next(L, 1) <> 0) do
   begin
     Key := lowercase(lua_ToString(L, -2));
-    {$IFNDEF ANDROID}
+
     if (Key = 'lyricsvisible') and (lua_isBoolean(L, -1)) then
       ScreenSing.settings.LyricsVisible := lua_toBoolean(L, -1)
     else if (Key = 'notesvisible') and (lua_isTable(L, -1)) then
@@ -407,16 +395,15 @@ begin
       ScreenSing.settings.PlayerEnabled := lua_toBinInt(L, -1)
     else if (Key = 'soundenabled') and (lua_isBoolean(L, -1)) then
       ScreenSing.settings.SoundEnabled := lua_toBoolean(L, -1);
-    {$ENDIF}
+
     // pop value from stack so key is on top
     lua_pop(L, 1);
   end;
 
   // clear stack from table
   lua_pop(L, lua_gettop(L));
-   {$IFNDEF ANDROID}
+
   ScreenSing.ApplySettings;
-   {$ENDIF}
 end;
 
 { ScreenSing.GetSongLines - no arguments

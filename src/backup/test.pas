@@ -129,6 +129,22 @@ uses
 
   UGraphicClasses   in 'base\UGraphicClasses.pas',
 
+  //------------------------------
+  //Includes - Lua Support
+  //------------------------------
+  ULua           in 'lib\Lua\ULua.pas',
+  ULuaUtils      in 'lua\ULuaUtils.pas',
+  ULuaGl         in 'lua\ULuaGl.pas',
+  ULuaLog        in 'lua\ULuaLog.pas',
+  ULuaTextGL     in 'lua\ULuaTextGL.pas',
+  ULuaTexture    in 'lua\ULuaTexture.pas',
+  UHookableEvent in 'lua\UHookableEvent.pas',
+  ULuaCore       in 'lua\ULuaCore.pas',
+  ULuaUsdx       in 'lua\ULuaUsdx.pas',
+  ULuaParty      in 'lua\ULuaParty.pas',
+  ULuaScreenSing in 'lua\ULuaScreenSing.pas',
+
+
 
   UPlaylist in 'base\UPlaylist.pas',
   USongs in 'base\USongs.pas',
@@ -138,6 +154,7 @@ uses
   UGraphic in 'base\UGraphic.pas',
   UAvatars in 'base\UAvatars.pas',
   ULyrics in 'base\ULyrics.pas',
+  UDraw in 'base\UDraw.pas',
 
   //------------------------------
   //Includes -Beat Playing

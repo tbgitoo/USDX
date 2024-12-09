@@ -841,10 +841,8 @@ begin
   // execute default function:
   if ExecuteDefault then
   begin
-    {$IFNDEF ANDROID}
     // display song select screen
     Display.FadeTo(@ScreenSong);
-    {$ENDIF}
   end;
 end;
 
@@ -865,10 +863,8 @@ begin
   // execute default function:
   if ExecuteDefault then
   begin
-    {$IFNDEF ANDROID}
     // display sing screen
     ScreenSong.StartSong;
-    {$ENDIF}
   end;
 end;
 
@@ -889,10 +885,9 @@ begin
   //set correct playersplay
   if (bPartyGame) then
     PlayersPlay := Length(Teams);
-  {$IFNDEF ANDROID}
+
   if (ScreenSong.Mode = smPartyTournament) then
     PlayersPlay := 2;
-  {$ENDIF}
 
   // execute default function:
   if ExecuteDefault then
@@ -942,7 +937,7 @@ begin
   end
   else
     ExecuteDefault := true;
-  {$IFNDEF ANDROID}
+
   // execute default function:
   if ExecuteDefault then
   begin
@@ -957,7 +952,6 @@ begin
         Display.FadeTo(@ScreenScore);
     end;
   end;
-  {$ENDIF}
 end;
 
 { returns an array[1..6] of integer. the index stands for the placing,
