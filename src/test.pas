@@ -92,6 +92,7 @@ uses
   UThemes in 'base\UThemes.pas',
   {$IFDEF UseFFmpegVideo}
   UVideo                    in 'media\UVideo.pas',
+  UDLLManager               in 'base\UDLLManager.pas',
   {$ENDIF}
 
   {$IFDEF UseFFmpeg}
@@ -128,6 +129,7 @@ uses
   {$ENDIF}  // UseFFmpeg
 
   UGraphicClasses   in 'base\UGraphicClasses.pas',
+  UDataBase         in 'base\UDataBase.pas',
 
   //------------------------------
   //Includes - Lua Support
@@ -216,23 +218,67 @@ uses
   opencv_types            in 'lib\openCV\opencv_types.pas',
 {$ENDIF}
 
-UJoystick         in 'base\UJoystick.pas';
+UJoystick         in 'base\UJoystick.pas',
 
-  //Amidi in 'lib\amidi\amidi.pas',
-  //UFluidSynth in 'lib\fluidsynth\UFluidSynth.pas',
-  //pasfluidsynth_android in 'lib\fluidsynth\pasfluidsynth_android.pas',
-  //UMidiInputStream in 'midi_input\UMidiInputStream.pas',
-  //UMidiTransfer in 'midi_input\UMidiTransfer.pas',
-  //UIni in 'base\UIni.pas',
-  //UMusic in 'base\UMusic.pas',
+   //------------------------------
+  //Includes - Media
+  //------------------------------
 
 
-  //UDataBase in 'base\UDataBase.pas',
-  //UFiles in 'base\UFiles.pas',
-  //UDllManager in 'base\UDLLManager.pas';
+  URingBuffer       in 'base\URingBuffer.pas',
+   UMediaCore_SDL         in 'media\UMediaCore_SDL.pas',
 
-  //UWebcam in 'base\UWebcam.pas',
-  //ULanguage in 'base\ULanguage.pas',
+    UAudioPlaybackBase        in 'media\UAudioPlaybackBase.pas',
+  {$IF Defined(UsePortaudioPlayback) or Defined(UseSDLPlayback)}
+    UFFT                      in 'lib\fft\UFFT.pas',
+    UAudioPlayback_SoftMixer  in 'media\UAudioPlayback_SoftMixer.pas',
+  {$IFEND}
+    UAudioConverter           in 'media\UAudioConverter.pas',
+
+
+//******************************
+ //Pluggable media modules
+ // The modules are prioritized as in the include list below.
+ // This means the first entry has highest priority, the last lowest.
+ //******************************
+
+
+{$IFDEF UseProjectM}
+ // must be after UVideo, so it will not be the default video module
+ UVisualizer               in 'media\UVisualizer.pas',
+{$ENDIF}
+{$IFDEF UseBASSInput}
+ UAudioInput_Bass          in 'media\UAudioInput_Bass.pas',
+{$ENDIF}
+{$IFDEF UseBASSDecoder}
+ // prefer Bass to FFmpeg if possible
+ UAudioDecoder_Bass        in 'media\UAudioDecoder_Bass.pas',
+{$ENDIF}
+{$IFDEF UseBASSPlayback}
+ UAudioPlayback_Bass       in 'media\UAudioPlayback_Bass.pas',
+{$ENDIF}
+{$IFDEF UseSDLInput}
+ UAudioInput_SDL           in 'media\UAudioInput_SDL.pas',
+{$ENDIF}
+{$IFDEF UseSDLPlayback}
+ UAudioPlayback_SDL        in 'media\UAudioPlayback_SDL.pas',
+{$ENDIF}
+{$IFDEF UsePortaudioInput}
+ UAudioInput_Portaudio     in 'media\UAudioInput_Portaudio.pas',
+{$ENDIF}
+{$IFDEF UsePortaudioPlayback}
+ UAudioPlayback_Portaudio  in 'media\UAudioPlayback_Portaudio.pas',
+{$ENDIF}
+{$IFDEF UseFFmpegDecoder}
+ UAudioDecoder_FFmpeg      in 'media\UAudioDecoder_FFmpeg.pas',
+{$ENDIF}
+ // fallback dummy, must be last
+ UMedia_dummy              in 'media\UMedia_dummy.pas';
+
+
+
+
+
 
 
 
@@ -533,7 +579,7 @@ begin
 
 
      Platform.init;
-     InitializePaths;
+
 
      // Commandline Parameter Parser
     Params := TCMDParams.Create;
@@ -563,6 +609,23 @@ begin
     // Language
 
     Log.LogStatus('Initialize Paths', 'Initialization');
+    InitializePaths;
+
+    Log.LogStatus('Loading Theme List', 'Initialization');
+    Theme := TTheme.Create;
+
+    Log.LogStatus('Website-Manager', 'Initialization');
+    DLLMan := TDLLMan.Create;   // Load WebsiteList
+
+    Log.LogStatus('DataBase System', 'Initialization');
+    DataBase := TDataBaseSystem.Create;
+
+    if (Params.ScoreFile.IsUnset) then
+      DataBase.Init(Platform.GetGameUserPath.Append('Ultrastar.db'))
+    else
+      DataBase.Init(Params.ScoreFile);
+
+    Log.LogStatus('Database System',Platform.GetGameUserPath.Append('Ultrastar.db').ToNative());
 
      VertexSpecification;
 

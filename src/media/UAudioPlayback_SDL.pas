@@ -47,8 +47,7 @@ uses
   UMediaCore_SDL,
   UMusic,
   ULog,
-  UIni,
-  UMain;
+  UIni;
 
 type
   TAudioPlayback_SDL = class(TAudioPlayback_SoftMixer)

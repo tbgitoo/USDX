@@ -75,7 +75,6 @@ uses
 {$ENDIF}
   UMusic,
   UIni,
-  UMain,
   UMediaCore_FFmpeg,
   ULog,
   UCommon,
