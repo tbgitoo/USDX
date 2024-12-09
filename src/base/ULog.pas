@@ -379,6 +379,25 @@ procedure TLog.LogMsg(const Text: string; Level: integer);
 var
   LogMsg: string;
 begin
+  {$IFDEF ANDROID}
+  LogMsg:=Text;
+  if ((Level <= LogLevel) or (Level <= LogFileLevel)) then
+  begin
+    if (Level <= LOG_LEVEL_CRITICAL_MAX) then
+      LogMsg := 'CRITICAL: ' + Text
+    else if (Level <= LOG_LEVEL_ERROR_MAX) then
+      LogMsg := 'ERROR:  ' + Text
+    else if (Level <= LOG_LEVEL_WARN_MAX) then
+      LogMsg := 'WARN:   ' + Text
+    else if (Level <= LOG_LEVEL_STATUS_MAX) then
+      LogMsg := 'STATUS: ' + Text
+    else if (Level <= LOG_LEVEL_INFO_MAX) then
+      LogMsg := 'INFO:   ' + Text
+    else
+      LogMsg := 'DEBUG:  ' + Text;
+  end;
+  ConsoleWriteLn(LogMsg);
+  {$ELSE}
   if ((Level <= LogLevel) or (Level <= LogFileLevel)) then
   begin
     if (Level <= LOG_LEVEL_CRITICAL_MAX) then
@@ -399,9 +418,6 @@ begin
     begin
       DebugWriteLn(LogMsg);
       LogConsole(LogMsg);
-      {$IF Defined(ANDROID)}
-      debug_message_to_android('USDX logging',LogMsg);
-      {$IFEND}
     end;
     
     // write message to log-file
@@ -418,6 +434,7 @@ begin
     ShowMessage(Text, mtError);
     Halt;
   end;
+  {$ENDIF}
 end;
 
 procedure TLog.LogMsg(const Msg, Context: string; Level: integer);
@@ -607,10 +624,12 @@ end;
 
 procedure TLog.LogConsole(const Text: string);
 begin
+  {$IFNDEF ANDROID}
   EnterCriticalSection(Lock);
   ConsoleBuffer.Insert(0, Text);
   if ConsoleBuffer.Count > CONSOLE_SCROLLBACK_SIZE then ConsoleBuffer.Capacity:=CONSOLE_SCROLLBACK_SIZE;
   LeaveCriticalSection(Lock);
+  {$ENDIF}
 end;
 
 end.

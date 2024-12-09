@@ -155,6 +155,7 @@ uses
   UAvatars in 'base\UAvatars.pas',
   ULyrics in 'base\ULyrics.pas',
   UDraw in 'base\UDraw.pas',
+  UParty in 'base\UParty.pas',
 
   //------------------------------
   //Includes -Beat Playing
@@ -552,6 +553,16 @@ begin
 
 
      InitializeProgram;
+
+      // create luacore first so other classes can register their events
+    LuaCore := TLuaCore.Create;
+
+    USTime := TTime.Create;
+    VideoBGTimer := TRelativeTimer.Create;
+
+    // Language
+    ConsoleWriteLn('Initialize Paths');
+    //Log.LogStatus('Initialize Paths', 'Initialization');
 
      VertexSpecification;
 

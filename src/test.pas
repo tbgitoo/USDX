@@ -554,6 +554,16 @@ begin
 
      InitializeProgram;
 
+      // create luacore first so other classes can register their events
+    LuaCore := TLuaCore.Create;
+
+    USTime := TTime.Create;
+    VideoBGTimer := TRelativeTimer.Create;
+
+    // Language
+
+    Log.LogStatus('Initialize Paths', 'Initialization');
+
      VertexSpecification;
 
       CreateGraphicsPipeline;
