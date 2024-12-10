@@ -349,7 +349,7 @@ UJoystick         in 'base\UJoystick.pas',
   UScreenOptionsMidiInput          in 'midi_input\UScreenOptionsMidiInput.pas',
 
 
-  UScreenAbout            in 'screens\UScreenAbout.pas'
+  UScreenAbout            in 'screens\UScreenAbout.pas';
 
 
 

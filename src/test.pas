@@ -353,23 +353,6 @@ UJoystick         in 'base\UJoystick.pas',
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var    window: PSDL_Window;
   maincontext: TSDL_GLContext;
   mode: TSDL_DisplayMode;
