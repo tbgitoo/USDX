@@ -50,16 +50,14 @@ uses
   SysUtils,
   UMenu,
   UPath,
-  UMusic{$IFNDEF ANDROID},
-  UHookableEvent{$ENDIF};
+  UMusic,
+  UHookableEvent;
 
 type
   TDisplay = class
     private
-      {$IFNDEF ANDROID}
       ePreDraw: THookableEvent;
       eDraw: THookableEvent;
-      {$ENDIF}
 
       // fade-to-black
       BlackScreen:   boolean;
@@ -199,10 +197,8 @@ begin
   inherited Create;
 
   // create events for plugins
-  {$IFNDEF ANDROID}
   ePreDraw := THookableEvent.Create('Display.PreDraw');
   eDraw := THookableEvent.Create('Display.Draw');
-  {$ENDIF}
 
   // init popup
   CheckOK             := false;
@@ -311,13 +307,10 @@ begin
 
     if (not assigned(NextScreen)) and (not BlackScreen) then
     begin
-      {$IFNDEF ANDROID}
       ePreDraw.CallHookChain(false);
-      {$ENDIF}
       CurrentScreen.Draw;
 
       // popup
-      {$IFNDEF ANDROID}
       if (ScreenPopupError <> nil) and ScreenPopupError.Visible then
         ScreenPopupError.Draw
       else if (ScreenPopupInfo <> nil) and ScreenPopupInfo.Visible then
@@ -332,7 +325,6 @@ begin
         ScreenPopupScoreDownload.Draw
       else if (ScreenPopupHelp <> nil) and ScreenPopupHelp.Visible then
         ScreenPopupHelp.Draw;
-      {$ENDIF}
 
       // fade
       FadeStartTime := 0;
@@ -340,9 +332,8 @@ begin
         FadeEnabled := true
       else
         FadeEnabled := false;
-      {$IFNDEF ANDROID}
+
       eDraw.CallHookChain(false);
-      {$ENDIF}
     end
     else
     begin
@@ -358,11 +349,9 @@ begin
         if FadeStartTime = 0 then
         begin
           // draw screen that will be faded
-          {$IFNDEF ANDROID}
           ePreDraw.CallHookChain(false);
           CurrentScreen.Draw;
           eDraw.CallHookChain(false);
-          {$ENDIF}
 
           // clear OpenGL errors, otherwise fading might be disabled due to some
           // older errors in previous OpenGL calls.
@@ -402,11 +391,9 @@ begin
 
         if not BlackScreen then
         begin
-          {$IFNDEF ANDROID}
           ePreDraw.CallHookChain(false);
           NextScreen.Draw; // draw next screen
           eDraw.CallHookChain(false);
-          {$ENDIF}
         end
         else if ScreenAct = 1 then
         begin
@@ -514,7 +501,7 @@ var
   Cursor: Integer;
 begin
   Cursor := 0;
-  {$IFNDEF ANDROID}
+
   if (CurrentScreen <> @ScreenSing) or (Cursor_HiddenByScreen) then
   begin // hide cursor on singscreen
     if (Ini.Mouse = 0) and (Ini.FullScreen = 0) then
@@ -530,8 +517,6 @@ begin
   else if (Ini.Mouse <> 2) then
     Cursor_HiddenByScreen := true;
 
-  {$ENDIF}
-
 
   SDL_ShowCursor(Cursor);
 
@@ -544,7 +529,7 @@ begin
       Cursor_Visible := false;
       Cursor_Fade := false;
     end
-    else {$IFNDEF ANDROID}if (CurrentScreen = @ScreenSing) then {$ENDIF}
+    else if (CurrentScreen = @ScreenSing) then
     begin
       // hide software cursor in singscreen
       Cursor_HiddenByScreen := true;
@@ -841,12 +826,11 @@ begin
    Success := WriteJPGImage(FileName, Surface, 95);
   //  Success := WriteBMPImage(FileName, Surface);
   //Success := WritePNGImage(FileName, Surface);
-  {$IFNDEF ANDROID}
   if Success then
     ScreenPopupInfo.ShowPopup(Format(Language.Translate('SCREENSHOT_SAVED'), [FileName.GetName.ToUTF8()]))
   else
     ScreenPopupError.ShowPopup(Language.Translate('SCREENSHOT_FAILED'));
-  {$ENDIF}
+
   SDL_FreeSurface(Surface);
   FreeMem(ScreenData);
 end;
