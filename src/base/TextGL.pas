@@ -103,9 +103,6 @@ uses
   SysUtils,
   IniFiles,
   UCommon,
-  {$IFNDEF ANDROID}
-  UMain,
-  {$ENDIF}
   UPathUtils;
 
 const

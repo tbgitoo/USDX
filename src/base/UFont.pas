@@ -2566,7 +2566,8 @@ begin
 
   // free expanded data
   SetLength(TexBuffer, 0);
-  {$IFNDEF ANDROID}
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
   // create the display list
   fDisplayList := glGenLists(1);
 
@@ -2631,7 +2632,8 @@ procedure TFTGlyph.Render(UseDisplayLists: boolean);
 begin
   // use display-lists if enabled and exit
 
-  {$IFNDEF ANDROID}
+  {$IFDEF UseOpenGLES3}
+  {$ELSE}
 
   if (UseDisplayLists) then
   begin

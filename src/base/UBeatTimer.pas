@@ -34,8 +34,7 @@ interface
 {$I switches.inc}
 
 uses
-  {$IFNDEF ANDROID}
-  UIni,{$ENDIF}
+  UIni,
   UTime;
 
 type
@@ -122,9 +121,7 @@ type
 implementation
 
 uses
-  {$IFNDEF ANDROID}
   UNote,
-  {$ENDIF}
   ULog,
   SysUtils,
   Math;
@@ -281,11 +278,6 @@ end;
  * current lyric time.
  *)
 procedure TLyricsState.UpdateBeats();
-{$IFDEF ANDROID}
-begin
-
-end;
-{$ELSE}
 
 
 
@@ -308,6 +300,6 @@ begin
   CurrentBeatD := Floor(MidBeatD);
 end;
 
-{$ENDIF}
+
 
 end.

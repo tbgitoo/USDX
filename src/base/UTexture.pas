@@ -149,11 +149,9 @@ uses
   StrUtils,
   Math,
   UImage,
-  ULog{$IFDEF ANDROID};{$ELSE},
+  ULog,
   UCovers,
   UThemes;
-
-  {$ENDIF}
 
 function RoundPOT(value: integer): integer;
 begin
@@ -265,11 +263,7 @@ begin
 end;
 
 function TTextureUnit.LoadTexture(const Identifier: IPath; Typ: TTextureType; Col: LongWord): TTexture;
-{$IFDEF ANDROID}
-begin
 
-  end;
-{$ELSE}
 var
   TexSurface: PSDL_Surface;
   newWidth, newHeight: integer;
@@ -411,7 +405,7 @@ begin
   SDL_FreeSurface(TexSurface);
 
 end;
-{$ENDIF}
+
 
 function TTextureUnit.GetTexture(const Name: IPath; Typ: TTextureType; FromCache: boolean): TTexture;
 begin

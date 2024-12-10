@@ -227,11 +227,8 @@ uses
   TextGL,
   UIni,
   UPathUtils,
-
   USongs,
-  {$IFNDEF ANDROID}
   UNote,   //needed for Player
-  {$ENDIF}
   UMusic;  //needed for Tracks
 
 
@@ -533,10 +530,8 @@ begin
   Rel[1]            := 0;
   Both              := false;
 
-  {$IFNDEF ANDROID}
   if Length(Player) = 2 then
     Both := true;
-  {$ENDIF}
 
   try
     MD5 := MD5SongFile(SongFile);
@@ -565,9 +560,7 @@ begin
       SetLength(Tracks, 0);
       if (CurLine[1] = 'P') then
       begin
-        {$IFNDEF ANDROID}
         CurrentSong.isDuet := true;
-        {$ENDIF}
         SetLength(Tracks, 2);
         CurrentTrack := -1;
       end
@@ -642,9 +635,7 @@ begin
           // sets the rap icon if the song has rap notes
           if(Param0 in ['R', 'G']) then
           begin
-            {$IFNDEF ANDROID}
             CurrentSong.hasRap := true;
-            {$ENDIF}
           end;
           // read notes
           Param1 := ParseLyricIntParam(CurLine, LinePos);
@@ -725,10 +716,8 @@ begin
         Tracks[TrackIndex].High := Tracks[TrackIndex].High - 1;
         Tracks[TrackIndex].Number := Tracks[TrackIndex].Number - 1;
         // HACK DUET ERROR
-        {$IFNDEF ANDROID}
         if not (CurrentSong.isDuet) then
           Log.LogError('Error loading Song, sentence w/o note found in last line before E: ' + FileNamePath.ToNative);
-        {$ENDIF}
       end;
     end;
   end;
@@ -1156,11 +1145,7 @@ begin
     if ((MedleyFlags and 1) = 0) or (self.PreviewStart <= 0) then //PreviewStart is not set or <=0
     begin
       if (MedleyFlags and 2) = 2 then
-      begin
-        {$IFNDEF ANDROID}
         self.PreviewStart := GetTimeFromBeat(self.Medley.StartBeat, self)  //fallback to MedleyStart
-        {$ENDIF}
-      end
       else
         self.PreviewStart := 0; //else set it to 0, it will be set in FindRefrainStart
     end;
@@ -1248,11 +1233,9 @@ begin
   else
   begin //use old line if it there were no notes added since last call of NewSentence
     // HACK DUET ERROR
-    {$IFNDEF ANDROID}
     if not (CurrentSong.isDuet) then
       Log.LogError('Error loading Song, sentence w/o note found in line ' +
                  InttoStr(FileLineNo) + ': ' + Filename.ToNative);
-    {$ENDIF}
   end;
 
   Tracks[LineNumberP].Lines[Tracks[LineNumberP].High].HighNote := -1;
@@ -1384,13 +1367,11 @@ begin
     found_end := false;
 
     //set end if duration > MEDLEY_MIN_DURATION
-    {$IFNDEF ANDROID}
     if GetTimeFromBeat(self.Medley.StartBeat) + MEDLEY_MIN_DURATION >
       GetTimeFromBeat(self.Medley.EndBeat) then
     begin
       found_end := true;
     end;
-    {$ENDIF}
 
     //estimate the end: just go MEDLEY_MIN_DURATION
     //ahead an set to a line end (if possible)
@@ -1401,7 +1382,6 @@ begin
         len_notes := length(Tracks[0].Lines[I].Notes);
         for J := 0 to len_notes - 1 do
         begin
-          {$IFNDEF ANDROID}
           if GetTimeFromBeat(self.Medley.StartBeat) + MEDLEY_MIN_DURATION >
             GetTimeFromBeat(Tracks[0].Lines[I].Notes[J].StartBeat +
             Tracks[0].Lines[I].Notes[J].Duration) then
@@ -1411,7 +1391,6 @@ begin
               Tracks[0].Lines[I].Notes[len_notes - 1].Duration;
             break;
           end;
-          {$ENDIF}
         end;
       end;
     end;
@@ -1429,10 +1408,8 @@ begin
   //set PreviewStart if not set
   if self.PreviewStart = 0 then
   begin
-    {$IFNDEF ANDROID}
     if self.Medley.Source = msCalculated then
       self.PreviewStart := GetTimeFromBeat(self.Medley.StartBeat);
-    {$ENDIF}
   end;
 end;
 
@@ -1578,9 +1555,7 @@ begin
     Result := Self.ReadTxTHeader(SongFile, ReadCustomTags);
 
     //Load Song for Medley Tags
-    {$IFNDEF ANDROID}
     CurrentSong := self;
-    {$ENDIF}
     Result := Result and LoadOpenedSong(SongFile, FileNamePath, DuetChange);
 
     if Result then

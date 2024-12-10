@@ -151,11 +151,10 @@ uses
   DateUtils,
   UTime,
   UPathUtils,
-  UCommon{$IFNDEF ANDROID},
+  UCommon,
   URecord,
-  UMain,
   UMusic,
-  UCommandLine{$ENDIF};
+  UCommandLine;
 
 
 var
@@ -506,9 +505,6 @@ type
   end;
 
 procedure TLog.LogVoice(SoundNr: integer);
-{$IFDEF ANDROID}
-  begin
-{$ELSE}
 var
   Stream: TBinaryFileStream;
   Prefix: string;
@@ -581,7 +577,7 @@ begin
   Stream.CopyFrom(Buffer, Buffer.Size);
 
   Stream.Free;
-  {$ENDIF}
+
 end;
 
 procedure TLog.LogBuffer(const buf: Pointer; const bufLength: Integer; const filename: IPath);

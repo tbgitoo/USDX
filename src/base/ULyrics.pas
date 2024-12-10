@@ -563,12 +563,10 @@ begin
   ResetFont();
 
   // hack to OptionsJukebox lyrics demo
-  {$IFNDEF ANDROID}
   if (Display.CurrentScreen = @ScreenOptionsJukebox) and (FontStyle = 2) then
     SetFontSize(Line.Height * 0.8)
   else
     SetFontSize(Line.Height);
-
 
   // set outline
   if (Display.CurrentScreen = @ScreenJukebox) or (Display.CurrentScreen = @ScreenOptionsJukebox) then
@@ -612,14 +610,11 @@ begin
     OutlineColor_dis := GetLyricOutlineColor(0);
   end;
 
-  {$ENDIF}
-
   // center lyrics
   LyricX := X + (W - Line.Width) / 2;
   LyricY := Y + (H - Line.Height) / 2;
   // get lyrics effect
 
-  {$IFNDEF ANDROID}
   if (Display.CurrentScreen = @ScreenJukebox) or (Display.CurrentScreen = @ScreenOptionsJukebox) then
     LyricsEffect := TLyricsEffect(Ini.JukeboxEffect)
   else
@@ -635,8 +630,6 @@ begin
     else
       Alpha := ScreenJukebox.LyricsAlpha;
   end;
-
-  {$ENDIF}
 
   // check if this line is active (at least its first note must be active)
   if (Beat >= Line.StartNote) then
@@ -673,7 +666,6 @@ begin
       Progress := 0;
 
     // last word of this line finished, but this line did not hide -> fade out
-    {$IFNDEF ANDROID}
     if (Display.CurrentScreen <> @ScreenJukebox)
       and (Display.CurrentScreen <> @ScreenOptionsJukebox) then
     begin
@@ -692,8 +684,6 @@ begin
       else
         Alpha := ScreenJukebox.LyricsAlpha;
     end;
-
-    {$ENDIF}
 
     // outline color
     SetOutlineColor(OutlineColor_act.R, OutlineColor_act.G, OutlineColor_act.B, Alpha);
@@ -737,10 +727,9 @@ begin
     SetOutlineColor(OutlineColor_act.R, OutlineColor_act.G, OutlineColor_act.B, Alpha);
 
     // draw current word
-
     if ((LyricsEffect in [lfxSimple, lfxBall, lfxShift])
       // hack to OptionsJukebox lyrics demo
-      or ((LyricsEffect = lfxSlide) {$IFNDEF ANDROID} and (Display.CurrentScreen = @ScreenOptionsJukebox){$ENDIF})) then
+      or ((LyricsEffect = lfxSlide) and (Display.CurrentScreen = @ScreenOptionsJukebox))) then
     begin
       if (LyricsEffect = lfxShift) then
         WordY := LyricY - 8 * (1-Progress)

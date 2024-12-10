@@ -91,8 +91,8 @@ implementation
 
 uses
   StrUtils,
-  UCommon{$IFNDEF ANDROID},
-  ULog{$ENDIF};
+  UCommon,
+  ULog;
 
 type
   IEncoder = interface

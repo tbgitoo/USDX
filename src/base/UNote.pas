@@ -140,18 +140,15 @@ const
   MAX_SONG_SCORE = 10000;     // max. achievable points per song
   MAX_SONG_LINE_BONUS = 1000; // max. achievable line bonus per song
 
-
 procedure Sing(Screen: TScreenSingController);
 procedure NewSentence(CP: integer; Screen: TScreenSingController);
 procedure NewBeatClick(Screen: TScreenSingController);  // executed when on then new beat for click
 procedure NewBeatDetect(Screen: TScreenSingController); // executed when on then new beat for detection
 procedure NewNote(CP: integer; Screen: TScreenSingController);       // detect note
-
 function  GetMidBeat(Time: real): real;
 function  GetTimeFromBeat(Beat: integer; SelfSong: TSong = nil): real;
 
 procedure SingJukebox(Screen: TScreenJukebox);
-
 
 implementation
 
@@ -425,7 +422,6 @@ begin
 
   Screen.onSentenceChange(CP, Tracks[CP].CurrentLine)
 end;
-
 
 procedure NewBeatClick;
 var
@@ -756,6 +752,5 @@ begin
   end; // for ActualBeat
   //Log.LogStatus('EndBeat', 'NewBeat');
 end;
-
 
 end.

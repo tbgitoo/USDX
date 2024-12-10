@@ -317,15 +317,12 @@ begin
   CurPlaylist := Index;
 
   //Show Cat in Topleft:
-  {$IFNDEF ANDROID}
   ScreenSong.ShowCatTLCustom(Format(Theme.Playlist.CatText,[Playlists[Index].Name]));
 
   //Fix SongSelection
   ScreenSong.Interaction := 0;
   ScreenSong.SelectNext;
   ScreenSong.FixSelected;
-
-  {$ENDIF}
 
   //Play correct Music
   //ScreenSong.ChangeMusic;
@@ -401,14 +398,12 @@ begin
   //-> Display Songs
   if (CatSongs.CatNumShow = -3) and (Index = CurPlaylist) then
   begin
-    {$IFNDEF ANDROID}
     ScreenSong.UnloadCover(ScreenSong.Interaction);
     ScreenSong.HideCatTL;
     CatSongs.SetFilter('', fltAll);
     ScreenSong.Interaction := 0;
     ScreenSong.FixSelected;
     ScreenSong.ChangeMusic;
-    {$ENDIF}
   end;
 end;
 
