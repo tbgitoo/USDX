@@ -4245,9 +4245,22 @@ var gl_exts_i : array of PAnsiChar;
 // name in gl_exts_i
 procedure get_exts();
 
+// specifically added for USDX, needed by UGraphics
+function InitOpenGL( ): Boolean;
+// needed by InitOpenGL
+function SDL_GL_GetProcAddress_wrapper(load: PAnsiChar): Pointer;
+
+
+
 
 
 implementation
+uses
+{$IFDEF UseSDL3}
+  SDL3;
+  {$ELSE}
+  sdl2;
+  {$ENDIF}
 
 procedure load_GL_ES_VERSION_2_0(load: TLoadProc);
 begin
@@ -6314,6 +6327,16 @@ begin
 
 end;
 
+function InitOpenGL(): Boolean;
+begin
+  Result:=gladLoadGLES2(@SDL_GL_GetProcAddress_wrapper);
+end;
+
+function SDL_GL_GetProcAddress_wrapper(load: PAnsiChar): Pointer;
+begin
+   SDL_GL_GetProcAddress_wrapper:=SDL_GL_GetProcAddress(load);
+
+end;
 
 
 end.

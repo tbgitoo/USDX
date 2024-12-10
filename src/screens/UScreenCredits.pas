@@ -136,14 +136,15 @@ type
 
       { beat detection }
       procedure DetectBeat;
-    protected
+
       { beat detection stuff
         protected cause we need this information for "on beat
         effect"}
+    public
       LastBeatTime: cardinal;
       BeatDetected: boolean;
       CTime:        cardinal;
-    public
+
       Fadeout: boolean;
       constructor Create; override;
       function ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean; override;
@@ -265,7 +266,6 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
   UPathUtils,
   USongs,
   UUnicodeUtils,

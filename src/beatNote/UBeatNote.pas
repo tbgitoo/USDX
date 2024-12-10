@@ -37,9 +37,7 @@ uses
   UBeatNoteTimer, // Provides the detection of beat notes along the time
   UKeyboardRecording, // Integration with keyboard playing
   UCommon,
-  {$IFNDEF ANDROID}
   UScreenSingController,
-  {$ENDIF}
   UMusic,
   USong,
   SysUtils,
@@ -56,13 +54,13 @@ TBeatDetectionParameters = record // single structure to hold the beat detection
     TestTimeAfterPeak:     integer; // How many milliseconds after the peak we should check for the drop
   end;
 
-{$IFNDEF ANDROID}
+
 procedure handleBeatNotes(Screen: TScreenSingController); // General handler called at every cycle. This is NewBeatDetect from
 // UNote with adaptation
 
 procedure checkBeatNote(CP: integer; Screen: TScreenSingController); // Specifically: detect current beat note (if any). This is
 // This is NewNote from UNote with adaptation
-{$ENDIF}
+
 
 function TimeTolerance(PlayerIndex: integer): real; // As a function of the difficulty, get the tolerance in time length
 
@@ -136,7 +134,7 @@ begin
 
 
 end;
-{$IFNDEF ANDROID}
+
 procedure handleBeatNotes(Screen: TScreenSingController);
 var
 
@@ -173,7 +171,7 @@ begin
 
   end;
 
-{$ENDIF}
+
 
 function TimeTolerance(PlayerIndex: integer): real;
 var
@@ -181,7 +179,7 @@ var
   beatTimeS: real;
 begin
   tolerance := 0.1;
-  {$IFNDEF ANDROID}
+
   if (ScreenSong.Mode = smNormal) then
   begin
     case Ini.PlayerLevel[PlayerIndex] of
@@ -201,7 +199,7 @@ begin
 
 
    Result:=tolerance;
-   {$ENDIF}
+
 
 end;
 
@@ -385,7 +383,7 @@ else
 
 end;
 
-{$IFNDEF ANDROID}
+
 procedure checkBeatNote(CP: integer; Screen: TScreenSingController); // Specifically: detect current beat note (if any). This is
 // inspired by NewNote from UNote with adaptation to the beat detection system (i.e. UBeateNoteTimer and specifically BeatNoteTimerState)
 // The idea is that BeatNoteTimerState provides the information on whether there is a beat note (NoteType ntRap) is playing at present.
@@ -572,7 +570,7 @@ begin
 
 
 end;
-{$ENDIF}
+
 
 
 
@@ -589,7 +587,7 @@ var
   W, H:  real;
   GoldenStarPos: real;
 begin
-  {$IFNDEF ANDROID}
+
 // We actually don't have a playernumber in this procedure, it should reside in Track - but it is always set to zero
 // So we exploit this behavior a bit - we give Track the playernumber, keep it in playernumber - and then we set Track to zero
 // This could also come quite in handy when we do the duet mode, cause just the notes for the player that has to sing should be drawn then
@@ -685,7 +683,7 @@ begin
 
 
 end;
-  {$ENDIF}
+
 
 end;
 
@@ -698,7 +696,7 @@ var
   TempR:          real;
   W, H:           real;
 begin
-  {$IFNDEF ANDROID}
+
   if (ScreenSing.settings.NotesVisible and (1 shl PlayerIndex) <> 0) then
   begin
     //glColor4f(1, 1, 1, sqrt((1+sin( AudioPlayback.Position * 3))/4)/ 2 + 0.5 );
@@ -760,7 +758,7 @@ begin
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
   end;
-  {$ENDIF}
+
 end;
 
 // draw sung notes
@@ -772,7 +770,6 @@ var
 //  R, G, B, A: real;
   NotesH2:    real;
 begin
-  {$IFNDEF ANDROID}
   if (ScreenSing.Settings.InputVisible) then
   begin
     //Log.LogStatus('Player notes', 'SingDraw');
@@ -912,7 +909,7 @@ begin
 
     end; // if
   end; // if
-  {$ENDIF}
+
 end;
 
 function GetTimeFromBeatReal(Beat: real; SelfSong: TSong = nil): real;

@@ -84,7 +84,6 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
   UMenuSelectSlide,
   UParty,
   UPlaylist,

@@ -110,7 +110,7 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
+  UMainThread,
   UParty,
   UScreenPartyOptions,
   UTexture,

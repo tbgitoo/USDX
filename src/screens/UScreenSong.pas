@@ -325,7 +325,6 @@ uses
   UGraphic,
   UHelp,
   ULog,
-  UMain,
   UMenuButton,
   UMenuStatic,
   UNote,

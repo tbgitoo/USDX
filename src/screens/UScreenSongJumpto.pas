@@ -82,7 +82,7 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
+  UMainThread,
   UParty,
   UScreenSong,
   UTexture,

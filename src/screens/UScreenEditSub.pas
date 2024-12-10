@@ -39,7 +39,7 @@ uses
   UFilesystem,
   UGraphicClasses,
   UIni,
-  UMain,
+  UMainThread,
   UMenu,
   UMenuText,
   UMusic,

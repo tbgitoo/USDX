@@ -77,7 +77,6 @@ implementation
 uses
   UGraphic,
   UHelp,
-  UMain,
   UIni,
   UTexture,
   ULanguage,

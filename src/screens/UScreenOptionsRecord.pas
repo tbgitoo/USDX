@@ -124,7 +124,6 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
   UMenuSelectSlide,
   UMenuText,
   UUnicodeUtils,

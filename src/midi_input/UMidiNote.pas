@@ -35,9 +35,7 @@ interface
 
 uses
   UCommon,
-  {$IFNDEF ANDROID}
   UScreenSingController,
-  {$ENDIF}
   UMusic,
   USong,
   SysUtils,
@@ -70,10 +68,10 @@ type
 var midiNoteHandler : TMidiNoteHandler;
 
 
-{$IFNDEF ANDROID}
+
 procedure handleMidiNotes(Screen: TScreenSingController; CP: integer); // General handler called at every cycle. This is NewBeatDetect from
 // UNote with adaptation
-{$ENDIF}
+
 
 function noteHit(availableTones: array of integer; actualTone: integer): boolean;
 
@@ -138,7 +136,7 @@ begin
 
 
 end;
-{$IFNDEF ANDROID}
+
 procedure handleMidiNotes(Screen: TScreenSingController;CP: integer );
    var
        NotesAvailable: array of TLineFragment; // contains the presently playing midi notes
@@ -343,7 +341,7 @@ begin
 
 end;
 
-{$ENDIF}
+
 function noteHit(availableTones: array of integer; actualTone: integer): boolean;
 var count : integer;
 begin

@@ -191,7 +191,6 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
   UPathUtils,
   USkins,
   UTextEncoding,

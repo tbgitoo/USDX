@@ -139,7 +139,7 @@ uses
   UHelp,
   ULanguage,
   ULog,
-  UMain,
+  UMainThread,
   UMenuButton,
   UPath,
   USkins,

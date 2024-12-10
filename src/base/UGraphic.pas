@@ -57,8 +57,7 @@ uses
   UAvatars,
   UCovers,
   UMusic,
-  USkins {$IFNDEF ANDROID},
-
+  USkins,
   UScreenLoading,
   UScreenMain,
   UScreenName,
@@ -110,7 +109,7 @@ uses
   {CreditsScreen}
   UScreenCredits,
   {Popup for errors, etc.}
-  UScreenPopup{$ENDIF};
+  UScreenPopup;
 
 type
   TRecR = record
@@ -150,7 +149,7 @@ var
   HasValidPosition:     boolean;
   HasValidSize:         boolean;
 
-  {$IFNDEF ANDROID}
+
   ScreenLoading:      TScreenLoading;
   ScreenMain:         TScreenMain;
   ScreenName:         TScreenName;
@@ -222,7 +221,7 @@ var
   //popup help system
   ScreenPopupHelp:  TScreenPopupHelp;
 
-  {$ENDIF}
+
 
   //Notes
   Tex_Left:        array[1..UIni.IMaxPlayerCount] of TTexture;   //rename to tex_note_left
@@ -575,9 +574,9 @@ begin
   LoadScreens(Title);
 
   SDL_SetWindowTitle(Screen, PChar(Title));
-  {$IFNDEF ANDROID}
+
   Display.CurrentScreen^.FadeTo( @ScreenMain );
-  {$ENDIF}
+
 
   // work around to force a good screen initialization on MacOS
   {$IFDEF MACOS}
@@ -615,11 +614,7 @@ begin
 end;
 
 procedure InitializeScreen;
-{$IFDEF ANDROID}
-begin
 
-end;
-{$ELSE}
 
 var
   S:      string;
@@ -770,17 +765,27 @@ NoDoubledResolution:
   InitOpenGL();
 
   //   ActivateRenderingContext(
+  {$IFNDEF UseOpenGLES3}
+  // The loading of the extensions is part of initOpenGL in the case of openGLES3
   ReadExtensions;
   ReadImplementationProperties;
+  {$ENDIF}
+  {$IFDEF UseOpenGLES3}
+  Log.LogInfo('OpenGL vendor ' + PAnsiChar(glGetString(GL_VENDOR)), 'UGraphic.InitializeScreen');
+  {$ELSE}
   Log.LogInfo('OpenGL vendor ' + glGetString(GL_VENDOR), 'UGraphic.InitializeScreen');
+  {$ENDIF}
   if not (glGetError = GL_NO_ERROR) then
   begin
     Log.LogInfo('an OpenGL Error happened.', 'UGraphic.InitializeScreen');
   end;
-  S := glGetString(GL_RENDERER);
+  S := PAnsiChar(glGetString(GL_RENDERER));
   Log.LogInfo('OpenGL renderer ' + S, 'UGraphic.InitializeScreen');
+  {$IFDEF UseOpenGLES3}
+   Log.LogInfo('OpenGL version ' + PAnsiChar(glGetString(GL_VERSION)), 'UGraphic.InitializeScreen');
+  {$ELSE}
   Log.LogInfo('OpenGL version ' + glGetString(GL_VERSION), 'UGraphic.InitializeScreen');
-
+  {$ENDIF}
   if (Pos('GDI Generic', S) > 0) or // Microsoft
      (Pos('Software Renderer', S) > 0) or // Apple
      (Pos('Software Rasterizer', S) > 0) or // Mesa (-Ddri-drivers=swrast)
@@ -808,7 +813,7 @@ NoDoubledResolution:
   SwapBuffers;}
 end;
 
-{$ENDIF}
+
 
 function HasWindowState(Flag: integer): boolean;
 begin
@@ -994,7 +999,7 @@ end;
 
 procedure LoadLoadingScreen;
 begin
-  {$IFNDEF ANDROID}
+
   ScreenLoading := TScreenLoading.Create;
 
 
@@ -1007,13 +1012,13 @@ begin
   Log.logStatus('UGraphic','LoadLoadingScreen Drawing done' );
   Display.Draw;
   SwapBuffers;
-  {$ENDIF}
+
 end;
 
 procedure LoadScreens(Title: string);
 begin
   SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading ScreenMain & ScreenName'));
-  {$IFNDEF ANDROID}
+
   ScreenMain :=             TScreenMain.Create;
 
   ScreenName :=             TScreenName.Create;
@@ -1103,7 +1108,7 @@ begin
   ScreenStatDetail :=       TScreenStatDetail.Create;
   ScreenCredits    :=       TScreenCredits.Create;
   SDL_SetWindowTitle(Screen, PChar(Title));
-  {$ENDIF}
+
 end;
 
 function LoadingThreadFunction: integer;
@@ -1114,7 +1119,7 @@ end;
 
 procedure UnloadScreens;
 begin
-  {$IFNDEF ANDROID}
+
   ScreenMain.Free;
   ScreenName.Free;
   ScreenLevel.Free;
@@ -1165,7 +1170,7 @@ begin
   ScreenStatDetail.Free;
   ScreenOptionsMidiInput.Free;
   ScreenOptionsSoundfont.Free;
-  {$ENDIF}
+
 end;
 
 end.

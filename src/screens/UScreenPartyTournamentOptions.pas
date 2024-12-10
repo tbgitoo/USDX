@@ -79,7 +79,6 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
   UNote,
   UPartyTournament,
   UPlaylist,

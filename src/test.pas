@@ -90,6 +90,8 @@ uses
   UCatCovers in 'base\UCatCovers.pas',
   USong in 'base\USong.pas',
   UThemes in 'base\UThemes.pas',
+  UHelp in 'base\UHelp.pas',
+  USingScores in 'base\USingScores.pas',
   {$IFDEF UseFFmpegVideo}
   UVideo                    in 'media\UVideo.pas',
   UDLLManager               in 'base\UDLLManager.pas',
@@ -156,6 +158,7 @@ uses
   UGraphic in 'base\UGraphic.pas',
   UAvatars in 'base\UAvatars.pas',
   ULyrics in 'base\ULyrics.pas',
+  UEditorLyrics     in 'base\UEditorLyrics.pas',
   UDraw in 'base\UDraw.pas',
   UParty in 'base\UParty.pas',
 
@@ -273,7 +276,80 @@ UJoystick         in 'base\UJoystick.pas',
  UAudioDecoder_FFmpeg      in 'media\UAudioDecoder_FFmpeg.pas',
 {$ENDIF}
  // fallback dummy, must be last
- UMedia_dummy              in 'media\UMedia_dummy.pas';
+ UMedia_dummy              in 'media\UMedia_dummy.pas',
+
+  //------------------------------
+  //Includes - Screens
+  //------------------------------
+  UScreenLoading          in 'screens\UScreenLoading.pas',
+  UScreenMain             in 'screens\UScreenMain.pas',
+  UScreenName             in 'screens\UScreenName.pas',
+  UScreenLevel            in 'screens\UScreenLevel.pas',
+  UScreenSong             in 'screens\UScreenSong.pas',
+  UScreenSingController   in 'screens\controllers\UScreenSingController.pas',
+  UScreenSingView         in 'screens\views\UScreenSingView.pas',
+  UScreenScore            in 'screens\UScreenScore.pas',
+  UScreenJukebox          in 'screens\UScreenJukebox.pas',
+  UScreenOptions          in 'screens\UScreenOptions.pas',
+  UScreenOptionsGame      in 'screens\UScreenOptionsGame.pas',
+  UScreenOptionsGraphics  in 'screens\UScreenOptionsGraphics.pas',
+  UScreenOptionsSound     in 'screens\UScreenOptionsSound.pas',
+  UScreenOptionsInput     in 'screens\UScreenOptionsInput.pas',
+  UScreenOptionsLyrics    in 'screens\UScreenOptionsLyrics.pas',
+  UScreenOptionsThemes    in 'screens\UScreenOptionsThemes.pas',
+  UScreenOptionsRecord    in 'screens\UScreenOptionsRecord.pas',
+  UScreenOptionsAdvanced  in 'screens\UScreenOptionsAdvanced.pas',
+  UScreenOptionsNetwork   in 'screens\UScreenOptionsNetwork.pas',
+  UScreenOptionsWebcam    in 'screens\UScreenOptionsWebcam.pas',
+  UScreenOptionsJukebox   in 'screens\UScreenOptionsJukebox.pas',
+  UScreenEditSub          in 'screens\UScreenEditSub.pas',
+  UScreenEdit             in 'screens\UScreenEdit.pas',
+  UScreenEditConvert      in 'screens\UScreenEditConvert.pas',
+  UScreenOpen             in 'screens\UScreenOpen.pas',
+  UScreenTop5             in 'screens\UScreenTop5.pas',
+  UScreenSongMenu         in 'screens\UScreenSongMenu.pas',
+  UScreenSongJumpto       in 'screens\UScreenSongJumpto.pas',
+  UScreenStatMain         in 'screens\UScreenStatMain.pas',
+  UScreenStatDetail       in 'screens\UScreenStatDetail.pas',
+  UScreenCredits          in 'screens\UScreenCredits.pas',
+  UScreenPopup            in 'screens\UScreenPopup.pas',
+
+  //Includes - Screens PartyMode
+  UScreenPartyNewRound    in 'screens\UScreenPartyNewRound.pas',
+  UScreenPartyScore       in 'screens\UScreenPartyScore.pas',
+  UScreenPartyPlayer      in 'screens\UScreenPartyPlayer.pas',
+  UScreenPartyOptions     in 'screens\UScreenPartyOptions.pas',
+  UScreenPartyRounds      in 'screens\UScreenPartyRounds.pas',
+  UScreenPartyWin         in 'screens\UScreenPartyWin.pas',
+
+  //Additional option screens
+  UScreenOptionsSoundfont in 'midi_input\UScreenOptionsSoundfont.pas',
+
+
+
+  //BassMIDI                in 'lib\bassmidi\bassmidi.pas',
+
+  UMenuStaticList in 'menu\UMenuStaticList.pas',
+
+
+
+
+  UPartyTournament              in 'base\UPartyTournament.pas',
+  UScreenPartyTournamentRounds  in 'screens\UScreenPartyTournamentRounds.pas',
+  UScreenPartyTournamentPlayer  in 'screens\UScreenPartyTournamentPlayer.pas',
+  UScreenPartyTournamentOptions in 'screens\UScreenPartyTournamentOptions.pas',
+  UScreenPartyTournamentWin     in 'screens\UScreenPartyTournamentWin.pas',
+  UScreenJukeboxOptions         in 'screens\UScreenJukeboxOptions.pas',
+  UScreenJukeboxPlaylist        in 'screens\UScreenJukeboxPlaylist.pas',
+
+
+
+  UScreenOptionsBeatPlay   in 'beatNote\UScreenOptionsBeatPlay.pas',
+  UScreenOptionsBeatPlayPeakAnalysis          in 'beatNote\UScreenOptionsBeatPlayPeakAnalysis.pas',
+  UScreenOptionsMidiInput          in 'midi_input\UScreenOptionsMidiInput.pas',
+
+
+  UScreenAbout            in 'screens\UScreenAbout.pas';
 
 
 
@@ -325,12 +401,6 @@ var    window: PSDL_Window;
 
 
 
-
-function SDL_GL_GetProcAddress_wrapper(load: PAnsiChar): Pointer;
-begin
-   SDL_GL_GetProcAddress_wrapper:=SDL_GL_GetProcAddress(load);
-
-end;
 
 procedure InitializeProgram();
 begin

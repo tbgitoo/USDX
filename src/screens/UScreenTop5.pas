@@ -79,7 +79,6 @@ uses
   UGraphic,
   UHelp,
   ULog,
-  UMain,
   UIni,
   UNote,
   UUnicodeUtils;

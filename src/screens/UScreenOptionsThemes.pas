@@ -76,7 +76,6 @@ uses
   UGraphic,
   UHelp,
   ULog,
-  UMain,
   UPathUtils,
   USkins,
   UUnicodeUtils,

@@ -105,7 +105,6 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
   UParty,
   USong,
   UTexture,

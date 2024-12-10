@@ -182,7 +182,6 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
   UParty,
   UScreenJukebox,
   UTexture,

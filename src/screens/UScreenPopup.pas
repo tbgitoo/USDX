@@ -266,7 +266,7 @@ uses
   dglOpenGL,
   {$ENDIF}
   UGraphic,
-  UMain,
+  UMainThread,
   UIni,
   ULanguage,
   UParty,

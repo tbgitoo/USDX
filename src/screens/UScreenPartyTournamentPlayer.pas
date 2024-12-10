@@ -92,7 +92,6 @@ uses
   UGraphic,
   UHelp,
   ULog,
-  UMain,
   UIni,
   UTexture,
   UUnicodeUtils,

@@ -81,7 +81,6 @@ uses
   UHelp,
   ULanguage,
   ULog,
-  UMain,
   UParty,
   UUnicodeUtils;
 

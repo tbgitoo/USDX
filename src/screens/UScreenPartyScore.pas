@@ -89,7 +89,6 @@ uses
   UHelp,
   ULanguage,
   ULog,
-  UMain,
   UParty,
   USkins,
   USong,

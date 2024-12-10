@@ -76,7 +76,6 @@ uses
   UHelp,
   ULanguage,
   ULog,
-  UMain,
   UNote,
   UPartyTournament,
   UScreenPartyTournamentRounds,

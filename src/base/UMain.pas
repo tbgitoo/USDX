@@ -50,9 +50,7 @@ var
 procedure Main;
 procedure MainLoop;
 procedure CheckEvents;
-procedure StartTextInput;
-procedure StopTextInput;
-procedure SetTextInput(enabled: boolean);
+
 
 
 implementation

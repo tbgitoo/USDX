@@ -65,7 +65,6 @@ uses
   UHelp,
   UIni,
   ULog,
-  UMain,
   USong,
   UTexture,
   UUnicodeUtils;

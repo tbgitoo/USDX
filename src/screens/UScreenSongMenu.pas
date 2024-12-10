@@ -106,14 +106,14 @@ uses
   UHelp,
   ULanguage,
   ULog,
-  UMain,
   UNote,
   UParty,
   UPlaylist,
   USong,
   USongs,
   UTexture,
-  UUnicodeUtils;
+  UUnicodeUtils,
+  UMainThread;
 
 function TScreenSongMenu.ParseInput(PressedKey: cardinal; CharCode: UCS4Char; PressedDown: boolean): boolean;
 var

@@ -132,7 +132,6 @@ uses
   UHelp,
   ULanguage,
   ULog,
-  UMain,
   UMenuText,
   UUnicodeUtils;
 

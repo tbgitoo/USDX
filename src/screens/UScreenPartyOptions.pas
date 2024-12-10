@@ -93,7 +93,6 @@ uses
   UIni,
   ULanguage,
   ULog,
-  UMain,
   UParty,
   UPlaylist,
   USong,

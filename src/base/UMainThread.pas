@@ -56,6 +56,11 @@ const
  * data, use Getmem() or New() or create a temporary object.
  *}
 procedure MainThreadExec(Proc: TMainThreadExecProc; Data: Pointer);
+procedure StartTextInput;
+procedure StopTextInput;
+procedure SetTextInput(enabled: boolean);
+
+
 
 implementation
 
@@ -71,6 +76,21 @@ begin
     data2 := Data;
   end;
   SDL_PushEvent(@Event);
+end;
+
+procedure StartTextInput;
+begin
+  SDL_StartTextInput;
+end;
+
+procedure StopTextInput;
+begin
+  SDL_StopTextInput;
+end;
+
+procedure SetTextInput(enabled: boolean);
+begin
+  if enabled then StartTextInput else StopTextInput;
 end;
 
 end.
