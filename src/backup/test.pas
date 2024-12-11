@@ -353,9 +353,8 @@ UJoystick         in 'base\UJoystick.pas',
 
 
 
-var    window: PSDL_Window;
-  maincontext: TSDL_GLContext;
-  mode: TSDL_DisplayMode;
+var
+
   gVertexArrayObject: GLuint;
   glVertexBufferObject: GLuint;
   gGraphicsPipelineShaderProgram: GLuint;
@@ -403,13 +402,13 @@ begin
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_ES);
       SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 
-      window:=SDL_CreateWindow('USDX',SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,640,480,
+      Screen:=SDL_CreateWindow('USDX',SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,640,480,
       SDL_WINDOW_SHOWN or SDL_WINDOW_OPENGL);
 
 
-      maincontext := SDL_GL_CreateContext(window);
+      glcontext := SDL_GL_CreateContext(Screen);
 
-      SDL_GetDesktopDisplayMode(0, @mode);
+
 
 
       gladLoadGLES2(@SDL_GL_GetProcAddress_wrapper);
@@ -509,7 +508,7 @@ var renderer: PSDL_Renderer = nil;
 begin
   // Setup renderer
 
-    renderer :=  SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED);
+    renderer :=  SDL_CreateRenderer( Screen, -1, SDL_RENDERER_ACCELERATED);
 
 
     // Set render color to red ( background will be rendered in this color )
@@ -573,13 +572,16 @@ begin
 end;
 
 procedure PreDraw();
+var Disp: TSDL_DisplayMode;
 begin
 
-    SDL_GL_MakeCurrent(window, maincontext);
+    SDL_GL_MakeCurrent(Screen, glcontext);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
-    glViewport(0,0,mode.w,mode.h );
+    SDL_GetDesktopDisplayMode(0, @disp);
+
+    glViewport(0,0,disp.w,disp.h );
     glClearColor(1.0, 1.0, 0.0,1.0);
 
     glUseProgram(gGraphicsPipelineShaderProgram);
@@ -602,7 +604,7 @@ begin
       Input;
       PreDraw;
       Draw;
-      SDL_GL_SwapWindow(window);
+      SDL_GL_SwapWindow(Screen);
       SDL_Delay(10);
 
   end;
@@ -614,7 +616,7 @@ end;
 
 procedure CleanUp();
 begin
-   SDL_DestroyWindow(window);
+   SDL_DestroyWindow(Screen);
    SDL_Quit();
 end;
 
@@ -731,12 +733,12 @@ begin
 
 
 
-      maincontext := SDL_GL_CreateContext(Screen);
-
-      SDL_GetDesktopDisplayMode(0, @mode);
 
 
-      gladLoadGLES2(@SDL_GL_GetProcAddress_wrapper);
+
+
+
+
 
       // create luacore first so other classes can register their events
 

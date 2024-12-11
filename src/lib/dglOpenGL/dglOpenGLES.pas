@@ -6330,6 +6330,7 @@ end;
 function InitOpenGL(): Boolean;
 begin
   Result:=gladLoadGLES2(@SDL_GL_GetProcAddress_wrapper);
+
 end;
 
 function SDL_GL_GetProcAddress_wrapper(load: PAnsiChar): Pointer;

@@ -354,8 +354,7 @@ UJoystick         in 'base\UJoystick.pas',
 
 
 var
-  maincontext: TSDL_GLContext;
-  mode: TSDL_DisplayMode;
+
   gVertexArrayObject: GLuint;
   glVertexBufferObject: GLuint;
   gGraphicsPipelineShaderProgram: GLuint;
@@ -407,9 +406,9 @@ begin
       SDL_WINDOW_SHOWN or SDL_WINDOW_OPENGL);
 
 
-      maincontext := SDL_GL_CreateContext(Screen);
+      glcontext := SDL_GL_CreateContext(Screen);
 
-      SDL_GetDesktopDisplayMode(0, @mode);
+
 
 
       gladLoadGLES2(@SDL_GL_GetProcAddress_wrapper);
@@ -573,13 +572,16 @@ begin
 end;
 
 procedure PreDraw();
+var Disp: TSDL_DisplayMode;
 begin
 
-    SDL_GL_MakeCurrent(Screen, maincontext);
+    SDL_GL_MakeCurrent(Screen, glcontext);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
-    glViewport(0,0,mode.w,mode.h );
+    SDL_GetDesktopDisplayMode(0, @disp);
+
+    glViewport(0,0,disp.w,disp.h );
     glClearColor(1.0, 1.0, 0.0,1.0);
 
     glUseProgram(gGraphicsPipelineShaderProgram);
@@ -724,19 +726,6 @@ begin
     // Graphics
     Initialize3D(WindowTitle);
 
-
-
-
-
-
-
-
-      maincontext := SDL_GL_CreateContext(Screen);
-
-      SDL_GetDesktopDisplayMode(0, @mode);
-
-
-      gladLoadGLES2(@SDL_GL_GetProcAddress_wrapper);
 
       // create luacore first so other classes can register their events
 

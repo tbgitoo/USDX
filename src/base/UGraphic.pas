@@ -639,6 +639,7 @@ procedure InitializeScreen;
 {$IFDEF ANDROID}
 var
   Disp: TSDL_DisplayMode;
+  S:      string;
 
 begin
    Screen:=SDL_CreateWindow('USDX',SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,640,480,
@@ -648,6 +649,47 @@ begin
 
    Log.LogStatus('Set Video Mode...   Fullscreen', 'SDL_SetVideoMode');
     CurrentWindowMode := Mode_Fullscreen; // full screen in Android at least for now
+
+   glcontext := SDL_GL_CreateContext(Screen);
+
+   if SDL_GetDesktopDisplayMode(0, @disp)=0 then
+   begin
+   Log.LogStatus(Format('Video resolution not used. Using native fullscreen resolution (%s)', [BuildResolutionString(Disp.w, Disp.h)]), 'SDL_SetVideoMode');
+        Ini.SetResolution(Disp.w, Disp.h, false, true);
+   end;
+
+   InitOpenGL();
+
+   {$IFDEF UseOpenGLES3}
+  Log.LogInfo('OpenGL vendor ' + PAnsiChar(glGetString(GL_VENDOR)), 'UGraphic.InitializeScreen');
+  {$ELSE}
+  Log.LogInfo('OpenGL vendor ' + glGetString(GL_VENDOR), 'UGraphic.InitializeScreen');
+  {$ENDIF}
+
+  S := PAnsiChar(glGetString(GL_RENDERER));
+  Log.LogInfo('OpenGL renderer ' + S, 'UGraphic.InitializeScreen');
+  {$IFDEF UseOpenGLES3}
+   Log.LogInfo('OpenGL version ' + PAnsiChar(glGetString(GL_VERSION)), 'UGraphic.InitializeScreen');
+  {$ELSE}
+  Log.LogInfo('OpenGL version ' + glGetString(GL_VERSION), 'UGraphic.InitializeScreen');
+  {$ENDIF}
+  if (Pos('GDI Generic', S) > 0) or // Microsoft
+     (Pos('Software Renderer', S) > 0) or // Apple
+     (Pos('Software Rasterizer', S) > 0) or // Mesa (-Ddri-drivers=swrast)
+     (Pos('softpipe', S) > 0) or // Mesa (-Dgallium-drivers=swrast -Dllvm=false)
+     (Pos('llvmpipe', S) > 0) or // Mesa (-Dgallium-drivers=swrast -Dllvm=true)
+     (Pos('SWR', S) > 0) or // Mesa (-Dgallium-drivers=swr)
+     (Pos('Mesa X11', S) > 0) or // Mesa (-Dglx=xlib)
+     (Pos('SwiftShader', S) > 0) then // Google; OpenGL ES, D3D9 & Vulkan only so far, but who knows...
+    SoftwareRendering := true
+  else
+    SoftwareRendering := false;
+
+  // define virtual (Render) and real (Screen) screen size
+  RenderW := 800;
+  RenderH := 600;
+  ScreenW := Screen.w;
+  ScreenH := Screen.h;
 
 end;
 
