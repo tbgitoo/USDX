@@ -36,7 +36,7 @@ interface
 uses
   UMusic, // Generically, the song structure, notes
   UIni, // For the number of players //
-  UCommon ,
+  UCommon,
   UScreenSingController;
 
 type
@@ -63,10 +63,8 @@ type
     playerBeatNoteState: array of TPlayerBeatNoteState; // Array indicating where each player is at present
     playerLastHitBeatTime: array of real; // Array keeping track of players last hit in terms of lyrics time
     constructor Create;
-
     procedure analyzeBeatNoteTiming(Screen: TScreenSingController); // Analyze present timing for all player to see whether ther are currently
                      // Beat note or beat breaks playing
-
     procedure analyzeBeatNoteTimingForPlayer(CP: integer); // Analysis for a given player
 
     function doBeatNoteDetection(CP: integer; ActualBeat: real):Boolean; // Function that indicates whether for a given player, beat note/break detection should be done
@@ -146,8 +144,6 @@ begin
     end;
 
   end;
-
-
 
 // The idea here is to go through the song and see whether based on the current player and time,
 // a beat not is currently open (also, not yet hit)

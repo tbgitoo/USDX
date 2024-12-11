@@ -54,13 +54,11 @@ TBeatDetectionParameters = record // single structure to hold the beat detection
     TestTimeAfterPeak:     integer; // How many milliseconds after the peak we should check for the drop
   end;
 
-
 procedure handleBeatNotes(Screen: TScreenSingController); // General handler called at every cycle. This is NewBeatDetect from
 // UNote with adaptation
 
 procedure checkBeatNote(CP: integer; Screen: TScreenSingController); // Specifically: detect current beat note (if any). This is
 // This is NewNote from UNote with adaptation
-
 
 function TimeTolerance(PlayerIndex: integer): real; // As a function of the difficulty, get the tolerance in time length
 
@@ -171,8 +169,6 @@ begin
 
   end;
 
-
-
 function TimeTolerance(PlayerIndex: integer): real;
 var
   tolerance: real;
@@ -199,7 +195,6 @@ begin
 
 
    Result:=tolerance;
-
 
 end;
 
@@ -577,7 +572,6 @@ end;
 
 
 
-
 // Basically SingDrawLine from UDraw, but specifically for the beat notes
 procedure SingDrawLineBeats(Left, Top, Right: real; Track, PlayerNumber: integer; LineSpacing: integer);
 var
@@ -587,7 +581,6 @@ var
   W, H:  real;
   GoldenStarPos: real;
 begin
-
 // We actually don't have a playernumber in this procedure, it should reside in Track - but it is always set to zero
 // So we exploit this behavior a bit - we give Track the playernumber, keep it in playernumber - and then we set Track to zero
 // This could also come quite in handy when we do the duet mode, cause just the notes for the player that has to sing should be drawn then
@@ -681,9 +674,7 @@ begin
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
 
-
 end;
-
 
 end;
 
@@ -696,7 +687,6 @@ var
   TempR:          real;
   W, H:           real;
 begin
-
   if (ScreenSing.settings.NotesVisible and (1 shl PlayerIndex) <> 0) then
   begin
     //glColor4f(1, 1, 1, sqrt((1+sin( AudioPlayback.Position * 3))/4)/ 2 + 0.5 );
@@ -758,7 +748,6 @@ begin
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
   end;
-
 end;
 
 // draw sung notes
@@ -909,7 +898,6 @@ begin
 
     end; // if
   end; // if
-
 end;
 
 function GetTimeFromBeatReal(Beat: real; SelfSong: TSong = nil): real;
