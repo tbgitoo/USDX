@@ -171,6 +171,7 @@ begin
   SharedPath := Platform.GetGameSharedPath;
   UserPath := Platform.GetGameUserPath;
 
+
   FindPath(SoundPath,     SharedPath.Append('sounds'),    false);
   FindPath(ThemePath,     SharedPath.Append('themes'),    false);
   FindPath(SkinsPath,     SharedPath.Append('themes'),    false);

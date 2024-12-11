@@ -520,11 +520,11 @@ android-install:
 	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/fonts.zip $(top_srcdir)/game/fonts
 	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/languages.zip $(top_srcdir)/game/languages
 	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/plugins.zip $(top_srcdir)/game/plugins
-	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/resources $(top_srcdir)/game/resources
-	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/soundfonts $(top_srcdir)/game/soundfonts
-	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/sounds $(top_srcdir)/game/sounds
-	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/themes $(top_srcdir)/game/themes
-	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/visuals $(top_srcdir)/game/visuals
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/resources.zip $(top_srcdir)/game/resources
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/soundfonts.zip $(top_srcdir)/game/soundfonts
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/sounds.zip $(top_srcdir)/game/sounds
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/themes.zip $(top_srcdir)/game/themes
+	zip -r  $(top_srcdir)/android_project/app/src/main/res/raw/visuals.zip $(top_srcdir)/game/visuals
 	cp  $(top_srcdir)/game/config.ini $(top_srcdir)/android_project/app/src/main/res/raw/
 	cp  $(top_srcdir)/game/LICENSE.ffmpeg.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_ffmpeg.txt
 	cp  $(top_srcdir)/game/LICENSE.freetype.txt $(top_srcdir)/android_project/app/src/main/res/raw/license_freetype.txt

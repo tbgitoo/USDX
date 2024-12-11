@@ -353,7 +353,7 @@ UJoystick         in 'base\UJoystick.pas',
 
 
 
-var    window: PSDL_Window;
+var
   maincontext: TSDL_GLContext;
   mode: TSDL_DisplayMode;
   gVertexArrayObject: GLuint;
@@ -403,11 +403,11 @@ begin
       SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_ES);
       SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
 
-      window:=SDL_CreateWindow('USDX',SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,640,480,
+      Screen:=SDL_CreateWindow('USDX',SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,640,480,
       SDL_WINDOW_SHOWN or SDL_WINDOW_OPENGL);
 
 
-      maincontext := SDL_GL_CreateContext(window);
+      maincontext := SDL_GL_CreateContext(Screen);
 
       SDL_GetDesktopDisplayMode(0, @mode);
 
@@ -509,7 +509,7 @@ var renderer: PSDL_Renderer = nil;
 begin
   // Setup renderer
 
-    renderer :=  SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED);
+    renderer :=  SDL_CreateRenderer( Screen, -1, SDL_RENDERER_ACCELERATED);
 
 
     // Set render color to red ( background will be rendered in this color )
@@ -575,7 +575,7 @@ end;
 procedure PreDraw();
 begin
 
-    SDL_GL_MakeCurrent(window, maincontext);
+    SDL_GL_MakeCurrent(Screen, maincontext);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
@@ -602,7 +602,7 @@ begin
       Input;
       PreDraw;
       Draw;
-      SDL_GL_SwapWindow(window);
+      SDL_GL_SwapWindow(Screen);
       SDL_Delay(10);
 
   end;
@@ -614,7 +614,7 @@ end;
 
 procedure CleanUp();
 begin
-   SDL_DestroyWindow(window);
+   SDL_DestroyWindow(Screen);
    SDL_Quit();
 end;
 
@@ -630,12 +630,12 @@ begin
      Log.Title := WindowTitle;
      Log.FileOutputEnabled := true;
 
-
-     Platform.init;
-
-
      // Commandline Parameter Parser
     Params := TCMDParams.Create;
+
+    if Platform.TerminateIfAlreadyRunning(WindowTitle) then
+      Exit;
+
 
     // fix floating-point exceptions (FPE)
     DisableFloatingPointExceptions();
@@ -651,9 +651,15 @@ begin
 
 
 
-     InitializeProgram;
+    SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING, '1');
 
-      // create luacore first so other classes can register their events
+        //SDL_EnableUnicode(1);  //not necessary in SDL2 any more
+       // initialize SDL
+       // without SDL_INIT_TIMER SDL_GetTicks() might return strange values
+
+
+    if SDL_Init(SDL_INIT_VIDEO or SDL_INIT_TIMER)<0 then debug_message_to_android('SDL not loaded');
+
     LuaCore := TLuaCore.Create;
 
     USTime := TTime.Create;
@@ -663,13 +669,26 @@ begin
 
     Log.LogStatus('Initialize Paths', 'Initialization');
     InitializePaths;
+    Log.SetLogFileLevel(50);
+    Log.LogStatus('Load Language', 'Initialization');
+    Language := TLanguage.Create;
+
+    // add const values:
+    Language.AddConst('US_VERSION', USDXVersionStr);
+
+    // Skin
+    Log.BenchmarkStart(1);
+    Log.LogStatus('Loading Skin List', 'Initialization');
+    Skin := TSkin.Create;
+
+    // add const values:
+    Language.AddConst('US_VERSION', USDXVersionStr);
+
 
     Log.LogStatus('Loading Theme List', 'Initialization');
     Theme := TTheme.Create;
-
     Log.LogStatus('Website-Manager', 'Initialization');
     DLLMan := TDLLMan.Create;   // Load WebsiteList
-
     Log.LogStatus('DataBase System', 'Initialization');
     DataBase := TDataBaseSystem.Create;
 
@@ -679,6 +698,48 @@ begin
       DataBase.Init(Params.ScoreFile);
 
     Log.LogStatus('Database System',Platform.GetGameUserPath.Append('Ultrastar.db').ToNative());
+
+    // Ini + Paths
+    Log.LogStatus('Load Ini', 'Initialization');
+    Ini := TIni.Create;
+    Ini.Load;
+
+    // Help
+    Log.LogStatus('Load Help', 'Initialization');
+    Help := THelp.Create;
+
+    // it is possible that this is the first run, create a .ini file if neccessary
+    Log.LogStatus('Write Ini', 'Initialization');
+    Ini.Save;
+
+    // Theme
+    Theme.LoadTheme(Ini.Theme, Ini.Color);
+
+    // Sound
+    InitializeSound();
+
+     // Lyrics-engine with media reference timer
+    LyricsState := TLyricsState.Create();
+
+    // Graphics
+    Initialize3D(WindowTitle);
+
+
+
+
+
+
+
+
+      maincontext := SDL_GL_CreateContext(Screen);
+
+      SDL_GetDesktopDisplayMode(0, @mode);
+
+
+      gladLoadGLES2(@SDL_GL_GetProcAddress_wrapper);
+
+      // create luacore first so other classes can register their events
+
 
      VertexSpecification;
 

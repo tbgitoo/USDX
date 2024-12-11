@@ -498,12 +498,31 @@ var
   Icon: PSDL_Surface;
 begin
 
+  {$IFDEF ANDROID}
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
+
   if ( SDL_InitSubSystem(SDL_INIT_VIDEO) = -1 ) then
   begin
     Log.LogCritical('SDL_Init Failed', 'UGraphic.Initialize3D');
   end;
 
   InitializeScreen;
+
+
+
+
+  {$ELSE}
+
+  if ( SDL_InitSubSystem(SDL_INIT_VIDEO) = -1 ) then
+  begin
+    Log.LogCritical('SDL_Init Failed', 'UGraphic.Initialize3D');
+  end;
+
+
   // load icon image (must be 32x32 for win32)
   Icon := LoadImage(ResourcesPath.Append(WINDOW_ICON));
   if (Icon <> nil) then
@@ -587,6 +606,8 @@ begin
   Log.LogBenchmark('--> Loading Screens', 2);
 
   Log.LogStatus('Finish', 'Initialize3D');
+
+  {$ENDIF}
 end;
 
 procedure SwapBuffers;
@@ -614,6 +635,23 @@ begin
 end;
 
 procedure InitializeScreen;
+
+{$IFDEF ANDROID}
+var
+  Disp: TSDL_DisplayMode;
+
+begin
+   Screen:=SDL_CreateWindow('USDX',SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,640,480,
+      SDL_WINDOW_SHOWN or SDL_WINDOW_OPENGL);
+
+   Screens:=1; // single screen in Android for now
+
+   Log.LogStatus('Set Video Mode...   Fullscreen', 'SDL_SetVideoMode');
+    CurrentWindowMode := Mode_Fullscreen; // full screen in Android at least for now
+
+end;
+
+{$ELSE}
 
 
 var
@@ -811,7 +849,9 @@ NoDoubledResolution:
   glClearColor(1, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
   SwapBuffers;}
+
 end;
+{$ENDIF}
 
 
 

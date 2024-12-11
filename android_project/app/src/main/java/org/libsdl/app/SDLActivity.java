@@ -26,6 +26,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.InputType;
@@ -222,108 +223,117 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         Log.v(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
 
-        try {
-            Thread.currentThread().setName("SDLActivity");
-        } catch (Exception e) {
-            Log.v(TAG, "modify thread properties failed " + e.toString());
-        }
+        // From api level 30 on, file permission is needed
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        //    if (!Environment.isExternalStorageManager()) {
+        //        Log.v("USDX permissions", "External file management permission needed");
+        //    }
+        //}
 
-        // Load shared libraries
-        String errorMsgBrokenLib = "";
-        try {
-            loadLibraries();
-            mBrokenLibraries = false; /* success */
-        } catch(UnsatisfiedLinkError e) {
-            System.err.println(e.getMessage());
-            mBrokenLibraries = true;
-            errorMsgBrokenLib = e.getMessage();
-        } catch(Exception e) {
-            System.err.println(e.getMessage());
-            mBrokenLibraries = true;
-            errorMsgBrokenLib = e.getMessage();
-        }
 
-        if (mBrokenLibraries)
-        {
+            try {
+                Thread.currentThread().setName("SDLActivity");
+            } catch (Exception e) {
+                Log.v(TAG, "modify thread properties failed " + e.toString());
+            }
+
+            // Load shared libraries
+            String errorMsgBrokenLib = "";
+            try {
+                loadLibraries();
+                mBrokenLibraries = false; /* success */
+            } catch(UnsatisfiedLinkError e) {
+                System.err.println(e.getMessage());
+                mBrokenLibraries = true;
+                errorMsgBrokenLib = e.getMessage();
+            } catch(Exception e) {
+                System.err.println(e.getMessage());
+                mBrokenLibraries = true;
+                errorMsgBrokenLib = e.getMessage();
+            }
+
+            if (mBrokenLibraries)
+            {
+                mSingleton = this;
+                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+                dlgAlert.setMessage("An error occurred while trying to start the application. Please try again and/or reinstall."
+                      + System.getProperty("line.separator")
+                      + System.getProperty("line.separator")
+                      + "Error: " + errorMsgBrokenLib);
+                dlgAlert.setTitle("SDL Error");
+                dlgAlert.setPositiveButton("Exit",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog,int id) {
+                            // if this button is clicked, close current activity
+                            SDLActivity.mSingleton.finish();
+                        }
+                    });
+               dlgAlert.setCancelable(false);
+               dlgAlert.create().show();
+
+               return;
+            }
+
+            mAudioManager=(AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
+
+            // Set up JNI
+            SDL.setupJNI();
+
+            // Initialize state
+            SDL.initialize();
+
+            // So we can call stuff from static callbacks
             mSingleton = this;
-            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-            dlgAlert.setMessage("An error occurred while trying to start the application. Please try again and/or reinstall."
-                  + System.getProperty("line.separator")
-                  + System.getProperty("line.separator")
-                  + "Error: " + errorMsgBrokenLib);
-            dlgAlert.setTitle("SDL Error");
-            dlgAlert.setPositiveButton("Exit",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog,int id) {
-                        // if this button is clicked, close current activity
-                        SDLActivity.mSingleton.finish();
-                    }
-                });
-           dlgAlert.setCancelable(false);
-           dlgAlert.create().show();
+            SDL.setContext(this);
 
-           return;
-        }
+            USDX_FileHandler.setContext(this);
+            USDX_FileHandler.initStorageLocationsDefault();
+            USDX_FileHandler.install_USDX_game_files();
 
-        mAudioManager=(AudioManager)this.getSystemService(Context.AUDIO_SERVICE);
+            mClipboardHandler = new SDLClipboardHandler();
 
-        // Set up JNI
-        SDL.setupJNI();
+            mHIDDeviceManager = HIDDeviceManager.acquire(this);
 
-        // Initialize state
-        SDL.initialize();
+            // Set up the surface
+            mSurface = new SDLSurface(getApplication());
 
-        // So we can call stuff from static callbacks
-        mSingleton = this;
-        SDL.setContext(this);
+            mLayout = new RelativeLayout(this);
+            mLayout.addView(mSurface);
 
-        USDX_FileHandler.setContext(this);
-        USDX_FileHandler.initStorageLocationsDefault();
-        USDX_FileHandler.install_USDX_game_files();
+            // Get our current screen orientation and pass it down.
+            mCurrentOrientation = SDLActivity.getCurrentOrientation();
+            // Only record current orientation
+            SDLActivity.onNativeOrientationChanged(mCurrentOrientation);
 
-        mClipboardHandler = new SDLClipboardHandler();
-
-        mHIDDeviceManager = HIDDeviceManager.acquire(this);
-
-        // Set up the surface
-        mSurface = new SDLSurface(getApplication());
-
-        mLayout = new RelativeLayout(this);
-        mLayout.addView(mSurface);
-
-        // Get our current screen orientation and pass it down.
-        mCurrentOrientation = SDLActivity.getCurrentOrientation();
-        // Only record current orientation
-        SDLActivity.onNativeOrientationChanged(mCurrentOrientation);
-
-        try {
-            if (Build.VERSION.SDK_INT < 24) {
-                mCurrentLocale = getContext().getResources().getConfiguration().locale;
-            } else {
-                mCurrentLocale = getContext().getResources().getConfiguration().getLocales().get(0);
+            try {
+                if (Build.VERSION.SDK_INT < 24) {
+                    mCurrentLocale = getContext().getResources().getConfiguration().locale;
+                } else {
+                    mCurrentLocale = getContext().getResources().getConfiguration().getLocales().get(0);
+                }
+            } catch(Exception ignored) {
             }
-        } catch(Exception ignored) {
-        }
 
-        setContentView(mLayout);
+            setContentView(mLayout);
 
-        setWindowStyle(false);
+            setWindowStyle(false);
 
-        getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(this);
+            getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(this);
 
-        // Get filename from "Open with" of another application
-        Intent intent = getIntent();
-        if (intent != null && intent.getData() != null) {
-            String filename = intent.getData().getPath();
-            if (filename != null) {
-                Log.v(TAG, "Got filename: " + filename);
-                SDLActivity.onNativeDropFile(filename);
+            // Get filename from "Open with" of another application
+            Intent intent = getIntent();
+            if (intent != null && intent.getData() != null) {
+                String filename = intent.getData().getPath();
+                if (filename != null) {
+                    Log.v(TAG, "Got filename: " + filename);
+                    SDLActivity.onNativeDropFile(filename);
+                }
             }
-        }
-    }
 
-    protected void pauseNativeThread() {
+        }
+
+        protected void pauseNativeThread() {
         mNextNativeState = NativeState.PAUSED;
         mIsResumedCalled = false;
 
