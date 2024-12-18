@@ -2,6 +2,10 @@
 
 set -eo pipefail
 
+if ! tput setaf 1 || ! tput bold || ! tput sgr0 ; then
+	tput() { return 0 ; }
+fi >/dev/null 2>/dev/null
+
 root=$(pwd)
 
 SRC="$root/deps"
@@ -97,7 +101,7 @@ task_cmake() {
 
 task_projectm() {
 	start_build projectm projectM || return 0
-	patch -p1 < $root/../flatpak/patches/projectM-2.2.1.patch
+	patch -p1 < $root/projectM-2.2.1.patch
 	chmod a+x autogen.sh
 	./autogen.sh
 	./configure --prefix="$PREFIX" PKG_CONFIG_PATH="$PKG_CONFIG_PATH" CC="$CC" CXX="$CXX" \
@@ -182,7 +186,7 @@ EOF
 	true | $CC -shared -o $PREFIX/lib/libpulse-simple.so.0 -Wl,-soname,libpulse-simple.so.0 -x c -
 	ln -s libpulse-simple.so.0 $PREFIX/lib/libpulse-simple.so
 	PA_VERSION=$(cat .tarball-version)
-	sed -e "s:@prefix@:$PREFIX:;s:@exec_prefix@:$PREFIX:;s:@libdir@:$PREFIX/lib:;s:@includedir@:$PREFIX/include:;s:@PACKAGE_VERSION@:$PA_VERSION:;s:@PTHREAD_LIBS@:-pthread:;/^Libs.private/d" < libpulse-simple.pc.in > $PREFIX/lib/pkgconfig/libpulse-simple.pc
+	sed -e "s:@prefix@:$PREFIX:;s:@exec_prefix@:$PREFIX:;s:@libdir@:$PREFIX/lib:;s:@includedir@:$PREFIX/include:;s:@PACKAGE_VERSION@:$PA_VERSION:;s:@PTHREAD_LIBS@:-pthread:;/^Libs.private/d;/^Requires:/d" < libpulse-simple.pc.in > $PREFIX/lib/pkgconfig/libpulse-simple.pc
 }
 
 task_pipewire() {
@@ -386,6 +390,7 @@ task_dav1d() {
 task_ffmpeg() {
 	start_build ffmpeg FFmpeg || return 0
 	# disable vaapi until it can be tested
+	# disable libdrm, currently only useful on devices that can use Rockchip MPP codecs
 	PKG_CONFIG_PATH="$PKG_CONFIG_PATH" \
 	./configure --prefix="$PREFIX" \
 		--cc="$CC" \
@@ -402,6 +407,7 @@ task_ffmpeg() {
 		--disable-libxcb-shm \
 		--disable-libx264 \
 		--disable-libx265 \
+		--disable-libdrm \
 		--disable-network \
 		--disable-debug \
 		--disable-indevs \

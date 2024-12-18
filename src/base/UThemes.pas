@@ -360,8 +360,9 @@ type
     //Duet Icon
     DuetIcon:         TThemeStatic;
 
-    //Rap Icon
+    //Rap Icons
     RapIcon:          TThemeStatic;
+    RapToFreestyleIcon: TThemeStatic;
 
     //Show Cat in TopLeft Mod
     TextCat:          TThemeText;
@@ -1430,7 +1431,6 @@ function GetLyricBarColor(Color: integer): TRGB;
 
 function GetPlayerColor(Color: integer): TRGB;
 function GetPlayerLightColor(Color: integer): TRGB;
-function GetPlayerLightColorV2(Color: integer): TRGB;
 procedure LoadPlayersColors;
 procedure LoadTeamsColors;
 
@@ -3463,72 +3463,6 @@ begin
       Result.G := 192/255;
       Result.B := 205/255;
     end;
-    7: //purple
-    begin
-      Result.R := 240/255;
-      Result.G := 170/255;
-      Result.B := 255/255;
-    end;
-    8: //gold
-    begin
-      Result.R := 255/255;
-      Result.G := 214/255;
-      Result.B := 118/255;
-    end;
-    9: //gray
-    begin
-      Result.R := 220/255;
-      Result.G := 220/255;
-      Result.B := 220/255;
-    end;
-    else
-    begin
-      Result.R := 145/255;
-      Result.G := 215/255;
-      Result.B := 240/255;
-    end;
-  end;
-end;
-
-function GetPlayerLightColorV2(Color: integer): TRGB;
-begin
-  case (Color) of
-    1://blue
-    begin
-      Result.R := 145/255;
-      Result.G := 215/255;
-      Result.B := 240/255;
-    end;
-    2: //red
-    begin
-      Result.R := 245/255;
-      Result.G := 162/255;
-      Result.B := 162/255;
-    end;
-    3: //green
-    begin
-      Result.R := 152/255;
-      Result.G := 250/255;
-      Result.B := 153/255;
-    end;
-    4: //yellow
-    begin
-      Result.R := 255/255;
-      Result.G := 246/255;
-      Result.B := 143/255;
-    end;
-    5: //orange
-    begin
-      Result.R := 255/255;
-      Result.G := 204/255;
-      Result.B := 156/255;
-    end;
-    6: //pink
-    begin
-      Result.R := 255/255;
-      Result.G := 192/255;
-      Result.B := 205/255;
-    end;
     7: //violet
     begin
       Result.R := 240/255;
@@ -4356,8 +4290,9 @@ begin
   //Duet Icon
   ThemeLoadStatic(Song.DuetIcon, 'Song' + prefix + 'DuetIcon');
 
-  //Rap Icon
+  //Rap Icons
   ThemeLoadStatic(Song.RapIcon, 'Song' + prefix + 'RapIcon');
+  ThemeLoadStatic(Song.RapToFreestyleIcon, 'Song' + prefix + 'RapToFreestyleIcon');
 
   //Show Cat in TopLeft Mod
   ThemeLoadStatic(Song.StaticCat, 'Song' + prefix + 'StaticCat');

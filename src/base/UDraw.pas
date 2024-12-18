@@ -84,6 +84,9 @@ type
     Mid:    real;
   end;
 
+const
+P1_INVERTED = 99;
+
 var
   NotesW:   array [0..UIni.IMaxPlayerCount-1] of real;
   NotesH:   array [0..UIni.IMaxPlayerCount-1] of real;
@@ -1580,7 +1583,7 @@ begin
   for I := 1 to PlayersPlay do
   begin
 
-    if (ScreenSong.Mode = smNormal) then
+    if (ScreenSong.Mode = smNormal) or (ScreenSong.Mode = smMedley) then
       Difficulty := Ini.PlayerLevel[I - 1]
     else
       Difficulty := Ini.Difficulty;
@@ -1875,11 +1878,17 @@ begin
 
         If ((NoteType = ntRap) and not CurrentSong.RapBeat) or (NoteType = ntRapGolden) then
         begin
-          glBindTexture(GL_TEXTURE_2D, Tex_Left_Rap[Color].TexNum);
+          If Color = P1_INVERTED then
+            glBindTexture(GL_TEXTURE_2D, Tex_Left_Rap_Inv.TexNum)
+          else
+            glBindTexture(GL_TEXTURE_2D, Tex_Left_Rap[Color].TexNum)
         end
         else
         begin
-          glBindTexture(GL_TEXTURE_2D, Tex_Left[Color].TexNum);
+          If Color = P1_INVERTED then
+            glBindTexture(GL_TEXTURE_2D, Tex_Left_Inv.TexNum)
+          else
+            glBindTexture(GL_TEXTURE_2D, Tex_Left[Color].TexNum)
         end;
         {$IFDEF UseOpenGLES3}
         {$ELSE}
@@ -1905,11 +1914,17 @@ begin
           end;
         If ((NoteType = ntRap) and not CurrentSong.RapBeat) or (NoteType = ntRapGolden) then
         begin
-          glBindTexture(GL_TEXTURE_2D, Tex_Mid_Rap[Color].TexNum);
+          If Color = P1_INVERTED then
+            glBindTexture(GL_TEXTURE_2D, Tex_Mid_Rap_Inv.TexNum)
+          else
+            glBindTexture(GL_TEXTURE_2D, Tex_Mid_Rap[Color].TexNum)
         end
         else
         begin
-          glBindTexture(GL_TEXTURE_2D, Tex_Mid[Color].TexNum);
+          If Color = P1_INVERTED then
+            glBindTexture(GL_TEXTURE_2D, Tex_Mid_Inv.TexNum)
+          else
+            glBindTexture(GL_TEXTURE_2D, Tex_Mid[Color].TexNum)
         end;
         {$IFDEF UseOpenGLES3}
         {$ELSE}
@@ -1927,11 +1942,19 @@ begin
 
         If ((NoteType = ntRap) and not CurrentSong.RapBeat) or (NoteType = ntRapGolden) then
         begin
-          glBindTexture(GL_TEXTURE_2D, Tex_Right_Rap[Color].TexNum);
+          If Color = P1_INVERTED then
+            glBindTexture(GL_TEXTURE_2D, Tex_Right_Rap_Inv.TexNum)
+          else
+            glBindTexture(GL_TEXTURE_2D, Tex_Right_Rap[Color].TexNum)
         end
         else
         begin
-          glBindTexture(GL_TEXTURE_2D, Tex_Right[Color].TexNum);
+          If Color = P1_INVERTED then
+          begin
+            glBindTexture(GL_TEXTURE_2D, Tex_Right_Inv.TexNum);
+          end
+          else
+            glBindTexture(GL_TEXTURE_2D, Tex_Right[Color].TexNum)
         end;
         {$IFDEF UseOpenGLES3}
         {$ELSE}

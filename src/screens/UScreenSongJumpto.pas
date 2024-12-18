@@ -105,6 +105,7 @@ begin
 
         Button[0].Text[0].Text := Button[0].Text[0].Text + UCS4ToUTF8String(CharCode);
         SetTextFound(CatSongs.SetFilter(Button[0].Text[0].Text, fSelectType));
+        ScreenSong.NextRandomSearchIdx := CatSongs.VisibleSongs;
       end;
     end;
 
@@ -116,6 +117,7 @@ begin
           begin
             Button[0].Text[0].DeleteLastLetter();
             SetTextFound(CatSongs.SetFilter(Button[0].Text[0].Text, fSelectType));
+            ScreenSong.NextRandomSearchIdx := CatSongs.VisibleSongs;
           end;
         end;
 
@@ -134,6 +136,7 @@ begin
             //ScreenSong.UnLoadDetailedCover;
             Button[0].Text[0].Text := '';
             CatSongs.SetFilter('', fltAll);
+            ScreenSong.NextRandomSearchIdx := CatSongs.VisibleSongs;
             SetTextFound(0);
           end;
         end;
@@ -155,7 +158,10 @@ begin
           Interaction := 1;
           InteractInc;
           if (Length(Button[0].Text[0].Text) > 0) then
+          begin
             SetTextFound(CatSongs.SetFilter(Button[0].Text[0].Text, fSelectType));
+            ScreenSong.NextRandomSearchIdx := CatSongs.VisibleSongs;
+          end;
           Interaction := 0;
         end;
       SDLK_LEFT:
@@ -163,7 +169,10 @@ begin
           Interaction := 1;
           InteractDec;
           if (Length(Button[0].Text[0].Text) > 0) then
+          begin
             SetTextFound(CatSongs.SetFilter(Button[0].Text[0].Text, fSelectType));
+            ScreenSong.NextRandomSearchIdx := CatSongs.VisibleSongs;
+          end;
           Interaction := 0;
         end;
     end;

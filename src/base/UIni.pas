@@ -842,7 +842,7 @@ begin
   end;
 
   ILineTranslated[0] := ULanguage.Language.Translate('OPTION_VALUE_TO_SING');
-  ILineTranslated[1] := ULanguage.Language.Translate('OPTION_VALUE_ACTUAL');
+  ILineTranslated[1] := ULanguage.Language.Translate('OPTION_VALUE_CURRENT');
   ILineTranslated[2] := ULanguage.Language.Translate('OPTION_VALUE_NEXT');
 
   IPropertyTranslated[0] := ULanguage.Language.Translate('OPTION_VALUE_FILL');
@@ -1788,6 +1788,11 @@ begin
     PlayerLevel[I] := IniFile.ReadInteger('PlayerLevel', 'P'+IntToStr(I+1), 0);
   end;
 
+  // Switch colors for players 2 and 4, since player 2 line color is used
+  // for the second part in duet, and yellow (4) looks better than red (2)
+  PlayerColor[1] := IniFile.ReadInteger('PlayerColor', 'P'+IntToStr(I+1), 4);
+  PlayerColor[3] := IniFile.ReadInteger('PlayerColor', 'P'+IntToStr(I+1), 2);
+
   // Color Team
   for I := 0 to 2 do
     TeamColor[I] := IniFile.ReadInteger('TeamColor', 'T'+IntToStr(I+1), I + 1);
@@ -1817,7 +1822,7 @@ begin
   TabsAtStartup := Tabs;	//Tabs at Startup fix
 
   // Song Sorting
-  Sorting := ReadArrayIndex(ISorting, IniFile, 'Game', 'Sorting', Ord(sEdition));
+  Sorting := ReadArrayIndex(ISorting, IniFile, 'Game', 'Sorting', Ord(sArtist));
 
   // Show Score
   ShowScores := ReadArrayIndex(IShowScores, IniFile, 'Game', 'ShowScores', IGNORE_INDEX, 'On');
@@ -1859,7 +1864,7 @@ begin
   TextureSize := ReadArrayIndex(ITextureSize, IniFile, 'Graphics', 'TextureSize', IGNORE_INDEX, '256');
 
   // Oscilloscope
-  Oscilloscope := ReadArrayIndex(IOscilloscope, IniFile, 'Graphics', 'Oscilloscope', 0);
+  Oscilloscope := ReadArrayIndex(IOscilloscope, IniFile, 'Graphics', 'Oscilloscope', 1);
 
   // Spectrum
   //Spectrum := ReadArrayIndex(ISpectrum, IniFile, 'Graphics', 'Spectrum', IGNORE_INDEX, 'Off');
@@ -1891,7 +1896,7 @@ begin
   AudioOutputBufferSizeIndex := ReadArrayIndex(IAudioOutputBufferSize, IniFile, 'Sound', 'AudioOutputBufferSize', 0);
 
   //Preview Volume
-  PreviewVolume := ReadArrayIndex(IPreviewVolume, IniFile, 'Sound', 'PreviewVolume', 7);
+  PreviewVolume := ReadArrayIndex(IPreviewVolume, IniFile, 'Sound', 'PreviewVolume', 5);
 
   //Preview Fading
   PreviewFading := ReadArrayIndex(IPreviewFading, IniFile, 'Sound', 'PreviewFading', 3);
@@ -1910,7 +1915,7 @@ begin
   // Lyrics Style
   LyricsStyle := ReadArrayIndex(ILyricsStyleCompat, IniFile, 'Lyrics', 'LyricsStyle', -1);
   if (LyricsStyle = -1) then
-    LyricsStyle := ReadArrayIndex(ILyricsStyle, IniFile, 'Lyrics', 'LyricsStyle', 0);
+    LyricsStyle := ReadArrayIndex(ILyricsStyle, IniFile, 'Lyrics', 'LyricsStyle', 2);
 
   // Lyrics Effect
   LyricsEffect := ReadArrayIndex(ILyricsEffect, IniFile, 'Lyrics', 'LyricsEffect', 2);
@@ -2079,8 +2084,8 @@ begin
 
   // Jukebox
   JukeboxFont := ReadArrayIndex(ILyricsFont, IniFile, 'Jukebox', 'LyricsFont', 0);
-  JukeboxStyle := ReadArrayIndex(ILyricsStyle, IniFile, 'Jukebox', 'LyricsStyle', 0);
-  JukeboxEffect := ReadArrayIndex(ILyricsEffect, IniFile, 'Jukebox', 'LyricsEffect', 1);
+  JukeboxStyle := ReadArrayIndex(ILyricsStyle, IniFile, 'Jukebox', 'LyricsStyle', 2);
+  JukeboxEffect := ReadArrayIndex(ILyricsEffect, IniFile, 'Jukebox', 'LyricsEffect', 2);
   JukeboxAlpha := ReadArrayIndex(ILyricsAlpha, IniFile, 'Jukebox', 'LyricsAlpha', 20);
 
   JukeboxSongMenu := ReadArrayIndex(IJukeboxSongMenu, IniFile, 'Jukebox', 'SongMenu', IGNORE_INDEX, 'On');
@@ -2093,7 +2098,7 @@ begin
   begin
     JukeboxSingLineColor := High(IHexSingColor);
 
-    HexColor := IniFile.ReadString('Jukebox', 'SingLineColor', IHexSingColor[0]);
+    HexColor := IniFile.ReadString('Jukebox', 'SingLineColor', '47B3FF');
     Col := HexToRGB(HexColor);
 
     Ini.JukeboxSingLineOtherColorR := Round(Col.R);

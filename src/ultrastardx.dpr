@@ -418,8 +418,6 @@ UPlatformAndroid   in 'base\UPlatformAndroid.pas',
   opencv_types            in 'lib\openCV\opencv_types.pas',
 {$ENDIF}
 
-  //BassMIDI                in 'lib\bassmidi\bassmidi.pas',
-
   UMenuStaticList in 'menu\UMenuStaticList.pas',
   UWebcam                 in 'base\UWebcam.pas',
 
