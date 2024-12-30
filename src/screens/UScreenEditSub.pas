@@ -4028,8 +4028,6 @@ begin
   scale := Round((CurrentTone - Tracks[CurrentTrack].Lines[Tracks[CurrentTrack].CurrentLine].Notes[CurrentNote].Tone) / 12);
 
 
-  Rec.Left  := X1;
-  Rec.Right := X2;
   scale := 0;
   repeat
     if (Tracks[CurrentTrack].Lines[Tracks[CurrentTrack].CurrentLine].Notes[CurrentNote].Tone + 12 * scale > CurrentTone) then

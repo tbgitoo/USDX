@@ -276,23 +276,29 @@ fi
 # Mac OS X and other linux distributions use lua.pc
 # Archlinux aur package for 5.3 use lua5.3.pc in order
 # to make it work alongside the 5.2 version.
+# On windows 64 bits compiled on mingw, the decimal point seems to be problematic, remove in dll name, pc file name and also here
 
 for i in 5.4 5.3 5.2 5.1 ; do
     if [[ "$android_cross" = "yes" ]]; then
   	ANDROID_PKG_HAVE([lua], [lua$i], yes)
     else
-  	PKG_HAVE([lua], [lua$i], check)
+	lua_LIB_NAME="lua$i"
+	if @<:@@<:@ "$host" = "x86_64-w64-mingw64" && "$build" = "x86_64-w64-mingw32" @:>@@:>@; then
+	  lua_LIB_NAME="lua${i//./}"		
+	fi
+  	PKG_HAVE([lua], ["$lua_LIB_NAME"], check)
     fi
     if [[ x$lua_HAVE = xyes ]]; then
-        lua_LIB_NAME="lua$i"
 	if [[ "$android_cross" = "yes" ]]; then
   	     ANDROID_PKG_VERSION([lua], [lua$i])
     	else
-  	    PKG_VERSION([lua], [lua$i])
+  	    PKG_VERSION([lua], ["$lua_LIB_NAME"])
     	fi   
         break
     fi
 done
+
+
 
 if [[ x$lua_HAVE != xyes ]]; then
     if [[ "$android_cross" = "yes" ]]; then
@@ -305,7 +311,7 @@ if [[ x$lua_HAVE != xyes ]]; then
     PKG_VERSION([lua], [lua])
     fi
 fi
-
+echo "Lua integer: checker header files with flag $lua_CFLAGS"
 AC_MSG_CHECKING([size of lua_Integer])
 if [[ "$android_cross" = "yes" ]]; then
 	ANDROID_PKG_VALUE([lua],[CFLAGS],[cflags],[$lua_LIB_NAME],[C compiler flags for Lua])
@@ -318,6 +324,19 @@ AC_COMPUTE_INT([LUA_INTEGER_BITS],[(long)sizeof(lua_Integer)*8],[#include <lua.h
 CFLAGS="$old_CFLAGS"
 AC_SUBST(LUA_INTEGER_BITS)
 AC_MSG_RESULT([$LUA_INTEGER_BITS bits])
+
+
+if @<:@@<:@ "$build" = "x86_64-w64-mingw32" @:>@@:>@; then
+        lua_LIBS_updated=
+	for i in $lua_LIBS ; do
+                lua_LIBS_updated_to_add="$i"
+		case "$i" in
+			-llua*)  lua_LIBS_updated_to_add="${i//./}"
+		esac
+		lua_LIBS_updated="$lua_LIBS_updated $lua_LIBS_updated_to_add"
+	done
+        lua_LIBS="$lua_LIBS_updated"		
+fi
 
 lua_lib_candidates=
 for i in $lua_LIBS ; do
@@ -632,6 +651,7 @@ AC_ARG_ENABLE(portmidi, [AS_HELP_STRING([--disable-portmidi], [Disable PortTime 
 AC_ARG_WITH(porttime, [AS_HELP_STRING([--with-porttime], [Use PortTime instead of SDL Midi loop])])
 
 if [[ x$enable_portmidi != xno ]] ; then
+    PKG_HAVE([portmidi], [portmidi], yes)
     AC_CHECK_LIB([portmidi], [Pm_Initialize], [
         portmidi_HAVE=yes
         if [[ x$with_porttime = xyes ]] ; then
@@ -684,7 +704,14 @@ AC_SUBST(FPC_ANDROID_FLAGS)
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([src/Makefile])
-AC_CONFIG_FILES([src/config-$FPC_PLATFORM.inc:src/config.inc.in])
+CONFIGFILE_PLATFORM=$FPC_PLATFORM
+if [[ x$CONFIGFILE_PLATFORM = xwin32 ]]; then
+   CONFIGFILE_PLATFORM=win
+fi
+if [[ x$CONFIGFILE_PLATFORM = xwin64 ]]; then
+    CONFIGFILE_PLATFORM=win
+fi
+AC_CONFIG_FILES([src/config-$CONFIGFILE_PLATFORM.inc:src/config.inc.in])
 if [[ x$libprojectM_USE_CWRAPPER = xyes ]]; then
     AC_CONFIG_FILES([src/lib/projectM/cwrapper/Makefile])
 fi

@@ -49,6 +49,7 @@ Optional libraries:
   * Path to FPC, something like `PATH="${PATH}:/c/FPC/3.2.2/bin/i386-win32"`
   * Path to mingw64 libraries, `PKG_CONFIG_PATH="${PKG_CONFIG_PATH}:/mingw64/lib/pkgconfig"`
 
+
 ### Compile and run
 - `git clone https://github.com/UltraStar-Deluxe/USDX`
 - `cd USDX`
@@ -70,6 +71,8 @@ Optional libraries:
   Current Linux distributions do not offer the C API.
 * `--with-opencv-cxx-api`: Use OpenCV's newer C++ API.
   Required for webcam support under Linux, but requires OpenCV to be present at both build time as well as runtime.
+* `--host=x86_64-w64-mingw64`: Specifically for cross-compiling to Windows 64 bit in mingw (uses the fpc crosscompiler ppcrossx64, if available, for windows 64 as there is no native fpc for this as yet
+
 
 ## Compiling on Linux using flatpak-builder
 - The manifest for our Flathub releases is in a different repository:
@@ -92,6 +95,10 @@ The CI does this for you, but if you need to do it manually:
   * Copy the DLLs from `game` to `installer/dependencies/dll`
   * `C:\...\makensis "installer/UltraStar Deluxe.nsi"` (this will take a while)
   * The .exe will be placed in `installer/dist`
+
+### Windows 64bit using MSYS2
+- As of 2024, FPC for windows 64bit does not run natively but as a crosscompiler
+- To specically detect this, use ./configure --host=x86_64-w64-mingw64
   
   
   # Android cross compilation

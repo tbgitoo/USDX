@@ -51,7 +51,11 @@ uses
   {$IFDEF UsePortMidi}
   PortMidi,
   {$ELSE}
+  {$IFDEF UseMIDIPort}
+  PortMidi,
+  {$ELSE}
   Amidi,
+  {$ENDIF}
   {$ENDIF}
   UFluidSynth,
   UMidiTransfer;

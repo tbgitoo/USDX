@@ -41,7 +41,11 @@ uses
   {$IFDEF UsePortMidi}
   PortMidi,
   {$ELSE}
+  {$IFDEF UseMIDIPort}
+  PortMidi,
+  {$ELSE}
   Amidi,
+  {$ENDIF}
   {$ENDIF}
   sysutils,CTypes, UCommon, UTextEncoding;
 

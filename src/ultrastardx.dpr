@@ -87,9 +87,9 @@ uses
   {$IFDEF UsePortmixer}
   portmixer              in 'lib\portmixer\portmixer.pas',
   {$ENDIF}
-  {$IFDEF UsePortMidi}
+  {$IFDEF UseMIDIPort}
   {$IFNDEF HaveAMidi}
-  portmidi               in 'lib\portmidi\portmidi.pp', 
+  portmidi               in 'lib\portmidi\portmidi.pp',
   {$ENDIF}
   {$ENDIF}
   {$IFDEF HaveAMidi}

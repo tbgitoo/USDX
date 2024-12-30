@@ -113,7 +113,14 @@ AC_ARG_ENABLE(noexecstack,
 # Find compiler executable
 ###
 
+# Special case: build for win64, this is actually a specific cross compiler
+
 PPC_CHECK_PROGS="fpc FPC ppc386 ppc PPC386"
+
+if @<:@@<:@ "$host" = "x86_64-w64-mingw64" && "$build" = "x86_64-w64-mingw32" @:>@@:>@; then
+echo "checking Windows 64: Use 32->64bit crosscompiler"
+PPC_CHECK_PROGS="ppcrossx64 $PPC_CHECK_PROGS"
+fi
 
 if test -z "$PPC_PATH"; then
     PPC_PATH=$PATH

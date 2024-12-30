@@ -49,7 +49,9 @@ interface
 
 uses
 
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
+  {$ENDIF}{$ENDIF}
 
   Classes,
   {$IFDEF ANDROID}

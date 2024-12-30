@@ -99,7 +99,7 @@ TIntArray = array of Integer;
 TMidiKeyboardPressedStream = class(TMidiInputStream)
     public
     keyBoardPressed: array[0..127] of Boolean;
-    criticlSectionKeyBoardPressed: TCriticalSection;
+
     constructor Create;
     procedure ResetKeyBoardPressed;
     procedure processEvents (midiEvents: array of PmEvent);

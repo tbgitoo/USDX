@@ -89,6 +89,7 @@ const
 implementation
 
 uses
+  UMainThread,
   UGraphic,
   UHelp,
   ULog,
