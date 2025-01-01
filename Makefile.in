@@ -574,4 +574,10 @@ android_test:
 	[[ -e build/x86 ]] && cp -r build/x86 android_project/app/src/main/jniLibs || :
 	[[ -e build/x86_64 ]] && cp -r build/x86_64 android_project/app/src/main/jniLibs || :
 
+.PHONY: pascal_test
+pascal_test:
+	$(MAKE) -C $(USDX_SRC_DIR) $@
+	[[ -e src/pascal_test.exe ]] && cp src/pascal_test.exe game || :
+	
+
 
