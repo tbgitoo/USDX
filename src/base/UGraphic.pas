@@ -518,17 +518,24 @@ begin
     Log.LogCritical('SDL_Init Failed', 'UGraphic.Initialize3D');
   end;
 
+   InitializeScreen;
+
+
+   {$ELSE}
+
   InitializeScreen;
 
 
 
 
-  {$ELSE}
+
 
   if ( SDL_InitSubSystem(SDL_INIT_VIDEO) = -1 ) then
   begin
     Log.LogCritical('SDL_Init Failed', 'UGraphic.Initialize3D');
   end;
+
+
 
 
   // load icon image (must be 32x32 for win32)

@@ -422,6 +422,94 @@ var
   WindowTitle: string;
   BadPlayer: integer;
 
+const
+  WINDOW_ICON = 'icons/ultrastardx-icon.png';
+
+  procedure LoadFontTextures;
+begin
+
+  BuildFonts;
+end;
+procedure LoadLoadingScreen_test;
+begin
+
+  ScreenLoading := TScreenLoading.Create;
+
+
+  ScreenLoading.OnShow;
+  Display.CurrentScreen := @ScreenLoading;
+
+  SwapBuffers;
+
+  ScreenLoading.Draw;
+  Log.logStatus('UGraphic','LoadLoadingScreen Drawing done' );
+
+  Log.logStatus('test',LUA_LIB_NAME);
+  luaL_newstate;
+
+
+end;
+
+
+procedure Initialize3D_test (Title: string);
+var
+  Icon: PSDL_Surface;
+begin
+
+
+
+  if ( SDL_InitSubSystem(SDL_INIT_VIDEO) = -1 ) then
+  begin
+    Log.LogCritical('SDL_Init Failed', 'UGraphic.Initialize3D');
+  end;
+
+  InitializeScreen;
+
+
+  // load icon image (must be 32x32 for win32)
+  Icon := LoadImage(ResourcesPath.Append(WINDOW_ICON));
+  if (Icon <> nil) then
+  begin
+    SDL_SetWindowIcon(Screen, Icon);
+    SDL_FreeSurface(Icon);
+  end;
+
+  SDL_SetWindowTitle(Screen, PChar(Title));
+
+  { workaround for buggy Intel 3D driver on Linux }
+  //SDL_putenv('texture_tiling=false');  //ToDo: on linux, check if this is still necessary with SDL 2
+
+  SDL_SetWindowTitle(Screen, PChar(Title + ' - Initializing screen'));
+
+
+  SDL_SetWindowTitle(Screen, PChar(Title + ' - Initializing texturizer'));
+  Texture := TTextureUnit.Create;
+  Texture.Limit :=1920; //currently, Full HD is all we want. switch to 64bit target before going further up
+
+  //LoadTextures;
+  SDL_SetWindowTitle(Screen, PChar(Title + ' - Initializing video modules'));
+  // Note: do not initialize video modules earlier. They might depend on some
+  // SDL video functions or OpenGL extensions initialized in InitializeScreen()
+  InitializeVideo();
+
+  SDL_SetWindowTitle(Screen, PChar(Title + ' - Initializing 3D'));
+  Display := TDisplay.Create;
+  //Display.SetCursor;
+
+  SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading font textures'));
+
+  LoadFontTextures();
+
+  // Show the Loading Screen
+  SDL_SetWindowTitle(Screen, PChar(Title + ' - Loading first screen'));
+
+  LoadLoadingScreen_test;
+
+
+
+
+end;
+
 
 begin
         SetMultiByteConversionCodePage(CP_UTF8);
@@ -493,6 +581,31 @@ begin
       DataBase.Init(Platform.GetGameUserPath.Append('Ultrastar.db'))
     else
       DataBase.Init(Params.ScoreFile);
+
+    // Ini + Paths
+    Log.LogStatus('Load Ini', 'Initialization');
+    Ini := TIni.Create;
+    Ini.Load;
+
+    // Help
+    Log.LogStatus('Load Help', 'Initialization');
+    Help := THelp.Create;
+
+    // it is possible that this is the first run, create a .ini file if neccessary
+    Log.LogStatus('Write Ini', 'Initialization');
+    Ini.Save;
+
+    // Theme
+    Theme.LoadTheme(Ini.Theme, Ini.Color);
+
+    // Sound
+    InitializeSound();
+
+    // Lyrics-engine with media reference timer
+    LyricsState := TLyricsState.Create();
+
+    // Graphics
+    Initialize3D_test(WindowTitle);
 
 	writeLn('Hello!');
 end.
