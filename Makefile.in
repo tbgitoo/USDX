@@ -87,7 +87,7 @@ USE_OPENCV_CWRAPPER = @USE_OPENCV_CWRAPPER@
 # Windows 64
 #################################################
 
-DO_WIN64 := @DO_WIN64@
+COPY_DLL_FOR_WIN64 = @COPY_DLL_FOR_WIN64@
 
 #################################################
 # Dependencies
@@ -135,7 +135,22 @@ $(BUILD_TARGETS): all-deps
 all-deps:
 	@for dir in $(DEPS); do \
 	  $(MAKE) -C "$$dir" all; \
-	done
+	done; \
+	if [ $(COPY_DLL_FOR_WIN64) = yes ]; then \
+	  echo "Copying Windows 64 dll into game folder"; \
+	  $(RM) $(USDX_GAME_DIR)/*.dll; \
+	  for file in "$(top_srcdir)"/installer/dependencies/dll/win64/*.dll; do \
+	    echo "Copying $$file"; \
+	    cp "$$file" "$(USDX_GAME_DIR)"; \
+	  done; \
+	else \
+	  echo "Copying Windows 32 dll into game folder"; \
+	  $(RM) $(USDX_GAME_DIR)/*.dll; \
+	  for file in "$(top_srcdir)"/installer/dependencies/dll/win32/*.dll; do \
+	    echo "Copying $$file"; \
+	    cp "$$file" "$(USDX_GAME_DIR)"; \
+	  done; \
+       fi
 
 .PHONY: clean
 clean: clean-src clean-deps

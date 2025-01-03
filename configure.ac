@@ -178,7 +178,10 @@ echo "Compiling for Windows 64: Use 64 bit dlls and crosscompiler"
 DO_WIN64="yes"
 fi
 
-AC_SUBST(DO_WIN64, $DO_WIN64)
+AC_SUBST_DEFINE(COPY_DLL_FOR_WIN64, $DO_WIN64)
+AC_SUBST(COPY_DLL_FOR_WIN64, $DO_WIN64)
+
+
 
 
 
