@@ -154,7 +154,7 @@ AC_DEFUN([PKG_HAVE],
 	PKG_CHECK_EXISTS([$2], [
             have_lib="yes"
             [$1][_LIBS]=`$PKG_CONFIG $PKG_HAVE_additional_option --libs --silence-errors "$2"`
-            [$1][_LIBDIRS]=`$PKG_CONFIG PKG_HAVE_additional_option --libs-only-L --silence-errors "$2"`
+            [$1][_LIBDIRS]=`$PKG_CONFIG $PKG_HAVE_additional_option --libs-only-L --silence-errors "$2"`
             [$1][_LIBDIRS]=`AX_TRIM($[$1][_LIBDIRS])`
             # add library directories to LIBS (ignore *_LIBS for now)
 	    if test -n "$[$1][_LIBDIRS]"; then

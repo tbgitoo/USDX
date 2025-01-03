@@ -1,0 +1,11 @@
+prefix="D:/lua"
+exec_prefix=${prefix}
+libdir=${prefix}
+includedir=${prefix}/include/lua
+
+Name: lua51
+Description: Cross-Platform MIDI IO
+Version: 5.1
+Cflags: -I${includedir}
+Libs: -L${libdir} -llua51
+Requires.private: 

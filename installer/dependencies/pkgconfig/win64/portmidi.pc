@@ -1,7 +1,7 @@
 prefix="C:/Progra~1/portmidi"
 exec_prefix=${prefix}
-libdir=${prefix}/bin
-includedir=${prefix}/include
+libdir=${prefix}
+includedir=${prefix}/include/portmidi
 
 Name: portmidi
 Description: Cross-Platform MIDI IO

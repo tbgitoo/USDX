@@ -301,13 +301,40 @@ for i in 5.4 5.3 5.2 5.1 ; do
 	if @<:@@<:@ "$host" = "x86_64-w64-mingw64" && "$build" = "x86_64-w64-mingw32" @:>@@:>@; then
 	  lua_LIB_NAME="lua${i//./}"		
 	fi
+        lua_found_x64=no
   	PKG_HAVE([lua], ["$lua_LIB_NAME"], check)
+	if [[ x$lua_HAVE != xyes ]] ; then
+          if [[ x$DO_WIN64 = xyes ]] ; then
+          echo "No system lua library, checking 64bit installation in USDX"
+          lua_pc_file_location=$(dirname "$0")
+	  lua_pc_file_location=$(realpath "$lua_pc_file_location")
+	  lua_pc_file_location="$lua_pc_file_location/installer/dependencies/pkgconfig/win64"
+	  lua_dll_file_location=$(dirname "$0")
+	  lua_dll_file_location=$(realpath "$lua_dll_file_location")
+	  lua_dll_file_location="$lua_dll_file_location/installer/dependencies/dll/win64"
+          echo "Trying $lua_pc_file_location"
+          OLD_PKG_CONFIG_PATH=$PKG_CONFIG_PATH
+	  export PKG_CONFIG_PATH=$lua_pc_file_location
+	  PKG_HAVE([lua], ["$lua_LIB_NAME"], check, define-variable=prefix="$lua_dll_file_location")
+	  export PKG_CONFIG_PATH=$OLD_PKG_CONFIG_PATH
+          lua_found_x64=yes
+        fi
+      fi
     fi
     if [[ x$lua_HAVE = xyes ]]; then
 	if [[ "$android_cross" = "yes" ]]; then
   	     ANDROID_PKG_VERSION([lua], [lua$i])
     	else
-  	    PKG_VERSION([lua], ["$lua_LIB_NAME"])
+            if [[ x$lua_found_x64 = xyes ]] ; then
+               OLD_PKG_CONFIG_PATH=$PKG_CONFIG_PATH
+	       export PKG_CONFIG_PATH=$lua_pc_file_location
+	    fi
+	    PKG_VERSION([lua], ["$lua_LIB_NAME"])
+            if [[ x$lua_found_x64 = xyes ]] ; then
+               export PKG_CONFIG_PATH=$OLD_PKG_CONFIG_PATH
+	    fi
+	    
+  	    
     	fi   
         break
     fi
@@ -331,10 +358,21 @@ AC_MSG_CHECKING([size of lua_Integer])
 if [[ "$android_cross" = "yes" ]]; then
 	ANDROID_PKG_VALUE([lua],[CFLAGS],[cflags],[$lua_LIB_NAME],[C compiler flags for Lua])
 else
-  	PKG_VALUE([lua],[CFLAGS],[cflags],[$lua_LIB_NAME],[C compiler flags for Lua])
+    lua_C_flags_argument=cflags
+    if [[ x$lua_found_x64 = xyes ]] ; then
+               OLD_PKG_CONFIG_PATH=$PKG_CONFIG_PATH
+	       export PKG_CONFIG_PATH=$lua_pc_file_location
+               lua_C_flags_argument="define-variable=prefix=""$lua_dll_file_location  --$lua_C_flags_argument" 
+    fi
+    PKG_VALUE([lua],[CFLAGS],[$lua_C_flags_argument],[$lua_LIB_NAME],[C compiler flags for Lua])
+    if [[ x$lua_found_x64 = xyes ]] ; then
+               export PKG_CONFIG_PATH=$OLD_PKG_CONFIG_PATH
+    fi
+
 fi
 old_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS $lua_CFLAGS"
+echo $CFLAGS
 AC_COMPUTE_INT([LUA_INTEGER_BITS],[(long)sizeof(lua_Integer)*8],[#include <lua.h>])
 CFLAGS="$old_CFLAGS"
 AC_SUBST(LUA_INTEGER_BITS)
@@ -674,10 +712,13 @@ if [[ x$enable_portmidi != xno ]] ; then
         portmidi_pc_file_location=$(dirname "$0")
 	portmidi_pc_file_location=$(realpath "$portmidi_pc_file_location")
 	portmidi_pc_file_location="$portmidi_pc_file_location/installer/dependencies/pkgconfig/win64"
+	portmidi_dll_file_location=$(dirname "$0")
+	portmidi_dll_file_location=$(realpath "$portmidi_dll_file_location")
+	portmidi_dll_file_location="$portmidi_dll_file_location/installer/dependencies/dll/win64"
         echo "Trying $portmidi_pc_file_location"
         OLD_PKG_CONFIG_PATH=$PKG_CONFIG_PATH
 	export PKG_CONFIG_PATH=$portmidi_pc_file_location
-	PKG_HAVE([portmidi], [portmidi], yes)
+	PKG_HAVE([portmidi], [portmidi], yes, define-variable=prefix="$portmidi_dll_file_location")
 	export PKG_CONFIG_PATH=$OLD_PKG_CONFIG_PATH
       fi
     fi
