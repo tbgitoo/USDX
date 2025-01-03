@@ -171,6 +171,16 @@ AC_SUBST(USE_OSX_PACKAGING_LIBDIR, $USE_OSX_PACKAGING_LIBDIR)
 
 AC_CANONICAL_HOST
 
+DO_WIN64="no"
+
+if @<:@@<:@ "$host" = "x86_64-w64-mingw64" && "$build" = "x86_64-w64-mingw32" @:>@@:>@; then
+echo "Compiling for Windows 64: Use 64 bit dlls and crosscompiler"
+DO_WIN64="yes"
+fi
+
+AC_SUBST(DO_WIN64, $DO_WIN64)
+
+
 
 
 
@@ -227,6 +237,8 @@ fi
 if test x$FPC_PLATFORM = xdarwin; then
    AC_MACOSX_VERSION
 fi
+
+
 
 
 
