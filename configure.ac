@@ -666,7 +666,21 @@ AC_ARG_ENABLE(portmidi, [AS_HELP_STRING([--disable-portmidi], [Disable PortTime 
 AC_ARG_WITH(porttime, [AS_HELP_STRING([--with-porttime], [Use PortTime instead of SDL Midi loop])])
 
 if [[ x$enable_portmidi != xno ]] ; then
-    PKG_HAVE([portmidi], [portmidi], yes)
+    # First, check system installation
+    PKG_HAVE([portmidi], [portmidi], no)
+    if [[ x$portmidi_HAVE != xyes ]] ; then
+      if [[ x$DO_WIN64 = xyes ]] ; then
+        echo "No system portmidi library, checking 64bit installation in USDX"
+        portmidi_pc_file_location=$(dirname "$0")
+	portmidi_pc_file_location=$(realpath "$portmidi_pc_file_location")
+	portmidi_pc_file_location="$portmidi_pc_file_location/installer/dependencies/pkgconfig/win64"
+        echo "Trying $portmidi_pc_file_location"
+        OLD_PKG_CONFIG_PATH=$PKG_CONFIG_PATH
+	export PKG_CONFIG_PATH=$portmidi_pc_file_location
+	PKG_HAVE([portmidi], [portmidi], yes)
+	export PKG_CONFIG_PATH=$OLD_PKG_CONFIG_PATH
+      fi
+    fi
     AC_CHECK_LIB([portmidi], [Pm_Initialize], [
         portmidi_HAVE=yes
         if [[ x$with_porttime = xyes ]] ; then

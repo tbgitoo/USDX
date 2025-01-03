@@ -6,7 +6,7 @@
 #
 #   PKG_VALUE(VARIABLE_PREFIX, POSTFIX, COMMAND, MODULE, HELP-STRING)
 #   PKG_VERSION(VARIABLE_PREFIX, MODULE)
-#   PKG_HAVE(VARIABLE_PREFIX, MODULE, [REQUIRED])
+#   PKG_HAVE(VARIABLE_PREFIX, MODULE, [REQUIRED], [COMMAND] )
 #   AX_TRIM(STRING)
 
 # SYNOPSIS
@@ -113,7 +113,7 @@ AC_DEFUN([AX_TRIM],
 
 # SYNOPSIS
 #
-#   PKG_HAVE(VARIABLE_PREFIX, MODULE, [REQUIRED])
+#   PKG_HAVE(VARIABLE_PREFIX, MODULE, [REQUIRED], [COMMAND])
 #
 # DESCRIPTION
 #
@@ -124,6 +124,7 @@ AC_DEFUN([AX_TRIM],
 #     - VARIABLE_PREFIX: the prefix for the variables storing information about the package.
 #     - MODULE:   package name according to pkg-config
 #     - REQUIRED: if true, the configure-script is aborted if the package was not found
+#     - COMMAND:         a pkg-config command, e.g. "variable=prefix"
 # 
 #   Uses:
 #     with_[$VARIABLE_PREFIX]: whether and how the package should be checked for
@@ -139,6 +140,10 @@ AC_DEFUN([AX_TRIM],
 
 AC_DEFUN([PKG_HAVE],
 [
+    PKG_HAVE_additional_option=""
+    if test x$4 != x; then
+      PKG_HAVE_additional_option="--[$4]"
+    fi
     have_lib="no"
     AC_MSG_CHECKING([for $2])
     if test x"$with_[$1]" = xnocheck; then
@@ -148,8 +153,8 @@ AC_DEFUN([PKG_HAVE],
         # check if package exists
 	PKG_CHECK_EXISTS([$2], [
             have_lib="yes"
-            [$1][_LIBS]=`$PKG_CONFIG --libs --silence-errors "$2"`
-            [$1][_LIBDIRS]=`$PKG_CONFIG --libs-only-L --silence-errors "$2"`
+            [$1][_LIBS]=`$PKG_CONFIG $PKG_HAVE_additional_option --libs --silence-errors "$2"`
+            [$1][_LIBDIRS]=`$PKG_CONFIG PKG_HAVE_additional_option --libs-only-L --silence-errors "$2"`
             [$1][_LIBDIRS]=`AX_TRIM($[$1][_LIBDIRS])`
             # add library directories to LIBS (ignore *_LIBS for now)
 	    if test -n "$[$1][_LIBDIRS]"; then
@@ -172,7 +177,7 @@ AC_DEFUN([PKG_HAVE],
         # check if package is required
         if test x$3 = xyes -o x"$with_[$1]" = xyes ; then
             # print error message and quit
-            err_msg=`$PKG_CONFIG --errors-to-stdout --print-errors "$2"`
+            err_msg=`$PKG_CONFIG $PKG_HAVE_additional_option --errors-to-stdout --print-errors "$2"`
             AC_MSG_ERROR(
 [
 
