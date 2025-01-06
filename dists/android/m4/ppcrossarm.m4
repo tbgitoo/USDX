@@ -221,7 +221,12 @@ SIMPLE_PROGRAM="program foo; begin writeln; end."
 
 #The -Cp flag is from https://groups.google.com/g/android-ndk/c/ulQkg_BiqCg
 #and the ppcross386 -i output
-FPC_ANDROID_FLAGS="-T${FPC_PLATFORM} -Fu${FPC_UNIT_PATH}:${ANDROID_NDK_LIB} -Fl${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/${SYSROOT_FOLDER_NAME}/${ANDROID_NDK_LEVEL} -FL${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/darwin-x86_64/bin/ld -Xe -k--verbose"
+host_operating_system=darwin
+if @<:@@<:@ "$host" = "x86_64-w64-mingw64" || "$host" = "x86_64-windows" @:>@@:>@; then
+host_operating_system=windows
+fi
+
+FPC_ANDROID_FLAGS="-T${FPC_PLATFORM} -Fu${FPC_UNIT_PATH}:${ANDROID_NDK_LIB} -Fl${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${host_operating_system}-x86_64/sysroot/usr/lib/${SYSROOT_FOLDER_NAME}/${ANDROID_NDK_LEVEL} -FL${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${host_operating_system}-x86_64/bin/ld -Xe -k--verbose"
 
 if [[ "$ANDROID_ARCH" = "x86" ]]; then
 FPC_ANDROID_FLAGS="${FPC_ANDROID_FLAGS} -CpCOREI"

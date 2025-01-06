@@ -9,9 +9,23 @@ AC_DEFUN([ANDROID_PKG_HAVE],
         # check if package exists
         PKG_CHECK_EXISTS([dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc], [
             have_lib="yes"
+            config_root_directory=$(dirname "@S|@0")
+	    config_root_directory=$(realpath "$config_root_directory")
             [$1][_LIBS]=`$PKG_CONFIG --libs --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc"` 
             [$1][_LIBDIRS]=`$PKG_CONFIG --libs-only-L --silence-errors "dists/android/external/${ANDROID_SUBFOLDER}/pkginfo/$2.pc"`
             [$1][_LIBDIRS]=`AX_TRIM($[$1][_LIBDIRS])`
+	    [$1][_LIBDIRS]=${[$1][_LIBDIRS]//"dists/android/external"/"$config_root_directory/dists/android/external"}
+	    [$1][_LIBS]=${[$1][_LIBS]//"dists/android/external"/"$config_root_directory/dists/android/external"}
+	    
+	    if @<:@@<:@ "x$host" = "xx86_64-windows" || "x$host" = "xx86_64-pc-windows"  @:>@@:>@; then
+	       [$1][_LIBS]=${[$1][_LIBS]//\/d\//D:/}
+	       [$1][_LIBDIRS]=${[$1][_LIBDIRS]//\/d\//D:/}
+	       [$1][_LIBS]=${[$1][_LIBS]//\//\\}
+	       [$1][_LIBDIRS]=${[$1][_LIBDIRS]//\//\\}
+
+		
+	    fi
+
             # add library directories to LIBS (ignore *_LIBS for now)
 	    if test -n "$[$1][_LIBDIRS]"; then
                 LIBS="$LIBS $[$1][_LIBDIRS]"

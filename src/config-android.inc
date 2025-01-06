@@ -1,12 +1,12 @@
 {***************************************************************** 
- * Configuration file for ultrastardx 2024.3.0+dev
+ * Configuration file for ultrastardx 2024.10.0+dev
  * src/config-android.inc.  Generated from config.inc.in by configure.
  *****************************************************************}
 
 {* Libraries *}
 
 {$IF Defined(IncludeConstants)}
-  lua_lib_name = 'lua';
+  lua_lib_name = 'lua5.4';
   LUA_VERSION_INT     = 5004006;
   LUA_VERSION_RELEASE = '6';
   LUA_VERSION_MINOR   = '4';

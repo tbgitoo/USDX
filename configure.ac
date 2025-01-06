@@ -294,10 +294,10 @@ fi
 # On windows 64 bits compiled on mingw, the decimal point seems to be problematic, remove in dll name, pc file name and also here
 
 for i in 5.4 5.3 5.2 5.1 ; do
+    lua_LIB_NAME="lua$i"
     if [[ "$android_cross" = "yes" ]]; then
   	ANDROID_PKG_HAVE([lua], [lua$i], yes)
     else
-	lua_LIB_NAME="lua$i"
 	if @<:@@<:@ "$host" = "x86_64-w64-mingw64" && "$build" = "x86_64-w64-mingw32" @:>@@:>@; then
 	  lua_LIB_NAME="lua${i//./}"		
 	fi
@@ -391,6 +391,19 @@ if @<:@@<:@ "$build" = "x86_64-w64-mingw32" @:>@@:>@; then
         lua_LIBS="$lua_LIBS_updated"		
 fi
 
+# The problem of lua library naming also arises in cross compilation
+if @<:@@<:@ "$host" = "x86_64-windows" && "x$android_cross" = "xyes"  @:>@@:>@; then
+        lua_LIBS_updated=
+	for i in $lua_LIBS ; do
+                lua_LIBS_updated_to_add="$i"
+		case "$i" in
+			-llua*)  lua_LIBS_updated_to_add="${i//./}"
+		esac
+		lua_LIBS_updated="$lua_LIBS_updated $lua_LIBS_updated_to_add"
+	done
+        lua_LIBS="$lua_LIBS_updated"		
+fi
+
 lua_lib_candidates=
 for i in $lua_LIBS ; do
 	case "$i" in
@@ -398,6 +411,7 @@ for i in $lua_LIBS ; do
 	esac
 done
 old_LIBS=$LIBS
+echo $lua_lib_candidates
 AC_SEARCH_LIBS([luaL_newstate], [$lua_lib_candidates], [lua_LIB_NAME=${ac_cv_search_luaL_newstate#-l}], [], [])
 LIBS=$old_LIBS
 AC_SUBST(lua_LIB_NAME)

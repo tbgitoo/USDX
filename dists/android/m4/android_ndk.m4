@@ -38,6 +38,8 @@ AC_ARG_VAR(ANDROID_LEVEL, [Android language level])
 
 ANDROID_NDK_ROOT=`echo $ANDROID_NDK_HOME`
 
+echo "Android NDK HOME environment variable: $ANDROID_NDK_HOME"
+
 # if it is not explicitly set, try to find wether a default ndk-build
 # executable is set
 if test -z "$ANDROID_NDK_ROOT"; then

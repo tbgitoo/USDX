@@ -68,3 +68,9 @@ ppaslink.sh
 /usdx-dlls-i686.zip
 /game/*.dll
 /game/*.debug
+
+# android stuff
+/src/backup/libmain.lps
+/dists/android/external/USDX.lnk
+/android_project/app/src/main/jniLibs/arm64-v8a/libtest.so
+/android_project/.idea
