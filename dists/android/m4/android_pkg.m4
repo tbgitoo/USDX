@@ -18,6 +18,8 @@ AC_DEFUN([ANDROID_PKG_HAVE],
 	    [$1][_LIBS]=${[$1][_LIBS]//"dists/android/external"/"$config_root_directory/dists/android/external"}
 	    
 	    if @<:@@<:@ "x$host" = "xx86_64-windows" || "x$host" = "xx86_64-pc-windows"  @:>@@:>@; then
+	       [$1][_LIBS]=${[$1][_LIBS]//\/c\//C:/}
+	       [$1][_LIBDIRS]=${[$1][_LIBDIRS]//\/c\//C:/}
 	       [$1][_LIBS]=${[$1][_LIBS]//\/d\//D:/}
 	       [$1][_LIBDIRS]=${[$1][_LIBDIRS]//\/d\//D:/}
 	       [$1][_LIBS]=${[$1][_LIBS]//\//\\}

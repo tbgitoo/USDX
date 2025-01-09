@@ -185,6 +185,13 @@ if @<:@ -d "$ANDROID_NDK_LIB" @:>@; then
 fi
 fi
 
+
+if @<:@@<:@ "x$host" = "xx86_64-windows" || "x$host" = "xx86_64-pc-windows"  @:>@@:>@; then
+	       ANDROID_NDK_LIB=${ANDROID_NDK_LIB//\/c\//C:/}
+               ANDROID_NDK_LIB=${ANDROID_NDK_LIB//\/d\//D:/}
+	       ANDROID_NDK_LIB=${ANDROID_NDK_LIB//\//\\}
+fi
+
 echo "Android sysroot library: $ANDROID_NDK_LIB"
 
 

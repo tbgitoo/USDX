@@ -759,8 +759,10 @@ fi
 
 amidi_HAVE=no
 if [[ "$android_cross" = "yes" ]]; then
-OLD_LDFLAGS=$LDFLAGS
-AC_CHECK_LIB([AMidi], [AMidiDevice_fromJava], [
+if @<:@ -d "${ANDROID_NDK_LIB}" @:>@; then
+        LIBS="$LIBS -L${ANDROID_NDK_LIB}"
+     fi
+AC_CHECK_LIB([amidi], [AMidiDevice_fromJava], [
         amidi_HAVE=yes
         ])
 fi

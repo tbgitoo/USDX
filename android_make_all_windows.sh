@@ -11,7 +11,7 @@ echo "Compile for arm64-v8a architecture"
 make android
 
 echo "Compile for x86 architecture"
-./configure --host=x86-windows --build=x86 --with-android
+./configure --host=x86_64-windows --build=x86 --with-android
 make android
 
 echo "Compile for x86_64 architecture"
