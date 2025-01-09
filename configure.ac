@@ -759,6 +759,7 @@ fi
 
 amidi_HAVE=no
 if [[ "$android_cross" = "yes" ]]; then
+OLD_LDFLAGS=$LDFLAGS
 AC_CHECK_LIB([AMidi], [AMidiDevice_fromJava], [
         amidi_HAVE=yes
         ])

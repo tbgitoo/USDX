@@ -74,6 +74,20 @@ AC_ARG_WITH(androidlevel,
 
 ANDROID_NDK_LIB=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${host-os}-${host-cpu}/sysroot/usr/lib
 
+if @<:@ ! -d "$ANDROID_NDK_LIB" @:>@; then
+ANDROID_NDK_LIB=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${host-os}/sysroot/usr/lib
+fi
+
+if @<:@ ! -d "$ANDROID_NDK_LIB" @:>@; then
+ANDROID_NDK_LIB=${ANDROID_NDK_ROOT}/toolchains/llvm/prebuilt/${host-cpu}/sysroot/usr/lib
+fi
+
+
+
+
+
+
+
 
 
 ANDROID_ARCH=arm
@@ -117,7 +131,7 @@ if [[ "$build" = "x86" ]]; then
   ANDROID_SUBFOLDER="x86"
 fi
 
-echo $build
+
 
 if [[ "$build" = "x86_64-pc-none" ]]; then
   ANDROID_ARCH=x86_64
@@ -130,6 +144,49 @@ if [[ "$build" = "x86_64" ]]; then
   ANDROID_ARCH_VERSION=NONE
   ANDROID_SUBFOLDER="x86_64"
 fi
+
+
+if @<:@ ! -d "$ANDROID_NDK_LIB" @:>@; then
+ANDROID_NDK_LIB=${ANDROID_NDK_ROOT}/platforms/android-${ANDROID_NDK_LEVEL}
+if @<:@ -d "$ANDROID_NDK_LIB" @:>@; then
+  ANDROID_NDK_LIB_ROOT=$ANDROID_NDK_LIB
+  if [[ "x$ANDROID_SUBFOLDER" = "xarmeabi-v7a" ]]; then
+     if @<:@ -d "${ANDROID_NDK_LIB_ROOT}/armeabi-v7a" @:>@; then
+        ANDROID_NDK_LIB="${ANDROID_NDK_LIB_ROOT}/armeabi-v7a"
+     fi
+     if @<:@ -d "${ANDROID_NDK_LIB_ROOT}/arch-arm" @:>@; then
+        ANDROID_NDK_LIB="${ANDROID_NDK_LIB_ROOT}/arch-arm"
+     fi
+  fi
+  if [[ "x$ANDROID_SUBFOLDER" = "xarm64-v8a" ]]; then
+     if @<:@ -d "${ANDROID_NDK_LIB_ROOT}/arm64-v8a" @:>@; then
+        ANDROID_NDK_LIB="${ANDROID_NDK_LIB_ROOT}/arm64-v8a"
+     fi
+     if @<:@ -d "${ANDROID_NDK_LIB_ROOT}/arch-arm64" @:>@; then
+        ANDROID_NDK_LIB="${ANDROID_NDK_LIB_ROOT}/arch-arm64"
+     fi
+  fi
+  if [[ "x$ANDROID_SUBFOLDER" = "xx86" ]]; then
+     if @<:@ -d "${ANDROID_NDK_LIB_ROOT}/x86" @:>@; then
+        ANDROID_NDK_LIB="${ANDROID_NDK_LIB_ROOT}/x86"
+     fi
+     if @<:@ -d "${ANDROID_NDK_LIB_ROOT}/arch-x86" @:>@; then
+        ANDROID_NDK_LIB="${ANDROID_NDK_LIB_ROOT}/arch-x86"
+     fi
+  fi
+  if [[ "x$ANDROID_SUBFOLDER" = "xx86_64" ]]; then
+     if @<:@ -d "${ANDROID_NDK_LIB_ROOT}/x86_64" @:>@; then
+        ANDROID_NDK_LIB="${ANDROID_NDK_LIB_ROOT}/x86_64"
+     fi
+     if @<:@ -d "${ANDROID_NDK_LIB_ROOT}/arch-x86_64" @:>@; then
+        ANDROID_NDK_LIB="${ANDROID_NDK_LIB_ROOT}/arch-x86_64"
+     fi
+  fi
+fi
+fi
+
+echo "Android sysroot library: $ANDROID_NDK_LIB"
+
 
 
 AC_SUBST(ANDROID_SUBFOLDER)

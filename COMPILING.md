@@ -103,7 +103,7 @@ The CI does this for you, but if you need to do it manually:
   
   # Android cross compilation
 Android cross compilation needs:
-- The crosscompiler. The crosscompiler can be built from the free pascal sources at https://gitlab.com/freepascal.org/fpc/source.git, following the instructions at https://wiki.freepascal.org/Android. Depending on the platform, this needs the presence of a number of libraries. An example make command on MacOSX (12.6.6) is
+- The crosscompiler. There are prebuilt binary packages for various operating systems. Otherwise, the crosscompiler can also be built from the free pascal sources at https://gitlab.com/freepascal.org/fpc/source.git, following the instructions at https://wiki.freepascal.org/Android. Depending on the platform, this needs the presence of a number of libraries. An example make command on MacOSX (12.6.6) is
   For arm-v7a
   `make clean crossall crossinstall OS_TARGET=android CPU_TARGET=arm COMPILER_LIBRARYDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib FPCMAKEGCCLIBDIR=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib INSTALL_PREFIX=~/FPC/pp`
   - For x86
@@ -121,193 +121,37 @@ endif`
 * There also seems to be an error in compiler/options.pas, replace line 886 by
 `Assign(xmloutput,Copy(More,2,Length(More)));`
 
-- The Android NDK. In fact the Android NDK is already needed for making the fpc cross compiler. For compatibility reasons, the highest suitable release seems to be 19C (the old versions are available at https://github.com/android/ndk/wiki/Unsupported-Downloads)
+- The Android NDK. In fact the Android NDK is already needed for making the fpc cross compiler. For compatibility reasons, the highest suitable release seems to be 19C for macosx and 21b for windows (the old versions are available at https://github.com/android/ndk/wiki/Unsupported-Downloads)
 
 - Environment variables are also needed. For example, something like this in .bash_profile (depends where you put your variables)
-`#For FPC crosscompilation armeabi-v7a
+`#For FPC crosscompilation armeabi-v7a, on macosx
 export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/arm-linux-androideabi/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-arm/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
 export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
 export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/arm-linux-androideabi/bin/ranlib
 
-`#For FPC crosscompilation x86
+`#For FPC crosscompilation x86 on macosx
 export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/x86-4.9/prebuilt/darwin-x86_64/i686-linux-android/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-x86/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
 export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
 export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/i686-linux-android/bin/ranlib
 
 
-`#For FPC crosscompilation aarch64=arm64-v8a
+`#For FPC crosscompilation aarch64=arm64-v8a on macosx
 export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/aarch64-linux-android/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-arm64/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
 export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
 export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/aarch64-linux-android/bin/ranlib
 
-`#For FPC crosscompilation x86_64
+`#For FPC crosscompilation x86_64 on macosx
 export PATH=$PATH:~/Documents/android-ndk-r19c/toolchains/x86_64-4.9/prebuilt/darwin-x86_64/x86_64-linux-android/bin:~/Documents/android-ndk-r19c/platforms/android-21/arch-x86_64/usr/lib:~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64/bin:~/FPC/pp/lib/fpc/3.3.1
 export ANDROID_NDK_HOME=~/Documents/android-ndk-r19c
 export RANLIB=~/Documents/android-ndk-r19c/toolchains/llvm/prebuilt/darwin-x86_64x86_64-linux-android/bin/ranlib
 
+`In mingw, the path also needs to be extended, and ANDROID_NDK_HOME needs to be provided, but ranlib seems to be automatically chosen.
+
 
 See https://lists.gnu.org/archive/html/autoconf/2013-10/msg00004.html for some discussion
 
+A number of .so files is provided for the various android architectures in dists/android/external. These are compiled from third-party libraries. For a discussion on how to obtain these, see ANDROID_THIRDPARTY.md
 
-SDL2: If you want to compile these, use the ndk compilers. For a starting example of how to do that, see  https://github.com/AlexanderAgd/SDL2-Android/
-
-For compilation, it is also advantageous to set appropriate environment variables. For example:
-
-Set the following in your your .bash profile
-PATH=$PATH:~/Library/Android/sdk/ndk/25.2.9519653
-PATH=$PATH:~/Library/Android/sdk/tools
-export ANDROID_NDK_HOME=~/Library/Android/sdk/ndk/25.2.9519653
-
-If you want to use the script at https://github.com/AlexanderAgd/SDL2-Android/, the command would be something like
-
-./build_SDL2.sh  --api=29 --arch=armeabi-v7a 
-./build_SDL2.sh  --api=29 --arch=arm64-v8a
-./build_SDL2.sh  --api=29 --arch=x86
-./build_SDL2.sh  --api=29 --arch=x86_64
-
-
-
-SDL2 official version:  git clone --branch SDL2 https://github.com/libsdl-org/SDL
-
-Set the following in your your .bash profile
-PATH=$PATH:~/Library/Android/sdk/ndk/25.2.9519653
-PATH=$PATH:~/Library/Android/sdk/tools
-export ANDROID_NDK_HOME=~/Library/Android/sdk/ndk/25.2.9519653
-
-git clone --branch SDL2 https://github.com/libsdl-org/SDL
-
-in the SDL folder created, execute build-scripts/android-prefab.sh and find libSDL2.so for each architecture, along with the includes and .pc files
-
-git clone --branch SDL2 https://github.com/libsdl-org/SDL_image
-
-in the SDL_image folder created, execute build-scripts/android-prefab.sh, find libSL2_image.so for each architecture along the includes and .pc files. There may be some issues that you need to debug in the script itself, for example setting an sdl_build_root variable in the script so that it points to the build-android-prefab in the SLD folder from above, and also checking whether the script can find SDL_image.h, it may be in the include. Also, you need to run the download.sh script in the external folder to get the necessary libraries.
-
-More in detail:
-
- add a line sdl_build_root="<SDL2 path>/build-android-prefab" where the SDL path is the absolute path to the SDL2 source library, to android-prefab.sh
- and possibly correct the location of SDL_image.h, by finding expressions of the type "${sdlimage_root}/SDL_image.h" and replacing them with "${sdlimage_root}/include/SDL_image.h"
-
-
-
-
-
-SDL3 is also available from https://github.com/libsdl-org/SDL/ build-scripts/android-prefab.sh, find libSDL3.so for each architecture, along with the includes and .pc files
-
-SDL3_image is also available from https://github.com/libsdl-org/SDL_image/ build-scripts/android-prefab.sh, find libSL3_image.so for each architecture along the includes and .pc files 
- 
-
-
-or similar depending on what the architecture and version. Android API version of at least 29 is generally required to have access to midi via Amidi.h, so we compile everything at API version of at least 29
-
-Of the libraries produced, we use the shard object libraries libSDL2.so and libSDL2_image.so, as well as the static archive libraries libcpufeatures.a, libjpeg.a, and libpng.a. These are produced in the liball folder, and should be copied over to dists/android/external/armeabi-v7a for the .so files, and libcpufeatures.a, libjpeg.a and libpng.a to dists/android/external/armeabi-v7a/lib
-
-Similarly, for the other architectures, copy into the respective architecture folders
-
-Freetype: 
-
-git clone https://github.com/castle-engine/android-freetype/
-
-Edit the make file to copy the libfreetype.so library for the armeabi-v7a architecture to the correct pace at dists/android/external/armeabi-v7a, i.e. add something of the type 
-	cp -f Android/libs/armeabi-v7a/libfreetype.so \
-	  path/to/USDX/dists/android/external/armeabi-v7a/libfreetype.so
-
-make build
-
-Copy over the libfreetype.so generated to dists/android/external/armeabi-v7a and likewise the other architectures
-
-Copy over the files in the android-freetype/include folder to dists/android/external/include/freetype (i.e. there will be among others a freetype folder nested within dists/android/external/include/freetype) 
-
-Sqlite3
-
-https://github.com/stockrt/sqlite3-android
-
-cd /whereever/you/have/sqlite3-android
-make
-
-Copy over the libsqlite3.so to dists/android/external/armeabi-v7a 
-
-To sqlite3-android/jni/Application.mk, add
-APP_PLATFORM := 29
-
-to ensure appropriate API level
-
-To make the other architectures, edit sqlite3-android/jni/Application.mk, change the 
-APP_ABI := armeabi-v7a
-line to 
-APP_ABI := arm64-v8a
-APP_ABI := x86
-APP_ABI := x86_64
-
-You can run one after each other
-
-Also copy over the header files sqlite3.h and sqlite3ext.h located in sqlite3-android/build to dists/android/external/include/sqlite3 
-
-
-lua
-https://www.lua.org/ftp/lua-5.4.6.tar.gz
-https://blog.spreendigital.de/2020/05/30/how-to-compile-lua-5-4-0-for-android-as-a-dynamic-library-using-android-studio-4/
-
-Copy over the liblua5.4.6.so to dists/android/external/armeabi-v7a (and analogously the other architectures)
-Also, rename to only the major version , i.e. 5.4, during configuration, the minor version is truncated
-
-ffmpeg
-https://github.com/Javernaut/ffmpeg-android-maker
-
-run script ffmpeg-android-maker.sh 
-
-copy over all the library files generated in ffmpeg-android-maker/output/lib into the corresponding architectures folders in dists/android/external
-
-copy over all the header files (in their folders) in ffmpeg-android-maker/output/include to dists/android/external/include/ffmpeg
-
- 
-
-
-
-portaudio
-https://github.com/Gundersanne/portaudio_opensles
-mkdir -p build && cd build
-cmake     -DANDROID_PLATFORM=android-29     -DANDROID_ABI=armeabi-v7a     -DCMAKE_BUILD_TYPE=Debug     -DCMAKE_TOOLCHAIN_FILE=~/Library/Android/sdk/ndk/25.2.9519653/build/cmake/android.toolchain.cmake ..
-make
-
-delete the build folder and start over
-mkdir -p build && cd build
-cmake     -DANDROID_PLATFORM=android-29     -DANDROID_ABI=arm64-v8a     -DCMAKE_BUILD_TYPE=Debug     -DCMAKE_TOOLCHAIN_FILE=~/Library/Android/sdk/ndk/25.2.9519653/build/cmake/android.toolchain.cmake ..
-make
-
-Copy over the libportaudio.so file generated in build to the corresponding architecture
-
-
-Oboe: This is the preconized alternative to the portaudio library
-git clone https://github.com/google/oboe/
-
-cd oboe
-
-./build_all_android.sh
-
-then copy over the liboboe.so files from the build forlder to dists/android/external/armeabi-v7a (and analogously the other architectures). Also copy over the oboe folder from the build/include folder to dists/android/external/include (i.e. there should be an oboe folder in the include directory)
-
-
-fluidsynth
-https://github.com/FluidSynth/fluidsynth/releases get the android release and also a windows one for the headers (the include directory)
-
-fluidsynth also depends on libomp, which is available through the ndk kit, for example: sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/lib64/clang/14.0.7/lib/linux/x86_64/libomp.so
-
-fluidsynth also depends on libc++_shared.so, which is available through the ndk kit, for example: sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/arm-linux-androideabi/libc++_shared.so
-
-
-
-fluidsynth from source
-git clone https://github.com/VolcanoMobile/fluidsynth-android
-and build_all_android.sh
-copy libfluidsynth.so as well as the include
-
-ligbles, ligEGL: From ndk (sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/29 and correspondingly)
-
-libpng: git clone https://github.com/julienr/libpng-android.git
-To create dynamic libraries, change the android.mk file (i.e uncomment include $(BUILD_SHARED_LIBRARY) and comment the corresponding static library)
-Also, there may be an issue with dynamic linking aginst zlib, use LOCAL_LDLIBS := -L$(SYSROOT)/usr/lib -lz to mitigate; finally, in Application.mk, add x86 for building
-
-Copy the corresponding libpng.so files to the architectures in the dist folder
 
 
 #USDX
@@ -325,7 +169,10 @@ And for the other architectures, that's
 ./configure --host=x86_64-darwin --build=x86_64 --with-android
 
 There is also a script that builds all the architectures
-./android_make_all.sh
+./android_make_all_darwin.sh
+or
+./android_make_all_windows.sh
+
 
 Specifically for the emulator or a device running x86:
 ./configure --host=x86_64-darwin --build=x86 --with-android
