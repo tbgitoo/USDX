@@ -1414,6 +1414,8 @@ begin
 
   SetLength(InputDeviceBeatDetectionConfig, Length(InputDeviceConfig));
 
+
+
   for DeviceIndex := 0 to Length(InputDeviceConfig)-1 do
   begin
     DeviceCfgBeatDetection:= @InputDeviceBeatDetectionConfig[DeviceIndex];

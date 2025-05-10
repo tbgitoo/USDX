@@ -79,3 +79,4 @@ android_project/app/.cxx/
 android_project/.gradle/8.0.2/
 android_project/.gradle/buildOutputCleanup/buildOutputCleanup.lock
 android_project/.gradle/file-system.probe
+src/backup/libmain.lpi

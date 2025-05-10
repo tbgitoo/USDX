@@ -71,7 +71,9 @@ Optional libraries:
   Current Linux distributions do not offer the C API.
 * `--with-opencv-cxx-api`: Use OpenCV's newer C++ API.
   Required for webcam support under Linux, but requires OpenCV to be present at both build time as well as runtime.
-* `--host=x86_64-w64-mingw64`: Specifically for cross-compiling to Windows 64 bit in mingw (uses the fpc crosscompiler ppcrossx64, if available, for windows 64 as there is no native fpc for this as yet
+* `--host=x86_64-w64-mingw64`: Specifically for cross-compiling to Windows 64 bit in mingw (uses the fpc crosscompiler ppcrossx64, if available, for windows 64 as there is no native fpc for this as yet. To force cross compiling, use
+* `--host=x86_64-w64-mingw64` . This should work, otherwise add `--build=x86_64-w64-mingw32`. For reasons of dll compatibility, you stand a better
+  chance for crosscompiling to windows 45 from mingw64.exe than from msys2.exe or mingw32.exe 
 
 
 ## Compiling on Linux using flatpak-builder

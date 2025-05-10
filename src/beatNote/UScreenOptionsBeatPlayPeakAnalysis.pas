@@ -386,6 +386,9 @@ begin
 
 
     // update the intensity threshold field
+
+    if(ChannelIndex<Length(Ini.InputDeviceBeatDetectionConfig[InputDeviceCfg.Input].
+             ChannelBeatDectectionSettings)) then
     UpdateSelectSlideOptions(Theme.OptionsBeatDetect.SelectIntensityThreshold,
         SelectIntensityID, IBeatDetectIntensityThreshold, Ini.InputDeviceBeatDetectionConfig[InputDeviceCfg.Input].
              ChannelBeatDectectionSettings[ChannelIndex].IntensityThreshold);
