@@ -919,16 +919,16 @@ begin
         self.Mp3 := EncFile;
         //Add Mp3 Flag to Done
         Done := Done or 4;
-      end
+      end;
 
 
 
-
+     end
       //MP3 File
 
 
       //MIDI File
-      else if (TagMap.TryGetData('MIDI', Value)) then
+    else if (TagMap.TryGetData('MIDI', Value)) then
       begin
         EncFile := DecodeFilename(Value);
         if (Self.Path.Append(EncFile).IsFile) then
@@ -944,7 +944,7 @@ begin
         end;
       end;
 
-      end;
+
 
       //Beats per Minute
       if (TagMap.TryGetData('BPM', Value)) then
