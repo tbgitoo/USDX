@@ -234,7 +234,8 @@ uses
   UPathUtils,
   USongs,
   UNote,   //needed for Player
-  UMusic;  //needed for Tracks
+  UMusic,  //needed for Tracks
+  UCommon;
 
 
 const
@@ -811,6 +812,7 @@ begin
 
   FullFileName := Path.Append(Filename).ToWide;
 
+
   //Read first Line
   SongFile.ReadLine(Line);
   if (Length(Line) <= 0) then
@@ -859,6 +861,8 @@ begin
       //Read Identifier and Value
       Identifier  := UpperCase(Trim(Copy(Line, 2, SepPos - 2))); //Uppercase is for Case Insensitive Checks
       Value       := Trim(Copy(Line, SepPos + 1, Length(Line) - SepPos));
+
+
 
       //Check the Identifier (If Value is given)
       if (Length(Value) = 0) then
@@ -918,34 +922,13 @@ begin
       end
 
 
-      else if (Identifier = 'ARTIST') then
-      begin
-        self.Artist := DecodeStringUTF8(Value, Encoding);
-        self.ArtistASCII := LowerCase(TransliterateToASCII(self.Artist));
 
-        //Add Artist Flag to Done
-        Done := Done or 2;
-      end
 
       //MP3 File
-      else if (Identifier = 'MP3') then
-      begin
-        EncFile := DecodeFilename(Value);
-        if (Self.Path.Append(EncFile).IsFile) then
-        begin
-          self.Mp3 := EncFile;
-          
-          //Add Mp3 Flag to Done
-          Done := Done or 4;
-        end
-        else
-        begin
-          Log.LogError('Can''t find audio file in song: ' + DecodeStringUTF8(FullFileName, Encoding));
-        end;
-      end
 
-      //MP3 File
-      else if (Identifier = 'MIDI') then
+
+      //MIDI File
+      else if (TagMap.TryGetData('MIDI', Value)) then
       begin
         EncFile := DecodeFilename(Value);
         if (Self.Path.Append(EncFile).IsFile) then
@@ -959,10 +942,12 @@ begin
         begin
           Log.LogError('Can''t find audio file in song: ' + DecodeStringUTF8(FullFileName, Encoding));
         end;
-      end
+      end;
+
+      end;
 
       //Beats per Minute
-      else if (Identifier = 'BPM') then
+      if (TagMap.TryGetData('BPM', Value)) then
       begin
         SetLength(self.BPM, 1);
         self.BPM[0].StartBeat := 0;
@@ -976,42 +961,21 @@ begin
         end
         else
             Log.LogError('Was not able to convert String ' + FullFileName + '"' + Value + '" to number.');
-      end
+      end;
 
       //---------
       //Additional Header Information
       //---------
 
-      // Gap
-      else if (Identifier = 'GAP') then
-      begin
-        self.GAP := StrToFloatI18n(Value);
-      end
 
-      //Cover Picture
-      else if (Identifier = 'COVER') then
-      begin
-        self.Cover := DecodeFilename(Value);
-      end
 
-      //Background Picture
-      else if (Identifier = 'BACKGROUND') then
-      begin
-        self.Background := DecodeFilename(Value);
-      end
 
-      // Video File
-      else if (Identifier = 'VIDEO') then
-      begin
-        EncFile := DecodeFilename(Value);
-        if (self.Path.Append(EncFile).IsFile) then
-          self.Video := EncFile
-        else
-          Log.LogError('Can''t find video file in song: ' + FullFileName);
-      end
+
+
       // Rap beat mode for detection of clapping on rap notes
-      else if (Identifier = 'RAP') then
+      if (TagMap.TryGetData('RAP', Value)) then
       begin
+        RemoveTagsFromTagMap('RAP');
         if Value = 'BEAT' then
         begin
            self.RapBeat:= true;
@@ -1019,9 +983,11 @@ begin
         end
         else self.RapBeat:=false;
 
-      end
-      else if (Identifier = 'FREESTYLE') then
+      end;
+
+      if (TagMap.TryGetData('FREESTYLE', Value)) then
       begin
+        RemoveTagsFromTagMap('MIDI');
         if Value = 'MIDI' then
         begin
            self.freestyleMidi:= true;
@@ -1029,148 +995,11 @@ begin
         end
         else self.freestyleMidi:=false;
 
-      end
-
-      // Video Gap
-      else if (Identifier = 'VIDEOGAP') then
-      begin
-        self.VideoGAP := StrToFloatI18n( Value )
-      end
-
-      //Genre Sorting
-      else if (Identifier = 'GENRE') then
-      begin
-        DecodeStringUTF8(Value, Genre, Encoding);
-        self.GenreASCII := LowerCase(TransliterateToASCII(Genre));
-      end
-
-      //Edition Sorting
-      else if (Identifier = 'EDITION') then
-      begin
-        DecodeStringUTF8(Value, Edition, Encoding);
-        self.EditionASCII := LowerCase(TransliterateToASCII(Edition));
-      end
-
-      //Creator Tag
-      else if (Identifier = 'CREATOR') then
-      begin
-        DecodeStringUTF8(Value, Creator, Encoding);
-        self.CreatorASCII := LowerCase(TransliterateToASCII(Creator));
-      end
-
-      //Language Sorting
-      else if (Identifier = 'LANGUAGE') then
-      begin
-        DecodeStringUTF8(Value, Language, Encoding);
-        self.LanguageASCII := LowerCase(TransliterateToASCII(Language));
-      end
-
-      //Year Sorting
-      else if (Identifier = 'YEAR') then
-      begin
-        TryStrtoInt(Value, self.Year)
-      end
-
-      // Song Start
-      else if (Identifier = 'START') then
-      begin
-        self.Start := StrToFloatI18n( Value )
-      end
-
-      // Song Ending
-      else if (Identifier = 'END') then
-      begin
-        TryStrtoInt(Value, self.Finish)
-      end
-
-      // Resolution
-      else if (Identifier = 'RESOLUTION') then
-      begin
-        TryStrtoInt(Value, self.Resolution)
-      end
-
-      // Notes Gap
-      else if (Identifier = 'NOTESGAP') then
-      begin
-        TryStrtoInt(Value, self.NotesGAP)
-      end
-
-      // Relative Notes
-      else if (Identifier = 'RELATIVE') then
-      begin
-        if (UpperCase(Value) = 'YES') then
-          self.Relative := true;
-      end
-
-      // File encoding
-      else if (Identifier = 'ENCODING') then
-      begin
-        self.Encoding := ParseEncoding(Value, Ini.DefaultEncoding);
-      end
-
-      // PreviewStart
-      else if (Identifier = 'PREVIEWSTART') then
-      begin
-        self.PreviewStart := StrToFloatI18n( Value );
-        if (self.PreviewStart>0) then
-        begin
-          MedleyFlags := MedleyFlags or 1;
-          HasPreview := true;
-        end;
-      end
-
-      // MedleyStartBeat
-      else if (Identifier = 'MEDLEYSTARTBEAT') and not self.Relative then
-      begin
-        if TryStrtoInt(Value, self.Medley.StartBeat) then
-          MedleyFlags := MedleyFlags or 2;
-      end
-
-      // MedleyEndBeat
-      else if (Identifier = 'MEDLEYENDBEAT') and not self.Relative then
-      begin
-        if TryStrtoInt(Value, self.Medley.EndBeat) then
-          MedleyFlags := MedleyFlags or 4;
-      end
-
-      // Medley
-      else if (Identifier = 'CALCMEDLEY') then
-      begin
-        if Uppercase(Value) = 'OFF' then
-          self.CalcMedley := false;
-      end
-
-      // Duet Singer Name P1
-      else if (Identifier = 'DUETSINGERP1') then
-      begin
-        DecodeStringUTF8(Value, DuetNames[0], Encoding);
-      end
-
-      // Duet Singer Name P2
-      else if (Identifier = 'DUETSINGERP2') then
-      begin
-        DecodeStringUTF8(Value, DuetNames[1], Encoding);
-      end
-
-      // Duet Singer Name P1
-      else if (Identifier = 'P1') then
-      begin
-        DecodeStringUTF8(Value, DuetNames[0], Encoding);
-      end
-
-      // Duet Singer Name P2
-      else if (Identifier = 'P2') then
-      begin
-        DecodeStringUTF8(Value, DuetNames[1], Encoding);
-      end
-
-      // unsupported tag
-
-      else
-      begin
-        Log.LogError('Can''t find audio file in song: ' + DecodeStringUTF8(FullFileName, Encoding));
       end;
-    end;
+
+
+
+
 
     //Beats per Minute
     if (TagMap.TryGetData('BPM', Value)) then
